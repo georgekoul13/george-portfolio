@@ -206,6 +206,7 @@ export default function Background() {
           opacity:      0.10,
           pointerEvents:'none',
           mixBlendMode: 'screen',
+          filter:       'blur(32px)',
         }}
       />
     </>
