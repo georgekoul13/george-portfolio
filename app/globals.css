@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design token CSS vars ─────────────────────────────────────────── */
+:root {
+  --color-dark:         #1A1A1A;
+  --color-surface-dark: #1F1F1F;
+  --color-surface:      #272727;
+  --color-grey-dark:    #444240;
+  --color-grey-md:      #5C5957;
+  --color-grey:         #B5A496;
+  --color-grey-light:   #EEE2D9;
+  --color-light:        #F2EAE3;
+  --color-yellow:       #FFC567;
+  --color-pink:         #FC7DA8;
+  --color-blue:         #048CD6;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────── */
+html,
+body {
+  background-color: #1A1A1A;
+  color: #F2EAE3;
+  overflow-x: clip;
+  min-height: 100%;
+}
+
+/* ─── Custom cursor — hide native cursor on fine-pointer devices ──────── */
+@media (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+}
+
+/* ─── Fun-mode draggable float ────────────────────────────────────────── */
+@keyframes draggableFloat {
+  0%, 100% { transform: translateY(0px)   rotate(0deg);   }
+  35%       { transform: translateY(-5px) rotate(0.4deg); }
+  65%       { transform: translateY(-3px) rotate(-0.3deg);}
+}
+
+/* ─── Smooth font rendering ───────────────────────────────────────────── */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Prevent image / video copying & downloading ────────────────────── */
+img,
+video {
+  -webkit-user-drag: none;
+  user-select:       none;
+  pointer-events:    none;
+}

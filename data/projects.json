@@ -1,0 +1,122 @@
+[
+  {
+    "id": "gaspar-ai",
+    "title": "Gaspar AI",
+    "subtitle": "AI-powered insurance assistant redesign",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "gaspar-ai"
+  },
+  {
+    "id": "piraeus-insurance",
+    "title": "Piraeus Insurance",
+    "subtitle": "Digital transformation for a leading Greek insurer",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "piraeus-insurance"
+  },
+  {
+    "id": "insurance-product-flows",
+    "title": "Insurance Product Flows",
+    "subtitle": "End-to-end UX for multi-step insurance purchase flows",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "insurance-product-flows"
+  },
+  {
+    "id": "cancellation-wallet",
+    "title": "Cancellation Wallet",
+    "subtitle": "Self-service cancellation and policy management experience",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "cancellation-wallet"
+  },
+  {
+    "id": "cybersential",
+    "title": "Cybersential",
+    "subtitle": "Cybersecurity SaaS dashboard design",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "cybersential"
+  },
+  {
+    "id": "bancasure360",
+    "title": "BancaSure 360",
+    "subtitle": "Bancassurance platform for bank-embedded insurance products",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "bancasure360"
+  },
+  {
+    "id": "mood",
+    "title": "Mood",
+    "subtitle": "Emotional wellbeing tracking app concept",
+    "category": "ux-ui",
+    "mode": "fun",
+    "slug": "mood"
+  },
+  {
+    "id": "istorima",
+    "title": "Istorima",
+    "subtitle": "Storytelling platform for shared community narratives",
+    "category": "ux-ui",
+    "mode": "fun",
+    "slug": "istorima"
+  },
+  {
+    "id": "benefit",
+    "title": "Benefit",
+    "subtitle": "Employee benefits management app redesign",
+    "category": "ux-ui",
+    "mode": "professional",
+    "slug": "benefit"
+  },
+  {
+    "id": "music-festivals",
+    "title": "Music Festivals",
+    "subtitle": "Visual identity and collateral for live music events",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "music-festivals"
+  },
+  {
+    "id": "book-cover",
+    "title": "Book Cover",
+    "subtitle": "Editorial illustration and typographic cover design",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "book-cover"
+  },
+  {
+    "id": "logo-designs",
+    "title": "Logo Designs",
+    "subtitle": "Brand mark exploration across industries",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "logo-designs"
+  },
+  {
+    "id": "psychologist-branding",
+    "title": "Psychologist Branding",
+    "subtitle": "Warm, trust-forward brand identity for a private practice",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "psychologist-branding"
+  },
+  {
+    "id": "illustrations",
+    "title": "Illustrations",
+    "subtitle": "Character and conceptual illustration work",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "illustrations"
+  },
+  {
+    "id": "custom-typefaces",
+    "title": "Custom Typefaces",
+    "subtitle": "Bespoke type design for editorial and branding contexts",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "custom-typefaces"
+  }
+]
