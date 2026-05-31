@@ -149,7 +149,7 @@ export default function Background() {
           // Normalise Perlin output from ≈[−0.7,0.7] to [0,1]
           const n = (noise(nx, ny) / 0.707 + 1) * 0.5;
           // Map to 0-20 brightness range — stays very dark, just adds depth
-          const v = (n * 20) | 0;
+          const v = (n * 12) | 0;
           buf[idx] = buf[idx + 1] = buf[idx + 2] = v;
           buf[idx + 3] = 255;
           idx += 4;
@@ -206,7 +206,7 @@ export default function Background() {
           opacity:      0.10,
           pointerEvents:'none',
           mixBlendMode: 'screen',
-          filter:       'blur(32px)',
+          filter:       'blur(80px)',
         }}
       />
     </>
