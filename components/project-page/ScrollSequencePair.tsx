@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 interface ScrollSequencePairProps {
@@ -21,6 +21,14 @@ export default function ScrollSequencePair({
   const leftRefs  = useRef<(HTMLDivElement | null)[]>([]);
   const rightRefs = useRef<(HTMLDivElement | null)[]>([]);
   const count     = Math.min(left.length, right.length);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 744);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -62,8 +70,16 @@ export default function ScrollSequencePair({
 
   if (!count) return null;
 
-  // Column box — height-driven so portrait screens fit within the viewport
-  const colStyle: React.CSSProperties = {
+  // Column box — mobile: single full-width column; desktop: two side-by-side
+  const colStyle: React.CSSProperties = isMobile ? {
+    position:     'relative',
+    height:       'clamp(300px, 75vh, 680px)',
+    width:        'min(80vw, 320px)',
+    borderRadius: 'clamp(16px, 1.67vw, 24px)',
+    overflow:     'hidden',
+    background:   '#111',
+    flexShrink:   0,
+  } : {
     position:     'relative',
     height:       'clamp(300px, 75vh, 680px)',
     aspectRatio,
@@ -90,9 +106,9 @@ export default function ScrollSequencePair({
           justifyContent: 'center',
         }}
       >
-        {/* Side-by-side columns */}
+        {/* Side-by-side columns — single column on mobile */}
         <div style={{ display: 'flex', gap, alignItems: 'center', justifyContent: 'center' }}>
-          {/* Left column */}
+          {/* Left column — always visible */}
           <div style={colStyle}>
             {left.map((img, i) => (
               <div
@@ -104,7 +120,7 @@ export default function ScrollSequencePair({
                   src={img.src}
                   alt={img.alt}
                   fill
-                  sizes="(max-width: 768px) 45vw, 25vw"
+                  sizes="(max-width: 744px) 80vw, 25vw"
                   style={{ objectFit: 'contain' }}
                   priority={i === 0}
                 />
@@ -112,25 +128,27 @@ export default function ScrollSequencePair({
             ))}
           </div>
 
-          {/* Right column */}
-          <div style={colStyle}>
-            {right.map((img, i) => (
-              <div
-                key={img.src}
-                ref={el => { rightRefs.current[i] = el; }}
-                style={{ position: 'absolute', inset: 0, opacity: i === 0 ? 1 : 0 }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  sizes="(max-width: 768px) 45vw, 25vw"
-                  style={{ objectFit: 'contain' }}
-                  priority={i === 0}
-                />
-              </div>
-            ))}
-          </div>
+          {/* Right column — hidden on mobile */}
+          {!isMobile && (
+            <div style={colStyle}>
+              {right.map((img, i) => (
+                <div
+                  key={img.src}
+                  ref={el => { rightRefs.current[i] = el; }}
+                  style={{ position: 'absolute', inset: 0, opacity: i === 0 ? 1 : 0 }}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="25vw"
+                    style={{ objectFit: 'contain' }}
+                    priority={i === 0}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

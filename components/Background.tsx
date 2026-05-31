@@ -97,47 +97,52 @@ export default function Background() {
     window.addEventListener('mousemove', onMouse, { passive: true });
     window.addEventListener('touchmove', onTouch, { passive: true });
 
+    const isMobile = window.innerWidth < 744;
+
     // ── Single RAF loop: noise + gradients + ripple ──
     const frame = (now: number) => {
       const dt = Math.min((now - lastTime) / 1000, 0.05); // seconds, capped
       lastTime = now;
       t += NOISE_SPEED;
 
-      // Gradient positions — lerp toward cursor
-      priX += (targetX - priX) * PRI_LERP;
-      priY += (targetY - priY) * PRI_LERP;
-      secX += (targetX - secX) * SEC_LERP;
-      secY += (targetY - secY) * SEC_LERP;
+      // Gradient glow — desktop only (mobile has no cursor; static blob looks wrong)
+      if (!isMobile) {
+        // Gradient positions — lerp toward cursor
+        priX += (targetX - priX) * PRI_LERP;
+        priY += (targetY - priY) * PRI_LERP;
+        secX += (targetX - secX) * SEC_LERP;
+        secY += (targetY - secY) * SEC_LERP;
 
-      // Ripple — detect fast cursor movement (pixels moved this frame)
-      const dist = Math.hypot(targetX - prevX, targetY - prevY);
-      if (dist > RIPPLE_THRESHOLD && !ripple) {
-        ripple = { x: targetX, y: targetY, age: 0 };
+        // Ripple — detect fast cursor movement (pixels moved this frame)
+        const dist = Math.hypot(targetX - prevX, targetY - prevY);
+        if (dist > RIPPLE_THRESHOLD && !ripple) {
+          ripple = { x: targetX, y: targetY, age: 0 };
+        }
+        prevX = targetX; prevY = targetY;
+
+        if (ripple) {
+          ripple.age += dt;
+          if (ripple.age >= RIPPLE_DURATION) ripple = null;
+        }
+
+        // ── Build gradient string (neutral cool-grey tones, low opacity) ──
+        const glows: string[] = [
+          // Primary — closer glow, neutral grey (equal R/G/B = no warm cast)
+          `radial-gradient(${PRI_SIZE}px circle at ${priX.toFixed(1)}px ${priY.toFixed(1)}px, rgba(70,70,70,0.25) 0%, transparent 100%)`,
+          // Secondary — larger, more diffuse, neutral grey
+          `radial-gradient(${SEC_SIZE}px circle at ${secX.toFixed(1)}px ${secY.toFixed(1)}px, rgba(55,55,55,0.18) 0%, transparent 100%)`,
+        ];
+
+        if (ripple) {
+          const prog   = ripple.age / RIPPLE_DURATION;
+          const alpha  = ((1 - prog) * (1 - prog) * 0.12).toFixed(3); // ease-out fade
+          const radius = (60 + prog * 320).toFixed(0);                 // expand outward
+          glows.push(
+            `radial-gradient(${radius}px circle at ${ripple.x}px ${ripple.y}px, rgba(70,70,70,${alpha}) 0%, transparent 100%)`,
+          );
+        }
+        gradDiv.style.backgroundImage = glows.join(', ');
       }
-      prevX = targetX; prevY = targetY;
-
-      if (ripple) {
-        ripple.age += dt;
-        if (ripple.age >= RIPPLE_DURATION) ripple = null;
-      }
-
-      // ── Build gradient string (neutral cool-grey tones, low opacity) ──
-      const glows: string[] = [
-        // Primary — closer glow, neutral grey (equal R/G/B = no warm cast)
-        `radial-gradient(${PRI_SIZE}px circle at ${priX.toFixed(1)}px ${priY.toFixed(1)}px, rgba(70,70,70,0.25) 0%, transparent 100%)`,
-        // Secondary — larger, more diffuse, neutral grey
-        `radial-gradient(${SEC_SIZE}px circle at ${secX.toFixed(1)}px ${secY.toFixed(1)}px, rgba(55,55,55,0.18) 0%, transparent 100%)`,
-      ];
-
-      if (ripple) {
-        const prog   = ripple.age / RIPPLE_DURATION;
-        const alpha  = ((1 - prog) * (1 - prog) * 0.12).toFixed(3); // ease-out fade
-        const radius = (60 + prog * 320).toFixed(0);                 // expand outward
-        glows.push(
-          `radial-gradient(${radius}px circle at ${ripple.x}px ${ripple.y}px, rgba(70,70,70,${alpha}) 0%, transparent 100%)`,
-        );
-      }
-      gradDiv.style.backgroundImage = glows.join(', ');
 
       // ── Animate noise canvas ──
       // Drift direction: x moves right (+t), y moves up (−t) — diagonal drift

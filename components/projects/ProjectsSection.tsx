@@ -313,11 +313,11 @@ function MobileFileItem({
   }, [isFun, el.group, onDragStart]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!dragging.current) return;
     const t  = e.touches[0];
     const dx = t.clientX - touchStart.current.x;
     const dy = t.clientY - touchStart.current.y;
     totalMoved.current = Math.hypot(dx, dy);
+    if (!dragging.current) return;
     liveDelta.current  = { x: dx, y: dy };
     flushTransform();
   }, [flushTransform]);
@@ -373,7 +373,7 @@ function MobileFileItem({
         top:           `${pos.y}%`,
         width:         100,
         zIndex:        zTop ? 50 : 2,
-        touchAction:   'none',
+        touchAction:   isFun ? 'none' : 'pan-y',
         cursor:        'pointer',
         opacity:       !visible ? 0 : isGroupDimmed ? 0.35 : 1,
         transition:    'opacity 0.35s ease',

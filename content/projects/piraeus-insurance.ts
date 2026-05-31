@@ -50,13 +50,6 @@ const piraeusInsurance: ProjectContent = {
     { type: 'divider' },
 
     {
-      type: 'textBlock',
-      body: 'The interface supports both light and dark modes — because banking doesn\'t keep office hours, and a design that only works in daylight isn\'t finished.',
-    },
-
-    { type: 'divider' },
-
-    {
       type: 'disclaimer',
       text: 'Parts of this project are not live yet and some screens are covered by NDA. What\'s shown here is the portion I\'m cleared to share.',
     },
