@@ -26,11 +26,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
   ),
-  title:       'George Koulouris — Product Designer',
-  description: 'Portfolio of George Koulouris — product, UX/UI, and brand design based in Athens, Greece.',
+  title:       'George Koulouris Portfolio',
+  description: 'Product design, UX, UI, Creative Direction, Illustrations - Based in Greece',
   openGraph: {
-    title:       'George Koulouris — Product Designer',
-    description: 'Portfolio of George Koulouris — product, UX/UI, and brand design based in Athens, Greece.',
+    title:       'George Koulouris Portfolio',
+    description: 'Product design, UX, UI, Creative Direction, Illustrations - Based in Greece',
     url:         'https://georgekoulouris.com',
     siteName:    'George Koulouris',
     images: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         url:    '/og-image.jpg',
         width:  1200,
         height: 630,
-        alt:    'George Koulouris — Product Designer',
+        alt:    'George Koulouris Portfolio',
       },
     ],
     locale: 'en_US',
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'George Koulouris — Product Designer',
-    description: 'Portfolio of George Koulouris — product, UX/UI, and brand design based in Athens, Greece.',
+    title:       'George Koulouris Portfolio',
+    description: 'Product design, UX, UI, Creative Direction, Illustrations - Based in Greece',
     images:      ['/og-image.jpg'],
   },
 };

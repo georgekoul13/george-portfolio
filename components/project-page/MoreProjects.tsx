@@ -190,8 +190,8 @@ export default function MoreProjects({ currentSlug }: MoreProjectsProps) {
               marginBottom:   16,
             }}
           >
-            <a href="#behance"   onMouseEnter={() => setBehanceHovered(true)} onMouseLeave={() => setBehanceHovered(false)} style={linkStyle(behanceHovered)}>BEHANCE</a>
-            <a href="#instagram" onMouseEnter={() => setIgHovered(true)}      onMouseLeave={() => setIgHovered(false)}      style={linkStyle(igHovered)}>INSTAGRAM</a>
+            <a href="https://www.behance.net/george_koulouris" target="_blank" rel="noopener noreferrer" onMouseEnter={() => setBehanceHovered(true)} onMouseLeave={() => setBehanceHovered(false)} style={linkStyle(behanceHovered)}>BEHANCE</a>
+            <a href="https://www.instagram.com/george_koulouris/" target="_blank" rel="noopener noreferrer" onMouseEnter={() => setIgHovered(true)} onMouseLeave={() => setIgHovered(false)} style={linkStyle(igHovered)}>INSTAGRAM</a>
           </div>
           <span style={{ ...copyrightStyle, flexShrink: 0 }}>COPYRIGHT © GEORGE KOULOURIS</span>
         </>
@@ -210,9 +210,9 @@ export default function MoreProjects({ currentSlug }: MoreProjectsProps) {
             justifyContent: 'space-between',
           }}
         >
-          <a href="#behance"   onMouseEnter={() => setBehanceHovered(true)} onMouseLeave={() => setBehanceHovered(false)} style={linkStyle(behanceHovered)}>BEHANCE</a>
+          <a href="https://www.behance.net/george_koulouris" target="_blank" rel="noopener noreferrer" onMouseEnter={() => setBehanceHovered(true)} onMouseLeave={() => setBehanceHovered(false)} style={linkStyle(behanceHovered)}>BEHANCE</a>
           <span style={copyrightStyle}>COPYRIGHT © GEORGE KOULOURIS</span>
-          <a href="#instagram" onMouseEnter={() => setIgHovered(true)}      onMouseLeave={() => setIgHovered(false)}      style={linkStyle(igHovered)}>INSTAGRAM</a>
+          <a href="https://www.instagram.com/george_koulouris/" target="_blank" rel="noopener noreferrer" onMouseEnter={() => setIgHovered(true)} onMouseLeave={() => setIgHovered(false)} style={linkStyle(igHovered)}>INSTAGRAM</a>
         </div>
       )}
     </section>

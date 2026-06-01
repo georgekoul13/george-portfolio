@@ -166,11 +166,12 @@ export default function NotFound() {
         <>
           <div
             style={{
-              display:      'flex',
-              width:        '100%',
-              alignItems:   'center',
-              flexShrink:   0,
-              marginBottom: 16,
+              display:        'flex',
+              width:          '100%',
+              alignItems:     'center',
+              justifyContent: 'center',
+              flexShrink:     0,
+              marginBottom:   16,
             }}
           >
             <span style={errorLabelStyle}>AN ERROR OCCURRED</span>
