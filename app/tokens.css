@@ -1,0 +1,591 @@
+/* ════════════════════════════════════════════════════════════════════
+   Design tokens — Portfolio Website vol 2
+   Ported from Figma file 4f0trlMHIIACk6KKKLhlVp, Collection 1.
+
+   Layer 1  primitives  — raw values, never used directly in components
+   Layer 2  semantic    — what components actually reference
+   Layer 3  illustration— decorative only, exempt from contrast rules
+   ════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Primitives · neutral ─────────────────────────────────────── */
+  --neutral-50:  #fffce0;
+  --neutral-100: #ecdfd5;
+  --neutral-200: #d3c5b7;
+  --neutral-300: #b5a496;
+  --neutral-400: #968b80;
+  --neutral-500: #7a736c;
+  --neutral-600: #5c5957;
+  --neutral-700: #444240;
+  --neutral-800: #272727;
+  --neutral-900: #1f1f1f;
+  --neutral-950: #0f0f0f;
+
+  /* ─── Primitives · accents ─────────────────────────────────────── */
+  --yellow-100: #fff3b8;
+  --yellow-300: #ffe263;
+  --yellow-500: #ffc300;
+  --yellow-700: #bf9200;
+  --yellow-900: #6b5100;
+
+  --orange-100: #ffe7c4;
+  --orange-300: #ffc567;
+  --orange-500: #fb8500;
+  --orange-700: #cc6302;
+  --orange-900: #6b3401;
+
+  --red-100: #ffdcd6;
+  --red-300: #ff9384;
+  --red-500: #fd5a47;
+  --red-700: #c13421;
+  --red-900: #661a0f;
+
+  --pink-100: #ffe0ea;
+  --pink-300: #fdaec7;
+  --pink-500: #fc7da8;
+  --pink-700: #c24672;
+  --pink-900: #66223a;
+
+  --purple-100: #f8e8ff;
+  --purple-300: #ecc1fe;
+  --purple-400: #c489ff;
+  --purple-500: #9747ff;
+  --purple-700: #552cb8;
+  --purple-900: #2b1560;
+
+  --green-100: #dcffce;
+  --green-300: #aafc83;
+  --green-400: #5df369;
+  --green-500: #0fe347;
+  --green-700: #0a9f32;
+  --green-900: #05501a;
+
+  --blue-100: #cdedfc;
+  --blue-300: #5ec2ef;
+  --blue-500: #048cd6;
+  --blue-700: #0356ca;
+  --blue-900: #023047;
+
+  /* ─── Semantic · background ────────────────────────────────────── */
+  --bg-page:    var(--neutral-950);
+  --bg-surface: var(--neutral-900);
+  --bg-raised:  var(--neutral-800);
+  --bg-inverse: var(--neutral-50);
+
+  /* ─── Semantic · text ──────────────────────────────────────────── */
+  --text-primary:   var(--neutral-50);
+  --text-secondary: var(--neutral-200);
+  --text-tertiary:  var(--neutral-400);
+  --text-disabled:  var(--neutral-500);
+  --text-inverse:   var(--neutral-950);
+
+  /* ─── Semantic · border ────────────────────────────────────────── */
+  --border-subtle:  var(--neutral-800);
+  --border-default: var(--neutral-700);
+  --border-strong:  var(--neutral-600);
+  /* Figma has blue-700 here (2.8:1 on --bg-page, fails the 3:1 minimum
+     for a focus indicator). Using blue-500 = 5.1:1. */
+  --border-focus:   var(--green-500);
+
+  /* ─── Semantic · feedback ──────────────────────────────────────── */
+  /* Figma currently has error→yellow and warning→red, which is swapped.
+     Corrected here; the 300 steps are used because the 500s fail
+     contrast against --bg-page.
+
+     ERROR is the exception, moved to the 500 on 2026-08-27. The contact
+     field component (Figma 203:5577) draws its error rule at #fd5a47, which
+     is this ramp's 500 — bound in the file to a variable named
+     `feedback/warning`, the same swap noted above. Measured on --bg-page
+     (#0f0f0f): red-500 is 6.14:1 and red-300 is 8.91:1, so this trades AAA
+     for AA rather than failing anything. The rule itself is a 1px border,
+     which only has to clear 3:1. */
+  --feedback-success: var(--green-300);
+  --feedback-warning: var(--yellow-300);
+  --feedback-error:   var(--red-500);
+  --feedback-info:    var(--blue-300);
+
+  /* ─── Illustration palette ─────────────────────────────────────── */
+  /* Decorative only. Never use for text, borders, or UI state. */
+  --illus-yellow:      var(--yellow-500);
+  --illus-yellow-dark: var(--yellow-700);
+  --illus-orange:      var(--orange-500);
+  --illus-orange-dark: var(--orange-700);
+  --illus-red:         var(--red-500);
+  --illus-red-dark:    var(--red-700);
+  --illus-pink:        var(--pink-500);
+  --illus-pink-dark:   var(--pink-700);
+  --illus-purple:      var(--purple-500);
+  --illus-purple-dark: var(--purple-700);
+  --illus-green:       var(--green-500);
+  --illus-green-dark:  var(--green-700);
+  --illus-blue:        var(--blue-500);
+  --illus-blue-dark:   var(--blue-700);
+
+  /* ─── Typography ───────────────────────────────────────────────── */
+  /* Mirrors the 7 bound text styles in Figma. Name = size|line-height|weight. */
+  --font-sans: var(--font-montserrat), Montserrat, sans-serif;
+  --font-mono: var(--font-courier), 'Courier Prime', monospace;
+
+  --type-12-16-r: 400 12px/16px var(--font-sans);   /* the card's category chip */
+  --type-14-20-r: 400 14px/20px var(--font-sans);   /* medium card description */
+  --type-16-16-r: 400 16px/16px var(--font-sans);
+  --type-16-20-r: 400 16px/20px var(--font-sans);
+  --type-15-20-m: 500 15px/20px var(--font-sans);   /* project meta value */
+  --type-16-20-b: 700 16px/20px var(--font-sans);   /* medium card title */
+  --type-16-24-r: 400 16px/24px var(--font-sans);   /* large card description */
+  --type-20-20-r: 400 20px/20px var(--font-sans);
+  --type-24-24-l: 300 24px/24px var(--font-sans);
+  --type-24-24-b: 700 24px/24px var(--font-sans);
+  --type-24-24-m: 500 24px/24px var(--font-sans);   /* the green project count */
+  --type-32-32-m: 500 32px/32px var(--font-sans);
+  --type-32-40-sb: 600 32px/40px var(--font-sans);  /* project summary line */
+  --type-48-48-b: 700 clamp(30px, calc(23.66px + 1.69vw), 48px)/clamp(30px, calc(23.66px + 1.69vw), 48px) var(--font-sans);   /* the "Categories" chip */
+  --type-56-64-m: 500 clamp(34px, calc(26.25px + 2.066vw), 56px)/clamp(40px, calc(31.55px + 2.254vw), 64px) var(--font-sans);   /* letter-spacing: 5px */
+  --type-72-80-r: 400 clamp(38px, calc(26.03px + 3.192vw), 72px)/clamp(44px, calc(31.32px + 3.38vw), 80px) var(--font-sans);
+  --type-100-100-m: 500 clamp(48px, calc(29.69px + 4.883vw), 100px)/clamp(48px, calc(29.69px + 4.883vw), 100px) var(--font-sans); /* project title */
+
+  --track-56: 5px;
+
+  /* ─── Motion ───────────────────────────────────────────────────── */
+  /* Read from the Figma keyframes and the gsap.com reference. */
+  --ease-pop:    cubic-bezier(0.45, 1.45, 0.8, 1);  /* overshoot  */
+  --ease-expo:   cubic-bezier(0.16, 1, 0.3, 1);     /* expo-out   */
+  --ease-smooth: cubic-bezier(0.5, 0, 0.5, 1);      /* in-out     */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Header height ───────────────────────────────────────────────────────
+   The bar is the 24px wordmark plus 32 above and below plus its hairline.
+   Every page offsets its `main` by it, and the category intro sizes its
+   opening band as `100svh` minus it, so it lives here rather than being
+   written out five times. */
+:root { --header-h: 89px; }
+
+/* ── Page gutter ─────────────────────────────────────────────────────────
+   Figma draws every vol2 section with 60px either side, against a 1440
+   frame — 8% of the width. Held literally on a phone that is 120 of 375px,
+   a third of the screen spent on margin, which is what pushed the hero's
+   subtitle off the side and squeezed the intro's lines into three words a
+   row. It steps down instead, keeping roughly the same share of the screen
+   the design gives it.
+
+   Consumed as `px-[var(--gutter)]`; changing it here moves every band on
+   every page at once. */
+:root { --gutter: 20px; }
+
+@media (min-width: 600px)  { :root { --gutter: 32px; } }
+@media (min-width: 900px)  { :root { --gutter: 44px; } }
+@media (min-width: 1200px) { :root { --gutter: 60px; } }
+
+/* ── Horizontal section ──────────────────────────────────────────────────
+   The ribbon is composed at 5494 × 498 against a 1440 frame. Held at full
+   size on a phone it still *works* — it is transform-driven inside a clip,
+   which is what gsap.com does on mobile too — but it would take 3300px of
+   scroll to cross, and you would read it through a 375px slot.
+
+   So it scales. Everything keeps its relationship to everything else; the
+   whole ribbon just gets smaller, which shortens the travel at the same
+   time: at 0.55 the crossing takes ~1700px of scroll, less than the desktop
+   2600, while the 56px words stay a legible 31px.
+
+   Deliberately NOT disabled on mobile. gsap.com keeps its horizontal
+   motion, and this section is the only place the three disciplines are
+   announced. */
+:root {
+  --chip-scale: 1;
+  --chip-lift: 0px;
+}
+
+/* One mobile scale from 0 to 899px meant a 900-wide tablet got phone-sized
+   content: the ribbon's 56px words arriving as 31px on a screen nearly three
+   times a phone's width. It steps instead. */
+/* The phone gets its own arrangement (the `--hw-*` tables in globals.css —
+   chips strung along the track rather than piled) and then scales it. The
+   Figma mobile frame draws everything at full size, but those sizes were
+   showing the ORDER, not the dimensions: at 1:1 a single word runs nearly
+   two screens wide and crossing the ribbon takes 4,000px of scroll.
+
+   0.72 is where the two constraints meet — the 56px words land at 40px and
+   the 24px chip labels at 17px, both comfortably readable, and the crossing
+   comes to roughly the 2,600px the desktop takes.
+
+   `--chip-scale` and `--chip-lift` stay at rest: they existed to rescue the
+   piled desktop cluster on a narrow screen, and the chips are not piled
+   any more. */
+@media (max-width: 899px) {
+  :root {
+    --chip-scale: 1;
+    --chip-lift: 0px;
+  }
+}
+
+/* The closing line is the longest string on the site — "THANKS FOR SCROLLING
+   ALL THE WAY" runs 402px at its drawn 20px, wider than a 375 phone, and it
+   cannot wrap because it turns on a drum. It sets smaller instead. */
+:root { --copyright-size: 20px; }
+@media (max-width: 480px) { :root { --copyright-size: 15px; } }
+@media (min-width: 481px) and (max-width: 599px) { :root { --copyright-size: 17px; } }
+
+/* A pinned section owns the screen for as long as it holds it, so it is the
+   screen's height — not Figma's 700, which is a frame height and left 382px
+   of dead space under the ribbon on an 812 phone, with the whole thing
+   riding 213px above centre. The track then sits at the vertical middle of
+   whatever that is. `svh` rather than `vh` so a mobile browser's collapsing
+   address bar doesn't resize the pin mid-scroll. */
+:root {
+  --hsection-h: 100svh;
+
+  /* Figma 191:4899: 88 between the line and the folders, 300 either end.
+     The row centres itself now — `--htrack-mid` and `--htrack-top` are gone
+     with the 5494px canvas they were correcting for. */
+  /* Figma puts the track's content at x=60 — the gutter, not the old 300
+     lead-in. The band is 3380 wide in a 1440 frame now that the category
+     list rides on it. */
+  --hrow-pad: var(--gutter);
+}
+
+/* 300 of lead-in is a fifth of a 1440 frame and four fifths of a 375 one.
+   It steps back to the page gutter, so the line starts where every other
+   band on the site starts. */
+@media (max-width: 899px) {
+  :root {
+    --hrow-pad: var(--gutter);
+  }
+}
+
+/* ── The projects band and the category list ────────────────────────────
+   Both used to be authored inside `scale(var(--track-scale))`, which meant
+   every size had to divide the scale back out before it meant anything on
+   screen. The scaled track is gone — `HorizontalSection` and
+   `ProjectGallery` were both replaced by `ProjectsBand` — so these are
+   plain values again: 32 means 32 on the glass.
+
+   ── The category list — Figma 210:5662 ────────────────────────────────
+   Three rows of [index, name] ... [count], each over a hairline, 88
+   between the row and its rule and 72 between rows, in a band padded 60
+   all round — 60 + 561 + 60 = Figma's 681. */
+:root {
+  --cat-index: clamp(12px, calc(10.59px + 0.3756vw), 16px);
+  /* the line that leads into the projects — Figma 210:5708 */
+  --pgal-head: clamp(32px, calc(9.5px + 6.0vw), 96px);
+  --cat-name: clamp(32px, calc(17.92px + 3.756vw), 72px);
+  --cat-count: clamp(12px, calc(7.775px + 1.127vw), 24px);
+  --cat-name-gap: clamp(24px, calc(1.465px + 6.009vw), 88px);
+  --cat-rule-gap: clamp(24px, calc(1.465px + 6.009vw), 88px);
+  --cat-row-gap: clamp(32px, calc(17.92px + 3.756vw), 72px);
+  /* the cursor-tracking preview, sized after the GSAP demo's 350 */
+  --cat-preview: clamp(200px, calc(147.2px + 14.08vw), 350px);
+  --cat-pad-y: clamp(40px, calc(32.96px + 1.878vw), 60px);
+}
+
+/* The `--cat-*` set is fluid on `:root` — it used to step from the phone
+   value straight to the desktop one at 900, which left a 768 tablet showing
+   32px category names across a 704 measure. */
+
+/* ── Display type on small screens ───────────────────────────────────────
+   The display type steps down. Held at its Figma size on a phone the
+   intro's 72px set sixteen lines deep and ran 1600px tall — two and a half
+   screens of one paragraph, and about five characters a line.
+
+   Only the four display sizes move. Body copy, labels and chips are already
+   sized for reading and are left exactly as drawn; shrinking those would
+   make the page worse, not smaller.
+
+   Line height moves with each one, keeping roughly the ratio the design
+   sets rather than a flat multiplier. */
+
+@media (min-width: 900px) and (max-width: 1199px) {
+  :root {
+  }
+}
+
+/* ── Two more fixed frames that have to give ─────────────────────────────
+   The gallery's cards are drawn 500 square and the connect section's folder
+   780 × 720, both against a 1440 frame. On a 375 screen a 500 card is wider
+   than the phone and the folder overhangs by 405px.
+
+   The card simply gets smaller — it is a square of artwork and nothing
+   inside it needs a minimum.
+
+   (The connect section's folder is NOT here: it already has a `fit()` of its
+   own that scales the group to the viewport, and a second scale in CSS would
+   land on the transform GSAP owns and be overwritten.)
+
+   The card is left deliberately narrower than the screen: a strip that
+   scrolls sideways has to show a slice of the next card, or nothing tells
+   you it moves. */
+
+
+/* ── Inside the gallery card ─────────────────────────────────────────────
+   Figma draws the card 500 square with 32px padding, a 32px title and a
+   72px arrow well. At 260 the card keeps all three, so a quarter of its
+   width goes to padding and "BOOK COVER" breaks across two lines. Every
+   part of the card scales with it. */
+:root {
+}
+
+
+/* The cue between the folders and the gallery. Its 24px is a quiet aside on
+   a 1440 frame and a headline on a phone. */
+
+/* ── Project template ────────────────────────────────────────────────────
+   Figma draws the template against the same 1440 frame as everything else,
+   and three of its numbers are frame-sized rather than content-sized. Each
+   becomes a token so the template reads the same at every width.
+
+   `--band-gap` is the 80px rhythm between bands. On a phone that is a fifth
+   of the screen of empty space repeated seven times; the page ran 3,636px
+   for six blocks of content.
+
+   `--project-intro-top` is the 124 above the back link. Held literally it
+   put the title a third of the way down the first screen, under a header
+   that already costs 89.
+
+   `--project-still` is the full-width hero's 1320 × 640. At 2.06:1 inside a
+   335px column the picture is 162px tall — a letterbox strip, and the one
+   thing on the page that has to carry the work. 3:2 gives it 223. It is a
+   crop, so `object-cover` takes 27% off the sides: worth revisiting per
+   project when the real exports land. */
+:root {
+  --band-gap: clamp(48px, calc(36.73px + 3.005vw), 80px);
+  --project-intro-top: clamp(56px, calc(32.06px + 6.385vw), 124px);
+  --project-still: 1320 / 640;
+}
+
+@media (max-width: 899px) {
+  :root {
+    --project-still: 3 / 2;
+  }
+}
+
+/* ── The 404 ─────────────────────────────────────────────────────────────
+   Figma 147:15098 is one numeral and nothing else: "404" at 800px Medium in
+   a 992-tall band, drawn 1604 wide in a 1440 frame so it bleeds 82 off each
+   side. `55.55vw` keeps that same overhang at every width — the section
+   clips it symmetrically, which is what the frame does.
+
+   `min(800px, …)` so it stops growing past the size it was drawn at, and
+   the stage takes the screen's height when that is under Figma's 992.
+
+   `--nf-dino`, `--nf-item` and `--nf-numerals-left` went with the game on
+   2026-08-29. */
+:root {
+  --nf-numerals: min(800px, 55.55vw);
+  --nf-stage-h: min(992px, calc(100svh - var(--header-h)));
+  --nf-stage-pad: clamp(48px, calc(21.24px + 7.136vw), 124px);
+}
+
+
+/* ── Selling point: the category chips and the ribbon ────────────────────
+   Figma "main selling point" 191:4288, composed against a 1440 frame:
+   py 124, chips 98 tall on a 32 gap, and two copies of the ribbon placed
+   past the left and right edges so it frames the stack rather than sitting
+   behind it.
+
+   The chips are NOT display type — they are labels, and the rule for this
+   site is that labels are left at their drawn size. But 48px bold set in a
+   pill with 48px of side padding makes "CREATIVE" 348px wide, which is
+   wider than a 375 phone before the pill's own padding is counted. So the
+   chip steps down as a unit: type, height and padding together, keeping the
+   pill's proportions rather than squeezing the word inside a fixed box. */
+:root {
+  --sp-pad: clamp(72px, calc(53.69px + 4.883vw), 124px);
+  --sp-gap: clamp(20px, calc(15.77px + 1.127vw), 32px);
+  --chip-h: clamp(64px, calc(52.03px + 3.192vw), 98px);
+  --chip-px: clamp(28px, calc(20.96px + 1.878vw), 48px);
+  --chip-font: var(--type-48-48-b);
+  /* The ribbon's own scale, and where each copy's CENTRE sits. Both axes,
+     because the phone does not just shrink this — it moves the two copies
+     into opposite corners. A = the rotated copy, B = the upright one. */
+  --ribbon-scale: 1;
+  --ribbon-a-x: 58px;
+  --ribbon-a-y: 38%;
+  --ribbon-b-x: calc(100% + 26px);
+  --ribbon-b-y: 50%;
+}
+
+/* The ribbon frames the chips at 1440 because there are 728px of clear
+   space between the two copies and the widest chip is 350. That ratio
+   cannot survive a phone: leave the offsets alone and the two arcs meet in
+   the middle and weave straight through the stack.
+
+   So the narrow layouts do not scale this arrangement — they RE-COMPOSE it.
+   Both copies move into opposite CORNERS, A into the top-left and B into
+   the bottom-right, which is why both axes are tokens rather than just the
+   x offsets. A slice of arc at each side reads as two cropped edges; the
+   same two slices on a diagonal read as a composition, and it puts the
+   ribbon back where there is actually room for it — the vertical chip stack
+   leaves the corners empty and the flanks tight. */
+@media (max-width: 899px) {
+  :root {
+    --ribbon-scale: 0.8;
+    --ribbon-a-x: -130px;
+    --ribbon-a-y: 30%;
+    --ribbon-b-x: calc(100% + 60px);
+    --ribbon-b-y: 68%;
+  }
+}
+
+/* The left copy is rotated, so its bounding box is 795 wide where the right
+   one is 566 — it needs the bigger push of the two.
+   Tuned against the INK, not the boxes: the bounding box of a rotated
+   S-curve is mostly empty, and at −185 the left copy still had 61px of box
+   on screen carrying only 35px of ribbon, which reads as nothing at all.
+   −155 puts 65px of actual ribbon at the edge, matching the right copy's
+   slice, and still leaves 14px before the widest chip. */
+@media (max-width: 599px) {
+  :root {
+    --ribbon-scale: 0.62;
+    --ribbon-a-x: -85px;
+    --ribbon-a-y: 0%;
+    --ribbon-b-x: calc(100% + 45px);
+    --ribbon-b-y: 92%;
+  }
+}
+
+/* ── Hero subtitle braces ────────────────────────────────────────────────
+   Figma draws them 64 × 16, flanking a 336px paragraph — a comfortable
+   ratio at 1440. Below 900 the hero stacks and the paragraph is the widest
+   thing in the band, so a 64px brace either side stops reading as
+   punctuation around the line and starts competing with it. They step down
+   as a pair, keeping the asset's own 4:1 so the curve never distorts.
+
+   Only the size moves. `BRACE_TRAVEL` in HeroSection is derived from the
+   paragraph's width and the flex gap, not from the brace, so how far they
+   part is untouched. */
+:root {
+  --brace-h: clamp(44px, calc(36.96px + 1.878vw), 64px);
+  --brace-w: clamp(11px, calc(9.239px + 0.4695vw), 16px);
+}
+
+
+/* ── Contact ─────────────────────────────────────────────────────────────
+   Figma 147:11421. The headline is drawn at 205.288/205.288 — not a round
+   number because it is not a chosen size: it is whatever makes "LET'S GET
+   IN" span the 1320 container at 1440. So it is not pinned at all: the size
+   is DERIVED from the measure, and the line fills it at every width.
+
+   "LET'S GET IN" is 1319 wide at 205.344, so it runs 6.423 font-sizes long.
+   Dividing the container by that constant makes it fill exactly — 1320/6.423
+   = 205.5 at desktop, 350/6.423 = 54.5 on a 390 phone.
+
+   In `cqw`, not `vw`: the band is a query container, so 100cqw is its
+   content box — already inside the gutter, and blind to the scrollbar. `vw`
+   counts both, and at 15vw the line came out 376 wide in a 350 container and
+   bled off the left edge.
+
+   `--contact-lead` is Figma's 65.692 gap, used both between the two lines
+   and between the video and TOUCH, so the block reads as one grid.
+
+   Below 900 the second line stops being a row: TOUCH beside a flex-1 video
+   would leave the video about 118px wide on a 375 screen, which is too small
+   to show anything happening in it. It stacks and goes full width instead,
+   and the form's two columns become one. */
+:root {
+  /* The title band, read off Figma 147:13474 (1440 x 897.69):
+     124 down to the back link, 88 to the headline, 88 to the intro, 80
+     under it. They were one token before, which made the last two 124. */
+  --contact-top: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
+  --contact-bottom: clamp(32px, calc(15.1px + 4.507vw), 80px);
+  --contact-back-gap: clamp(40px, calc(23.1px + 4.507vw), 88px);
+  --contact-intro-gap: clamp(56px, calc(44.73px + 3.005vw), 88px);
+  /* how many font-sizes long the longest line is — see above */
+  --contact-fit: 6.423;
+  --contact-rect-flex: 1 1 0%;
+  /* the display size, named once so the gap and the video can be derived
+     from the TYPE rather than from the viewport */
+  --contact-display: calc(100cqw / var(--contact-fit));
+  /* Figma's 65.692 gap is 0.32 of the 205.288 type, not a viewport figure */
+  --contact-lead: calc(var(--contact-display) * 0.32);
+  /* desktop: the video is a flex item stretched to the row, so its height is
+     the cap band of TOUCH — never a number of its own. Only the stacked
+     phone layout needs one. */
+  --contact-rect-h: auto;
+  /* DETAILS and the intro paragraph are the same size at desktop and
+     different on a phone (32 vs 24), so they are two tokens. DETAILS is a
+     single line and cap-trims in `em`; the intro keeps its leading and
+     needs the multi-line trim below. */
+  --contact-details-size: clamp(32px, calc(26.37px + 1.502vw), 48px);
+  --contact-heading: clamp(24px, calc(15.55px + 2.254vw), 48px);
+  --contact-heading-lh: clamp(32px, calc(23.55px + 2.254vw), 56px);
+  /* the cap trim for a MULTI-line block, which the em version in
+     ContactForm can't express because it depends on the leading as well as
+     the size. Derived from the same measured Montserrat metrics:
+       top    = L/2 - 0.3415F      bottom = L/2 - 0.3585F
+     Written against the tokens, so it stays right at every breakpoint. */
+  --contact-heading-trim-t: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3415);
+  --contact-heading-trim-b: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3585);
+  /* Two row tokens, not one. The HEADLINE can be a row as soon as there is
+     room for the video beside the word (600); the FORM needs DETAILS in a
+     column beside a two-up grid and only earns that at 900. */
+  --contact-head-row: row;
+  --contact-form-row: row;
+  --contact-cols: 1fr 1fr;
+  --contact-fields-indent: 150px;
+  /* Figma 147:12901: pt-80 / pb-124 on the band, gap-80 down to the button,
+     gap-40 from DETAILS to the fields, gap-48 between field rows. All four
+     were hard-coded in the component; they are tokens so the phone can have
+     smaller ones. */
+  /* The field's value type — Figma 203:5577 sets 20/24. The row height and
+     the textarea's cap trim are both derived from it, so a breakpoint only
+     has to change this one number. */
+  --contact-value-size: 20px;
+  --contact-value-lh: 24px;
+  /* py-8 either side of the line trimmed to its cap (0.7 of the size) */
+  --contact-value-h: calc(var(--contact-value-size) * 0.7 + 16px);
+  /* a textarea can't be cap-trimmed by height, so it gets the multi-line
+     margin form: top = L/2 − 0.3415F, bottom = L/2 − 0.3585F */
+  --contact-ta-trim-t: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3415);
+  --contact-ta-trim-b: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3585);
+
+  --contact-form-top: clamp(32px, calc(15.1px + 4.507vw), 80px);
+  --contact-form-bottom: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
+  --contact-cta-gap: clamp(56px, calc(47.55px + 2.254vw), 80px);
+  --contact-details-gap: 40px;
+  --contact-fields-gap: clamp(24px, calc(15.55px + 2.254vw), 48px);
+}
+
+/* ── Contact below the desktop rung ─────────────────────────────────────
+   Figma draws this page twice: 210:5709 at 375 and 147:11421 at 1440. The
+   sizes between those two are FLUID — see the `clamp()`s on `:root` above —
+   because pinning them to the phone value all the way up to 899 left a
+   768 tablet wearing a 375 layout: a 14.7:1 letterbox video under a 110px
+   headline, and DETAILS at 32 beside it.
+
+   What stays in a media query is only what cannot be interpolated: which
+   way a row runs, and how many columns it has. */
+
+/* 600–899: the headline earns its row back — the video is the remainder
+   beside the word, exactly as on desktop — and the form goes two-up. The
+   FORM's own row (DETAILS beside the grid) still waits for 900, because
+   DETAILS + its 150 indent does not fit beside a 704 grid. */
+@media (max-width: 899px) {
+  :root {
+    --contact-form-row: column;
+    --contact-fields-indent: 0px;
+  }
+}
+
+/* Under 600 there is no room for anything beside the display type, so the
+   headline stacks and the video becomes a band of its own. Its height is
+   the one number that has to be interpolated by hand: 48 is the design's
+   at 375, and 88 is the cap band of the display type at the 900 switch, so
+   it arrives at the desktop behaviour without a step. */
+@media (max-width: 599px) {
+  :root {
+    --contact-head-row: column;
+    --contact-cols: 1fr;
+    --contact-rect-flex: 0 0 auto;
+    --contact-rect-h: clamp(48px, calc(19.43px + 7.619vw), 88px);
+  }
+}

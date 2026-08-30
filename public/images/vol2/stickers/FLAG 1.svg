@@ -1,0 +1,17 @@
+<svg width="93" height="114" viewBox="0 0 93 114" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M36 78H25.5V88.5H4.5V109.5H88.5V88.5H67.5V78H46.5V57H57V46.5H78V36H88.5V25.5H78V15H57V4.5H36V78Z" fill="#FD5A47"/>
+<path d="M4.5 88.5H25.5V78H36V4.5H57V15H78V25.5H88.5V36H78V46.5H57V57H46.5V78H67.5V88.5H88.5V109.5H4.5V88.5ZM31.5 73.5H21V84H0V114H93V84H72V73.5H51V61.5H61.5V51H82.5V40.5H93V21H82.5V10.5H61.5V0H31.5V73.5Z" fill="#FFFCE0"/>
+<rect width="10.5" height="52.5" transform="matrix(-1 0 0 1 46.5 57)" fill="#0F0F0F"/>
+<rect width="10.5" height="52.5" transform="matrix(-1 0 0 1 57 4.5)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 67.5 25.5)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 67.5 15)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 67.5 36)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 78 25.5)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 78 15)" fill="#FD5A47"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 78 36)" fill="#FD5A47"/>
+<rect width="42" height="10.5" transform="matrix(-1 0 0 1 67.5 78)" fill="#0F0F0F"/>
+<rect width="84" height="10.5" transform="matrix(-1 0 0 1 88.5 88.5)" fill="#0F0F0F"/>
+<rect width="84" height="10.5" transform="matrix(-1 0 0 1 88.5 99)" fill="#0F0F0F"/>
+<rect width="10.5" height="10.5" transform="matrix(-1 0 0 1 88.5 25.5)" fill="#FD5A47"/>
+<rect width="10.5" height="52.5" transform="matrix(-1 0 0 1 46.5 4.5)" fill="#FD5A47"/>
+</svg>

@@ -1,11 +1,11 @@
 import type { ProjectContent } from './types';
 
-const psychologistBranding: ProjectContent = {
-  slug:       'psychologist-branding',
+const danaiMichali: ProjectContent = {
+  slug:       'danai-michali',
   title:      'SOCIAL MEDIA BRANDING',
   resolution: '1440 × 900',
   description:
-    'Design of the complete visual identity and a series of illustrated social media posts for a mental health counselor.',
+    'The complete visual identity for Δανάη Μιχάλη, a systemic mental-health counsellor working with individuals, couples, families and groups — plus a run of illustrated posts carrying it onto social, where a practice like hers is actually found.',
   metadata: {
     role: 'Brand & Social Media Designer.',
     categories: ['BRAND DESIGN', 'ILLUSTRATION'],
@@ -37,4 +37,4 @@ const psychologistBranding: ProjectContent = {
   ],
 };
 
-export default psychologistBranding;
+export default danaiMichali;

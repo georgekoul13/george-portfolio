@@ -1,8 +1,12 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Design token CSS vars ─────────────────────────────────────────── */
+/* ─── Legacy v1 tokens ───────────────────────────────────────────────
+   Still referenced by the existing project pages. Removed page by page
+   as each template is rebuilt for vol2. New work uses tokens.css. */
 :root {
   --color-dark:         #1A1A1A;
   --color-surface-dark: #1F1F1F;
@@ -24,6 +28,12 @@ body {
   color: #F2EAE3;
   overflow-x: clip;
   min-height: 100%;
+}
+
+/* Vol2 owns its own surface — flat --bg-page, no v1 chrome behind it. */
+body:has([data-vol2]) {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
 }
 
 /* ─── Custom cursor — hide native cursor on fine-pointer devices ──────── */
@@ -54,4 +64,76 @@ video {
   -webkit-user-drag: none;
   user-select:       none;
   pointer-events:    none;
+}
+
+/* ══ vol2 — mobile layout ═══════════════════════════════════════════════
+   These were inline `<style>` tags inside the components, which is a trap:
+   React escapes `>` to `&amp;gt;` when it server-renders text inside a
+   `<style>`, so the child combinator below arrived escaped from the server
+   and unescaped from the client, and every load threw a hydration mismatch
+   that replaced the whole document. Real stylesheet, no escaping, and the
+   CSS stops being re-emitted on every render.                              */
+
+@media (max-width: 899px) {
+  /* The hero frame is a fixed 1320 × 582 with everything placed on it by
+     percentage, which cannot reflow — held to it on a phone the subtitle
+     sits at 65% of the width and leaves the screen. Under 900px it stops
+     being a frame and becomes an ordinary column: wordmark, then braces and
+     subtitle beneath, then the CTA full width. Same move gsap.com makes. */
+  [data-hero-frame] {
+    aspect-ratio: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 40px;
+  }
+  [data-hero-frame] > [data-hero-part] {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+  }
+  /* a pointer, drawn for a device that has one */
+  [data-hero-cursor] { display: none !important; }
+  [data-hero-subtitle] { justify-content: flex-start; }
+  [data-hero-subtitle] p { width: auto !important; flex: 1 1 auto; }
+  [data-hero-cta] > * { display: block; }
+  [data-hero-cta] a { width: 100%; justify-content: center; }
+
+  /* Figma indents KOULOURIS under the tail of GEORGE, spending 1318 units of
+     width to carry 969 units of letters. On a phone that overhang is paid
+     for in cap height, so both words go flush left: the box narrows to the
+     longer word and every letter grows 36% for free. */
+  [data-wordmark] { aspect-ratio: 969.529 / 462 !important; }
+  [data-word="GEORGE"] { left: 0% !important; width: 74.5623% !important; }
+  [data-word="KOULOURIS"] { left: 0% !important; width: 100% !important; }
+}
+
+/* The centred card in the project strip shows what hover shows on a desktop
+   — scrim, arrow and title. Written here rather than as a Tailwind variant
+   because the attribute is set from a rAF loop, and the elements it has to
+   reach are three levels down inside the card. */
+[data-focus][data-focused] [data-reveal] { opacity: 1; }
+/* it grows, so it has to sit over its neighbours rather than under them */
+[data-focus][data-focused] { position: relative; z-index: 2; }
+
+/* ---------------------------------------------------------------------------
+   Burger menu, open state.
+
+   The menu's backdrop is fixed to the viewport and sits at z-55, one below
+   the header, so the logo and the X stay sharp on top of it. The header's
+   own opaque bar would otherwise punch a solid, unblurred strip across the
+   top of that backdrop — so while the menu is open the bar steps aside and
+   the blur runs the full height of the screen. Its hairline goes with it;
+   a rule drawn across a blurred overlay reads as a stray line.
+
+   `data-nav-open` is set on the root by MobileMenu, which also swallows
+   wheel and touchmove while it is there. See the comment there for why the
+   page is not locked with `overflow: hidden`.
+--------------------------------------------------------------------------- */
+html[data-nav-open] {
+  --header-bg: transparent;
+}
+html[data-nav-open] [data-header-rule] {
+  opacity: 0;
 }

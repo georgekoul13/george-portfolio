@@ -8,11 +8,12 @@ import {
   Pacifico,
   Black_Ops_One,
   Satisfy,
+  Courier_Prime,
 } from 'next/font/google';
 import './globals.css';
 import ClientProviders from '@/components/ClientProviders';
 
-const montserrat     = Montserrat({      subsets: ['latin'], weight: ['300','400','500','800','900'], variable: '--font-montserrat',  display: 'swap' });
+const montserrat     = Montserrat({      subsets: ['latin'], weight: ['300','400','500','600','700','800','900'], variable: '--font-montserrat',  display: 'swap' });
 const playfairDisplay = Playfair_Display({ subsets: ['latin'], weight: ['400'],                  variable: '--font-playfair',    display: 'swap' });
 const righteous      = Righteous({        subsets: ['latin'], weight: ['400'],                  variable: '--font-righteous',   display: 'swap' });
 const boogaloo       = Boogaloo({         subsets: ['latin'], weight: ['400'],                  variable: '--font-boogaloo',    display: 'swap' });
@@ -20,6 +21,8 @@ const abrilFatface   = Abril_Fatface({    subsets: ['latin'], weight: ['400'],  
 const pacifico       = Pacifico({         subsets: ['latin'], weight: ['400'],                  variable: '--font-pacifico',    display: 'swap' });
 const blackOpsOne    = Black_Ops_One({    subsets: ['latin'], weight: ['400'],                  variable: '--font-black-ops',   display: 'swap' });
 const satisfy        = Satisfy({          subsets: ['latin'], weight: ['400'],                  variable: '--font-satisfy',     display: 'swap' });
+/* The vol2 ID card sets its small print in Courier Prime — Figma 92:4429. */
+const courierPrime   = Courier_Prime({    subsets: ['latin'], weight: ['400','700'],          variable: '--font-courier',     display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -67,6 +70,7 @@ export default function RootLayout({
       pacifico.variable,
       blackOpsOne.variable,
       satisfy.variable,
+      courierPrime.variable,
     ].join(' ')}>
       <body className="font-sans antialiased">
         <ClientProviders>{children}</ClientProviders>

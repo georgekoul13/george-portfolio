@@ -4,12 +4,18 @@ const benefit: ProjectContent = {
   slug:       'benefit',
   title:      'BENEFIT',
   resolution: '1440 × 900',
+  /* Benefit Software builds ERP and communication tools for shipping —
+     office and onboard. Two separate pieces of work sit behind this page and
+     the credit distinguishes them deliberately: the Suite was a team effort
+     where George owned the library and the templates, while the companion
+     app was his alone with art direction from his manager. Overstating
+     either would be the easiest thing in the world and the least useful. */
   description:
-    'I designed Benefit — an employee benefits platform that simplifies the selection, activation, and tracking of workplace benefits in a single card-based wallet. The product spans health insurance, gym memberships, meal vouchers, and learning budgets, giving employees a clear view of the full value their employer provides.',
+    'Benefit Software makes the ERP and communication tools that shipping companies run on, ashore and at sea. Working at Holy, I was part of the design team on Benefit Suite, where the library and the suite\'s templates were mine — the components and layouts everything else was assembled from. Alongside it I designed the companion app, as the only designer on it, with art direction from my manager.',
   metadata: {
-    role: 'Lead Product Designer — design strategy, end-to-end product design, and design system.',
-    categories: ['PRODUCT DESIGN', 'HR TECH'],
-    employer: 'EMPLOYEE BENEFITS',
+    role: 'UX Designer at Holy — design library and templates for Benefit Suite; sole designer on the companion app.',
+    categories: ['PRODUCT DESIGN', 'DESIGN SYSTEM'],
+    employer: 'HØLY™',
   },
   sections: [
     { type: 'divider' },

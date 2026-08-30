@@ -4,11 +4,16 @@ const cybersential: ProjectContent = {
   slug:       'cybersential',
   title:      'CYBERSENTIAL',
   resolution: '1440 × 900',
+  /* Corrected 2026-08-21. This was filed as "a cybersecurity platform for
+     small and medium businesses", which it is not: it is hospitality-
+     specific, and it reaches its customers through HBX Group rather than
+     being sold to SMBs at large. Sourced from the live product page at
+     hotelbeds.wallbid.io/cybersential. */
   description:
-    'A cybersecurity platform for small and medium businesses. Accessible dashboards, clear risk language and a comprehensible sales flow.',
+    'A cyber risk assessment built at Wallbid for hotels, and offered to HBX Group partners across Europe at preferential rates through a strategic alliance. It covers dark-web monitoring, external vulnerability scanning, blacklist checks and email-authentication hardening, with the security work itself carried out by Safestate. I designed both halves: the partner-facing site that explains and sells the service, and the web app hotels use to manage their cover. It was drawn white-label from the start — built to be re-skinned for whichever brand distributes it — and what went live wears Wallbid\'s identity carrying elements of the partner\'s.',
   metadata: {
-    role: 'Product Designer.',
-    categories: ['PRODUCT DESIGN', 'BRAND DESIGN'],
+    role: 'Product Designer at Wallbid — white-label design for the partner-facing site and the insurance management web app.',
+    categories: ['PRODUCT DESIGN', 'WEB DESIGN', 'DESIGN SYSTEM'],
     employer: 'WALLBID',
   },
   sections: [
