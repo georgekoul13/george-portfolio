@@ -27,7 +27,11 @@ const RANGES: Record<keyof Tuning, [number, number, number]> = {
   cardW:       [160, 700, 5],
   cardH:       [160, 800, 5],
   hoverTurn:   [0, 1, 0.02],
-  hoverShift:  [0, 500, 5],
+  hoverShift:  [0, 700, 5],
+  focusMax:    [1, 4, 0.05],
+  focusRange:  [1, 12, 0.5],
+  focusFrom:   [-8, 4, 0.5],
+  spread:      [0, 900, 10],
   bow:         [-200, 300, 5],
   restDim:     [0.1, 1, 0.05],
 };

@@ -159,8 +159,8 @@ export const DEFAULTS = {
    * turned 28 degrees reads as roughly 432x320 on screen, which is the 1.35
    * the reference measures. The residual crop off a 4:3 source is slight.
    */
-  cardW: 480,
-  cardH: 320,
+  cardW: 560,
+  cardH: 376,
   /**
    * Hover: how much of `rotate` survives. Measured on the reference at
    * effectively 0 — the card turns square to the camera and does nothing
@@ -184,7 +184,58 @@ export const DEFAULTS = {
    * Which is also why the visible left edge looked pinned: it was never the
    * card's edge, it was the edge of the card in front.
    */
-  hoverShift: 150,
+  hoverShift: 280,
+  /**
+   * The cubic focus curve, lifted from gaspoorf/curve-gallery — the Blender
+   * camera-path demo. Its scaling is
+   *
+   *     f = 1 - distance / maxDistance
+   *     scale = 1 + f**3 * (maxScale - 1)
+   *
+   * A cube rather than a straight line, so a plane far away sits at its
+   * plain size and only ramps as it arrives — "coming into focus" rather
+   * than growing steadily the whole way in.
+   *
+   * It layers ON TOP of the geometric falloff rather than replacing it, so
+   * the two are independent: `ratio` sets how the rank recedes, this sets
+   * how much the leading card is singled out. Turning it off is
+   * `focusMax: 1`. Note the reference's own rank measures a CONSTANT ratio
+   * all the way back, i.e. no focus term at all — this is a deliberate
+   * departure from it, not a correction toward it.
+   */
+  focusMax: 1.5,
+  /**
+   * How many places back the focus zone reaches. It wants to be WIDE — at 4
+   * the whole ramp lands in four cards and leaves a shelf you can see:
+   * neighbour ratios ran 1.13, 1.13, 1.13, then 1.42, 1.34, 1.21, then back
+   * to 1.13. Two smooth curves stacked can still read as a lump if one of
+   * them turns over inside the other's flat part. At 7 the ramp eases the
+   * whole way out and the ratios taper 1.29 -> 1.13 without a step.
+   */
+  focusRange: 7,
+  /**
+   * Where the curve peaks, in places. NEGATIVE, and it has to be: `u` counts
+   * from the near plane, but a card reaching that plane is already walking
+   * off the left edge, so the front of the VISIBLE rank sits around u = -3.
+   * Peaking at 0 put the whole ramp in the middle of the row and left the
+   * leading cards clamped flat against each other — the emphasis landed on
+   * the wrong cards entirely.
+   */
+  focusFrom: -3,
+  /**
+   * Extra separation between cards at the FAR end, in screen px.
+   *
+   * Perspective packs the arriving cards almost on top of each other, so the
+   * back of the rank reads as one striped mass rather than as projects. This
+   * pushes each card further along the row the deeper it sits, which widens
+   * the GAPS without touching the near end: the offset is proportional to
+   * depth, so it is zero for the card about to leave frame and grows from
+   * there. The cards on their way out stay exactly where they were.
+   *
+   * Same trick as `bow` — written as a screen distance and divided back
+   * through the projection so the number means what it says at any depth.
+   */
+  spread: 300,
   /**
    * How far the rank rises toward the back, in screen px, as a smooth arc.
    * The path is not a straight line — the cards climb as they recede, which
@@ -279,6 +330,13 @@ export default function PerspectiveGallery({
          position would not have. */
       const state = { p: START, target: START, drag: 0 };
 
+      /* Per-card hover progress. The hover used to be a hard boolean read
+         straight off React state, so a card snapped in and out; this eases
+         it. One float per card rather than a tween per card because the
+         render loop already runs every frame — there is nothing for a tween
+         to do that this does not. */
+      const hovT = new Array(N).fill(0);
+
       /* Every length in DEFAULTS was fitted at 1440. Scaling them by the
          stage's own width — rather than letting the cards keep a fixed pixel
          size — is what stops the rank from filling a laptop and overflowing a
@@ -313,7 +371,12 @@ export default function PerspectiveGallery({
         for (let i = 0; i < N; i++) {
           const u = i - state.p;
           const depth = depthOf(u);
-          const on = h === i;
+          /* ease toward hovered / not, then smoothstep it so the card
+             floats out and settles rather than arriving at a constant speed */
+          hovT[i] += ((h === i ? 1 : 0) - hovT[i]) * 0.13;
+          const t01 = hovT[i];
+          const e = t01 * t01 * (3 - 2 * t01);
+          const on = e > 0.001;
           const rest = turnAt(u);
           const rad = (rest * Math.PI) / 180;
 
@@ -323,16 +386,26 @@ export default function PerspectiveGallery({
              centre swings toward the camera by half the depth it loses —
              both fall straight out of the angle, so the hover has no magic
              numbers in it at all. */
-          const turn = on ? rest * c.hoverTurn : rest;
+          const turn = rest * (1 - e * (1 - c.hoverTurn));
           /* Out of the stack, and nothing else. */
-          const openX = on ? c.hoverShift * k : 0;
-          const openZ = on && c.hoverTurn < 1 ? halfW * Math.sin(rad) : 0;
+          const openX = c.hoverShift * k * e;
+          const openZ = c.hoverTurn < 1 ? halfW * Math.sin(rad) * e : 0;
 
           /* The arc. `bow` is a screen distance, so it has to be divided back
              through the projection — a card at `depth` is drawn at
              `P / (P + depth)`, so multiplying by the inverse of that leaves
              the rise reading the same at every depth. */
           const rise = -(c.bow * k * depth) / P;
+          /* Clamped at zero so it only ever pushes cards further back along
+             the row, never pulls a leaving one. `depth` goes negative once a
+             card passes the near plane, and without this the cards on their
+             way out would slide too — which is the one thing that had to
+             stay exactly as it was. */
+          const spread = Math.max(0, (c.spread * k * depth) / P);
+
+          /* cubic focus — their formula, with `u` standing in for distance */
+          const f = gsap.utils.clamp(0, 1, 1 - (u - c.focusFrom) / c.focusRange);
+          const focus = 1 + Math.pow(f, 3) * (c.focusMax - 1);
 
           const z = -depth + openZ;
 
@@ -348,12 +421,13 @@ export default function PerspectiveGallery({
           const gone = z > P * 0.45 || scale < FAR_SCALE;
 
           gsap.set(cards[i], {
-            x: c.worldX * k + openX,
+            x: c.worldX * k + spread + openX,
             y: rise,
             z,
             rotationY: turn,
-            /* no scale at all — see `hoverShift` */
-            scale: 1,
+            /* the focus curve is the ONLY thing that scales a card; hover
+               does not touch it — see `hoverShift` */
+            scale: focus,
             opacity: gone ? 0 : h === null || on ? 1 : c.restDim,
             visibility: gone ? 'hidden' : 'visible',
           });
