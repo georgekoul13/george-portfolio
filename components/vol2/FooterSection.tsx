@@ -20,7 +20,12 @@ import SocialLinks from './SocialLinks';
  */
 export default function FooterSection() {
   return (
-    <footer className="w-full px-[var(--gutter)] pb-16 pt-[124px]">
+    <footer
+      className="w-full px-[var(--gutter)]"
+      /* was a flat 124/64 — now on the shared section rhythm, so it opens up
+         with everything else rather than staying tight against the band */
+      style={{ paddingTop: 'var(--section-pad-y)', paddingBottom: 'var(--section-pad-y)' }}
+    >
       <RevealText className="max-w-[1100px]" beats={['freelance collaborations', 'say hi!']}>
         {`Reach out for freelance collaborations or just to say hi! :-)`}
       </RevealText>

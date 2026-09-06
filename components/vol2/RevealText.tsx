@@ -7,6 +7,7 @@ import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 
 import './scrollDefaults';
+import { scrubToHold, scrubToPosition } from './scrubToPosition';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -55,8 +56,26 @@ export interface RevealTextProps {
    * `scroll` (the default) scrubs the reveal against the page. `load` plays
    * it once on mount, compressed into `LOAD_SECONDS` — for a block that sits
    * in the first viewport, where there is no scroll to spend on it yet.
+   *
+   * `pinned` scrubs the reveal against the block's own position on screen,
+   * for a block inside a PINNED panel. `scroll` cannot be used there — the
+   * panel does not move through the document, so a ScrollTrigger keyed to the
+   * paragraph never advances — but the behaviour is the same one: word by
+   * word as you scroll, and un-written again as you scroll back up. See
+   * `scrubToPosition`.
+   *
+   * It briefly played once instead, on a cue. George: *"let's make the
+   * revealing of this text happen word by word with scroll — like we had in
+   * the previous version of the Vol2, not automatically after one scroll."*
    */
-  play?: 'scroll' | 'load';
+  play?: 'scroll' | 'load' | 'pinned';
+  /**
+   * The `font` shorthand for the copy. Defaults to the display size; the
+   * intro sentence takes the step below it. A prop rather than a class
+   * because the size has to be on the `<p>` the split reads, and a shorthand
+   * set there beats anything inherited from the wrapper.
+   */
+  font?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -107,6 +126,7 @@ export default function RevealText({
   beats,
   lead = 0,
   play = 'scroll',
+  font = 'var(--type-72-80-r)',
   className,
   style,
 }: RevealTextProps) {
@@ -121,6 +141,10 @@ export default function RevealText({
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       let split: SplitText | undefined;
+      /* `onSplit` can run many times — `autoSplit` re-runs it on every
+         reflow — and each run arms a new observer, so they are collected
+         rather than tracked singly. */
+      const cleanups: (() => void)[] = [];
 
       /* Held invisible until the split has parked every word. Splitting waits
          on `document.fonts.ready`, and until it resolves this is just a
@@ -165,7 +189,9 @@ export default function RevealText({
                `scrub: 0.8` lets it chase the scroll rather than being welded
                to it, so a flick of the wheel still resolves smoothly. */
             const tl = gsap.timeline(
-              play === 'load'
+              play === 'pinned'
+                ? { paused: true }
+                : play === 'load'
                 ? { delay: 0.15 }
                 : {
                     scrollTrigger: {
@@ -325,8 +351,47 @@ export default function RevealText({
               at += beat.duration();
             });
 
+            /* `load` plays in real time and needs compressing; `pinned` is
+               driven by `progress()`, which is normalised, so a timeScale
+               would change nothing. */
             if (play === 'load' && tl.duration() > 0) {
               tl.timeScale(tl.duration() / LOAD_SECONDS);
+            }
+
+            /* Plays once, on whichever comes first: the panel's cue, or the
+               block simply arriving on screen.
+
+               The cue alone is too fragile for content this important. It
+               fires when the panel takes the screen, and if it does not fire
+               at all — a trigger built against a layout that then changed, a
+               panel the sentence is not actually inside — the words stay
+               parked and the paragraph is invisible with nothing to say why.
+
+               An OBSERVER, not a scroll listener. Everything in here is built
+               inside `onSplit`, which waits on `document.fonts.ready`, so the
+               gate is armed at an unpredictable moment — and a scroll handler
+               armed after the reader has already scrolled past this point
+               never hears anything again, because no further scroll event is
+               coming. That left the paragraph permanently blank whenever the
+               font resolved late. An observer reports the CURRENT
+               intersection the moment it starts, so arming it late is
+               harmless. It is also immune to the thing the rect check was for:
+               it works pinned, carried by an overscroll, or in plain flow,
+               since it compares against the viewport either way. */
+            /* Inside a `[data-hold]` the panel parks the block mid-screen
+               and spends a screen of scroll on it going nowhere, so the
+               reveal is driven by that hold rather than by a position which
+               is, for its whole duration, not changing. Without a hold it
+               falls back to scrubbing against its own travel: reading starts
+               as the paragraph comes up past three-quarters of the window
+               and the last word lands by 12%. */
+            if (play === 'pinned') {
+              const held = container.closest('[data-hold]');
+              cleanups.push(
+                held
+                  ? scrubToHold(held, tl)
+                  : scrubToPosition(container, tl, { from: 0.8, to: 0.12 }),
+              );
             }
 
             return tl;
@@ -483,14 +548,17 @@ export default function RevealText({
         return marked;
       }
 
-      return () => split?.revert();
+      return () => {
+        cleanups.forEach((fn) => fn());
+        split?.revert();
+      };
     },
     { scope: root, dependencies: [children] },
   );
 
   return (
     <div ref={root} className={`relative ${className ?? ''}`} style={style}>
-      <p data-split style={{ font: 'var(--type-72-80-r)', color: 'var(--text-primary)' }}>
+      <p data-split style={{ font, color: 'var(--text-primary)' }}>
         {children}
       </p>
 

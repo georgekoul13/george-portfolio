@@ -16,6 +16,22 @@ import { useGSAP } from '@gsap/react';
 
 const RING = 12;
 const RING_HOVER = 32;
+
+/**
+ * The cursor is `position: fixed` on the body, so it sits OUTSIDE every
+ * `[data-tone='light']` subtree and `var(--text-primary)` always resolves to
+ * the page-level (dark) value — cream. Over the cream about panel that is
+ * cream on cream, and the cursor simply disappears.
+ *
+ * So the ink is chosen per-tone here rather than inherited. George asked for
+ * dark grey rather than the tone's own near-black `--text-primary`: at 12px
+ * a pure black ring reads as a dot of dirt on the cream, where a grey reads
+ * as a cursor.
+ */
+const INK = {
+  dark:  'var(--neutral-50)',
+  light: 'var(--neutral-700)',
+} as const;
 const CLICKABLE =
   'a, button, [role="button"], label, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -45,11 +61,30 @@ export default function Cursor() {
       const yTo = gsap.quickTo(el, 'y', { duration: 0.28, ease: 'power3' });
 
       let over = false;
+      let light = false;
       const onMove = (e: PointerEvent) => {
         xTo(e.clientX);
         yTo(e.clientY);
 
         const target = e.target as Element | null;
+
+        /* `e.target` is already the topmost element under the pointer — the
+           cursor itself is `pointer-events: none`, so it never shadows it —
+           which makes this a free read rather than an `elementFromPoint`
+           hit-test on every move. It also gets the STACKING right for free:
+           while the categories panel rides up over the cream one, the target
+           is whichever is actually on top. */
+        const onLight = !!target?.closest?.('[data-tone="light"]');
+        if (onLight !== light) {
+          light = onLight;
+          const ink = onLight ? INK.light : INK.dark;
+          /* Colour is set rather than tweened: GSAP cannot interpolate a
+             custom property, and a 0.18s crossfade between two inks reads as
+             a smear on something this small anyway. */
+          el.style.borderColor = `color-mix(in srgb, ${ink} 70%, transparent)`;
+          if (fill.current) fill.current.style.background = ink;
+        }
+
         const hit = !!target?.closest?.(CLICKABLE);
         if (hit === over) return;
         over = hit;
@@ -81,13 +116,13 @@ export default function Cursor() {
         zIndex: 999999,
         width: RING,
         height: RING,
-        border: '1.5px solid color-mix(in srgb, var(--text-primary) 70%, transparent)',
+        border: `1.5px solid color-mix(in srgb, ${INK.dark} 70%, transparent)`,
       }}
     >
       <span
         ref={fill}
         className="absolute inset-0 rounded-full"
-        style={{ background: 'var(--text-primary)', opacity: 0 }}
+        style={{ background: INK.dark, opacity: 0 }}
       />
     </div>
   );

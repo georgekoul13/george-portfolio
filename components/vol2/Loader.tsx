@@ -107,7 +107,22 @@ export default function Loader() {
 
     if (reduce) {
       const t = setTimeout(release, 300);
-      return () => clearTimeout(t);
+      /* The unlock has to happen here too. React runs an effect's cleanup
+         before it re-runs the effect, and under StrictMode it always
+         re-runs — so a cleanup that only clears the timer leaves
+         `overflow: hidden` in place, and the SECOND run then captures
+         "hidden" as the value to restore. The lock becomes permanent.
+         
+         That is not a loading bug, it is a layout one: a body with
+         `overflow: hidden` is a scroll container, which makes it the sticky
+         containing block for everything inside it — so every panel in the
+         stack silently stops sticking and the whole page scrolls flat. It
+         only ever bit on the reduced-motion path, which is exactly the path
+         that gets the least looking at. */
+      return () => {
+        clearTimeout(t);
+        document.body.style.overflow = overflow;
+      };
     }
 
     // one frame at rest first, so the creep is a transition and not a paint

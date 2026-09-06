@@ -92,9 +92,13 @@ export const ENTRANCE_END = WORDS.flatMap((w) => w.slots).reduce(
 );
 
 /**
- * Swap pool. Sizes are each illustration's own viewBox — they are NOT
- * normalised, because the design gives every sticker its own weight.
- * `rotate` is the resting angle read from the Figma instances.
+ * The illustrations the CTA throws on tap. Sizes are each one's own viewBox
+ * — they are NOT normalised, because the design gives every sticker its own
+ * weight. `rotate` is the resting angle read from the Figma instances.
+ *
+ * These used to double as the wordmark's O-swap pool. That was removed
+ * 2026-09-04 at George's request; the CTA is the only thing that uses them
+ * now.
  */
 export interface Sticker {
   file: string;
@@ -125,14 +129,15 @@ export const STICKERS: Sticker[] = [
   { file: 'website',   w: 118, h: 119, rotate:   0 },
 ];
 
+
 /**
- * Only the three O's swap — O 1 in GEORGE, O 2 and O 3 in KOULOURIS — and
- * only with these four illustrations.
+ * The illustrations an O can turn into. Four, none of which is a letterform,
+ * so the swap always reads as a substitution rather than a typo.
  */
 export const O_POOL = ['smile', 'happy', 'globe', 'pokeball'] as const;
 
 /**
- * entrance finishes → idle → 2 stickers arrive → hold → they leave → idle …
+ * entrance finishes → idle → an O swaps → hold → it leaves → idle …
  * The idle gap is measured after the exit completes, not on a fixed beat.
  */
 export const SWAP = {
@@ -144,8 +149,6 @@ export const SWAP = {
   firstIdle: 3,
   idle: 10,
   hold: 4,
-  /** how many of the three O's swap per cycle */
-  concurrent: 2,
 } as const;
 
 export const stickerByFile = (file: string) =>

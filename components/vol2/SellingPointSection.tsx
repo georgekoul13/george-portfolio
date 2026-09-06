@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 import './scrollDefaults';
+import { scrubToHold, scrubToPosition } from './scrubToPosition';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -85,29 +86,32 @@ const REPEATS = 9;
 /** px of path travelled per second — one phrase every ~6s */
 const RIBBON_SPEED = 44;
 
-/**
- * How much pinned scroll the whole sequence takes: chips in, ribbons in, a
- * beat of stillness, then both taken back off the screen before the pin
- * lets go. The section holds the viewport for all of it.
- */
-const ARRIVAL = 2200;
-const ARRIVAL_SMALL = 1500;
+/* ── The arrival, removed 2026-09-05 ────────────────────────────────────
+   George: *"the chips and ribbons should not move."* The pinned
+   choreography is gone; these are its measured numbers, kept as a record
+   rather than as dead bindings so that bringing it back does not mean
+   deriving them again.
 
-/* Timeline positions, in the timeline's own units. Laid out here rather
-   than sprinkled through the calls because the whole point is the ORDER —
-   reveal the chips, then the ribbons, hold, then clear the screen — and
-   that order is much easier to check as a table than as six `position`
-   arguments read one at a time. */
-const AT = {
-  chipsIn: 0,
-  ribbonsIn: 0.9,
-  /** everything at rest; nothing happens through here */
-  still: 2.2,
-  ribbonsOut: 3.2,
-  chipsOut: 3.35,
-  /** empty screen, held briefly, so the pin never releases mid-exit */
-  end: 4.8,
-};
+     ARRIVAL        2200   pinned scroll for the whole sequence
+     ARRIVAL_SMALL  1500   the same under 900px wide
+
+   Timeline positions, in the timeline's own units — the point was always
+   the ORDER, which reads better as a table than as six `position`
+   arguments encountered one at a time:
+
+     chipsIn      0
+     ribbonsIn    0.9
+     still        2.2    everything at rest; nothing happens through here
+     ribbonsOut   3.2
+     chipsOut     3.35
+     end          4.8    empty screen, held so the pin never released
+                         mid-exit
+
+   The chips also had an idle float (Figma 191:4312, "Floationg
+   animation") driven by a `seeded(i, salt)` hash — two sine waves per axis
+   on periods that do not divide into each other, because one sine is a
+   pendulum and five chips nodding on the same clock reads as a loading
+   state rather than as floating. */
 
 const CHIPS = [
   { label: 'Product', color: 'var(--red-500)' },
@@ -125,17 +129,15 @@ const CHIPS = [
  * couple of seconds and five chips nodding on the same clock stops reading
  * as floating and starts reading as a loading state.
  */
-const seeded = (i: number, salt: number) => {
-  const n = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
-  return n - Math.floor(n);
-};
-
 export default function SellingPointSection() {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
       const section = root.current!;
+      /* Anything GSAP does not own, and so will not revert on its own —
+         currently the entrance's viewport observer. */
+      const cleanup: (() => void)[] = [];
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       /* ── The ribbons' marquee ────────────────────────────────────────
@@ -174,161 +176,98 @@ export default function SellingPointSection() {
       if (document.fonts.status === 'loaded') spin();
       else document.fonts.ready.then(spin);
 
-      /* ── The arrival ─────────────────────────────────────────────────
-         The section pins at `top top` and is exactly one screen tall with
-         an opaque background, so from the moment it takes hold there is
-         nothing else on screen — no neighbour showing above or below. That
-         is why it pins rather than merely scroll-triggering, and why the
-         dividers either side are gone.
+      /* ── The entrance, restored 2026-09-05 ───────────────────────────
+         George: *"let's not forget the reveal animations that we already
+         had for the texts, the chips and the ribbons."*
 
-         Scrubbed, so the reader brings the chips in themselves rather than
-         watching a clip play. Chips land first, the ribbons come in over
-         the tail of them, and the last stretch is deliberately empty — the
-         composition sits finished for a beat before the pin releases. */
+         This is a REVEAL, not the old travel. The chips and the ribbons
+         arrive and then hold exactly where 231:16735 draws them — they never
+         travel across the band the way they used to. Which is what "should
+         not move" and "don't forget the reveals" both ask for at the same
+         time.
+
+         The ARRIVAL itself is scrubbed against the band's position on screen
+         — George asked for the same treatment the sentence gets: *"let's add
+         the revealing animation we had in the chips as well."* So they build
+         as you scroll down and come apart again as you scroll back up, and
+         the panel's `tailRun` holds them finished and still before the next
+         panel is allowed over them. */
       const chips = gsap.utils.toArray<HTMLElement>('[data-chip]');
       const ribbons = gsap.utils.toArray<HTMLElement>('[data-ribbon]');
 
-      const length = () => (window.innerWidth < 900 ? ARRIVAL_SMALL : ARRIVAL);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: () => '+=' + length(),
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true,
-          /* Highest of the page's four pinned sections, because it is the
-             topmost. ScrollTrigger refreshes in descending priority, and a
-             pin that refreshes late has already had its start measured
-             against a page that did not yet contain the spacers of the pins
-             above it. That is not cosmetic: with this section on the
-             default 0 and the horizontal one on 1, the horizontal section
-             measured its start 1150px — exactly this section's own pin
-             length — too early, the two pin ranges overlapped by 250px, and
-             the chips sat on screen next to "WHERE EVERY PROJECT…". */
-          refreshPriority: 4,
-        },
-      });
+      if (!reduce) {
+        /* Start states are SET, never left to `from()`. A paused `from`
+           writes its start values only when the timeline first renders, so
+           until the cue arrives the chips and ribbons sit at their resting
+           positions in full view — and then snap away to animate back in.
+           The same defect the hero and the reveals both had. */
+        gsap.set(ribbons, { scale: 0.86, autoAlpha: 0, transformOrigin: '50% 50%' });
+        gsap.set(chips, { y: 44, autoAlpha: 0 });
 
-      tl.from(
-        chips,
-        {
-          yPercent: 60,
-          autoAlpha: 0,
-          scale: 0.7,
-          ease: 'back.out(1.4)',
-          duration: 1,
-          stagger: 0.18,
-        },
-        AT.chipsIn,
-      );
+        const entrance = gsap.timeline({ paused: true });
 
-      /* Out along the PAGE's x axis, not the ribbon's. GSAP composes its
-         transform as translate → rotate → scale, so `x` is the outermost
-         term and stays horizontal whatever the copy is rotated to — which
-         is why the resting rotation lives on the SVG's own CSS transform,
-         one element further in, leaving this wrapper free. */
-      ribbons.forEach((r, i) => {
-        const dir = RIBBONS[i].dir;
-        tl.from(
-          r,
-          {
-            x: () => dir * window.innerWidth * 0.55,
-            rotation: dir * 12,
-            scale: 0.82,
-            autoAlpha: 0,
-            ease: 'power3.out',
-            duration: 1.3,
-          },
-          AT.ribbonsIn,
+        /* The ribbons first and from further out: they are the backdrop the
+           chips land in front of, so they have to be there to land in. */
+        entrance.to(
+          ribbons,
+          { scale: 1, autoAlpha: 1, duration: 0.9, ease: 'power3.out', stagger: 0.12 },
+          0,
         );
-      });
-
-      /* ── The exit ────────────────────────────────────────────────────
-         The section does not just stop being interesting — it clears
-         itself, and only then does the pin let go. That is what keeps this
-         band and the horizontal one from ever being on screen together:
-         by the time the next section starts arriving there is nothing left
-         here to share the screen with.
-
-         Ribbons leave first, back out the side they came in, because they
-         arrived last — the sequence reads as unwinding. The chips follow,
-         upward and out of frame, which is the direction the page is already
-         travelling, and from the bottom of the stack up so the pile
-         unstacks rather than sliding away as one slab. */
-      ribbons.forEach((r, i) => {
-        tl.to(
-          r,
-          {
-            x: () => RIBBONS[i].dir * window.innerWidth * 0.9,
-            rotation: RIBBONS[i].dir * 14,
-            scale: 0.8,
-            autoAlpha: 0,
-            ease: 'power2.in',
-            duration: 1.1,
-          },
-          AT.ribbonsOut,
+        entrance.to(
+          chips,
+          { y: 0, autoAlpha: 1, duration: 0.7, ease: 'back.out(1.6)', stagger: 0.08 },
+          0.25,
         );
-      });
 
-      tl.to(
-        chips,
-        {
-          yPercent: -170,
-          scale: 0.65,
-          autoAlpha: 0,
-          ease: 'power2.in',
-          duration: 1,
-          stagger: { each: 0.12, from: 'end' },
-        },
-        AT.chipsOut,
-      );
+        /* Played when this section is actually ON SCREEN, not when the
+           panel it lives in arrives.
 
-      // hold the empty screen so the pin can never release mid-exit
-      tl.to({}, { duration: 0.1 }, AT.end);
+           The panel cue fires as the panel takes the screen — but this band
+           is the BOTTOM half of a panel taller than the window, so at that
+           moment it is still hundreds of pixels below the fold. The chips
+           and ribbons were animating in where nobody could see them, and by
+           the time the panel's overscroll carried them up the entrance had
+           long finished. All you ever saw was the parked state or the
+           settled one, which is exactly why they read as missing.
 
-      /* ── The chips' idle float ───────────────────────────────────────
-         On a wrapper inside each chip, never on the chip itself: the
-         arrival owns the chip's transform and this owns the wrapper's. One
-         element carrying both would be two authors on one property, and the
-         per-frame drift wins every frame. */
-      const drifters = gsap.utils.toArray<HTMLElement>('[data-drift]');
-      const bodies = drifters.map((el, i) => ({
-        setX: gsap.quickSetter(el, 'x', 'px') as (v: number) => void,
-        setY: gsap.quickSetter(el, 'y', 'px') as (v: number) => void,
-        setR: gsap.quickSetter(el, 'rotation', 'deg') as (v: number) => void,
-        ax1: 5 + seeded(i, 2) * 5,
-        ax2: 2 + seeded(i, 3) * 2.5,
-        ay1: 7 + seeded(i, 4) * 6,
-        ay2: 2.5 + seeded(i, 5) * 3,
-        ar: 0.7 + seeded(i, 6) * 1.3,
-        t1: 5.3 + seeded(i, 7) * 3.1,
-        t2: 3.1 + seeded(i, 8) * 1.7,
-        t3: 6.7 + seeded(i, 9) * 3.9,
-        t4: 2.9 + seeded(i, 10) * 1.9,
-        t5: 8.1 + seeded(i, 11) * 4.4,
-        p1: seeded(i, 12) * Math.PI * 2,
-        p2: seeded(i, 13) * Math.PI * 2,
-        p3: seeded(i, 14) * Math.PI * 2,
-      }));
+           A rect check works whether the section is pinned, transformed by
+           the overscroll, or sitting in ordinary flow — none of which a
+           ScrollTrigger keyed to its own position would survive. */
+        /* The band carries its own `data-hold`, so the panel stops with it
+           filling the screen and the chips build over a screen of scroll that
+           moves nothing — George: *"let's add a force scroll to the chips as
+           well."* The positional scrub is the fallback for anywhere this
+           section is used outside a panel that holds. */
+        const held = section.closest('[data-hold]');
+        cleanup.push(
+          held
+            ? scrubToHold(held, entrance)
+            : scrubToPosition(section, entrance, { from: 0.85, to: 0.05 }),
+        );
+      }
 
-      const start = performance.now();
-      /* A plain rAF loop, and the next frame is asked for BEFORE the work.
-         Requesting it after means one throw inside the body ends the loop
-         permanently and silently — which is exactly how the horizontal
-         section's float died the first time, 102 frames in. */
-      let frame = requestAnimationFrame(function loop() {
-        frame = requestAnimationFrame(loop);
-        const now = (performance.now() - start) / 1000;
-        bodies.forEach((b) => {
-          b.setX(Math.sin(now / b.t1 + b.p1) * b.ax1 + Math.sin(now / b.t2 + b.p2) * b.ax2);
-          b.setY(Math.sin(now / b.t3 + b.p3) * b.ay1 + Math.sin(now / b.t4 + b.p1) * b.ay2);
-          b.setR(Math.sin(now / b.t5 + b.p2) * b.ar);
-        });
-      });
+      /* ── Static otherwise, 2026-09-05 ────────────────────────────────
+         George: *"the chips and ribbons should not move and the other
+         section should come on top of them like the white came on top of
+         hero."*
 
-      return () => cancelAnimationFrame(frame);
+         So the whole choreography is gone: the pinned ScrollTrigger, the
+         2200px arrival that flew the chips in and the ribbons out, and the
+         chips' idle float. The band is now exactly what 231:16735 draws and
+         it simply sits there while the categories panel rides up over it.
+
+         What survives is the MARQUEE above — the ribbons themselves are
+         nailed down and only the lettering travels along them. That is the
+         ribbon's identity rather than the ribbon moving, and without it two
+         big black arcs read as clip art.
+
+         `ARRIVAL`, `ARRIVAL_SMALL` and the `AT` cue sheet are kept in the
+         file: they are the measured timings of that arrival, and re-deriving
+         them costs a great deal more than leaving them unreferenced. */
+
+      return () => cleanup.forEach((fn) => fn());
     },
     { scope: root },
   );
@@ -337,6 +276,9 @@ export default function SellingPointSection() {
     <section
       ref={root}
       aria-label="Design services"
+      /* The panel stops here for a screen of scroll while the chips and the
+         ribbons build — see `PanelStack`'s hold handling. */
+      data-hold
       className="relative flex w-full items-center justify-center overflow-hidden"
       style={{
         background: 'var(--bg-page)',
@@ -423,7 +365,10 @@ export default function SellingPointSection() {
             >
               <span
                 className="whitespace-nowrap uppercase"
-                style={{ font: 'var(--chip-font)', color: 'var(--text-inverse)' }}
+                /* --chip-ink, not --text-inverse: the label sits on the
+                   chip's own brand colour, so it stays near-black even
+                   when the panel around it is light. */
+                style={{ font: 'var(--chip-font)', color: 'var(--chip-ink)' }}
               >
                 {c.label}
               </span>

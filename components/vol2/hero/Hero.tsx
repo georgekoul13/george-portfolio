@@ -10,13 +10,28 @@ import {
 
 const pct = (v: number, total: number) => `${(v / total) * 100}%`;
 
-/** Flat index of every slot whose letterform is an O. */
+/**
+ * Which O's are allowed to turn into something else, by their letterform's
+ * file name. George: *"only to the 1st and 3rd O."*
+ *
+ * `O 2` — the first O of KOULOURIS — sits this out. It is also the only one
+ * of the three whose entrance is a card FLIP rather than a roll, and the
+ * flip is by far the fiddliest of the two swaps to keep honest: the clip's
+ * `overflow: hidden` flattens `transform-style`, so the two faces cannot be
+ * separated by depth and have to trade places by hand at the edge-on frame.
+ * Leaving it out is George's call, and it happens to retire that whole
+ * mechanism — but the flip branch below is kept, because which O's swap is a
+ * one-line change and it should not cost a rewrite to change it back.
+ */
+const SWAPPABLE = ['O 1', 'O 3'];
+
+/** Flat index of every slot whose letterform is a swappable O. */
 const O_SLOTS: { i: number; entrance: Entrance; duration: number; ease: string }[] = (() => {
   const out: { i: number; entrance: Entrance; duration: number; ease: string }[] = [];
   let i = 0;
   WORDS.forEach((w) =>
     w.slots.forEach((s) => {
-      if (s.file.startsWith('O')) {
+      if (SWAPPABLE.includes(s.file)) {
         out.push({ i, entrance: s.entrance, duration: s.duration, ease: s.ease });
       }
       i += 1;
@@ -27,6 +42,7 @@ const O_SLOTS: { i: number; entrance: Entrance; duration: number; ease: string }
 
 export default function Hero() {
   const root = useRef<HTMLDivElement>(null);
+
   /** the outer positioning div of each slot — the only layer with no
       transform of its own, which is what the magnet gets to use */
   const slots = useRef<(HTMLDivElement | null)[]>([]);
@@ -90,14 +106,17 @@ export default function Hero() {
     if (reduce) return;
 
     /* ── O swap ─────────────────────────────────────────────────────────
-       Two of the three O's at a time, from a pool of four illustrations.
-       The swap reuses each O's own entrance motion so it reads as part of
-       the same language: the letter rolls out one edge while the sticker
-       rolls in from the other, or the whole clip flips over.             */
+       ONE O at a time, from a pool of four illustrations — George: *"only
+       one can be at any time."* The swap reuses that O's own entrance
+       motion, so it reads as part of the same language rather than a new
+       effect bolted on: the letter rolls out one edge while the illustration
+       rolls in from the other.
 
-    function pickTwo() {
-      return gsap.utils.shuffle([...O_SLOTS]).slice(0, SWAP.concurrent);
-    }
+       The two take turns rather than being picked at random. With only two
+       in play, random would show the same O twice in a row about half the
+       time, and twice in a row reads as the other one being broken. */
+    let next = 0;
+    const timers: number[] = [];
 
     function pickSticker(slot: number) {
       const options = O_POOL.filter((f) => f !== lastOn.current[slot]);
@@ -107,12 +126,13 @@ export default function Hero() {
     }
 
     /** Build the in-and-out for one O. Returns a timeline. */
-    function swapOne(o: (typeof O_SLOTS)[number]) {
-      const clip = clips.current[o.i]!;
-      const letter = letters.current[o.i]!;
-      const sticker = stickers.current[o.i]!;
+    function swapOne(oSlot: (typeof O_SLOTS)[number]) {
+      const clip = clips.current[oSlot.i]!;
+      const letter = letters.current[oSlot.i]!;
+      const sticker = stickers.current[oSlot.i]!;
+      if (!clip || !letter || !sticker) return gsap.timeline();
       const img = sticker.firstElementChild as HTMLImageElement;
-      const st = pickSticker(o.i);
+      const st = pickSticker(oSlot.i);
 
       img.src = stickerSrc(st.file);
       img.style.height = pct(st.h, ROW_H);
@@ -121,45 +141,29 @@ export default function Hero() {
 
       const tl = gsap.timeline();
 
-      if (o.entrance.kind === 'flip') {
-        /* A card flip. `overflow: hidden` on the clip forces `transform-style`
-           back to flat, so the two faces can't be separated by 3D depth — they
-           have to trade places by hand at the edge-on moment, where the clip
-           is side-on and nothing is legible. Showing the sticker any earlier
-           is what put it on top of the letterform. */
+      if (oSlot.entrance.kind === 'flip') {
+        /* Kept for the day an O with a flip entrance swaps again — see
+           `SWAPPABLE`. The faces trade at the edge-on ANGLE rather than at
+           half the duration, because these flips overshoot with
+           `back.out`: at half the duration the clip is already past 180°,
+           so a scheduled trade showed the letter's mirrored back for most
+           of the turn. */
         gsap.set(clip, { transformPerspective: 800 });
-        // pre-flipped, so it reads upright once the clip is upside down
         gsap.set(sticker, { transformPerspective: 800, rotationX: 180, opacity: 0 });
 
-        /* Which face is up is read off the clip's actual angle every frame,
-           not scheduled at a point in time.
-
-           The trade used to happen at half the tween's *duration*, which is
-           only the edge-on moment for a linear ease. These flips run
-           `back.out(1.7)`, which overshoots: it is already past 90° at 13% of
-           the way through and past 180° by the midpoint — so for most of the
-           turn the letter was still opaque while facing away, showing its
-           mirrored back, and the sticker then appeared late and abruptly.
-           That was the glitch on the O in KOULOURIS, the only O of the three
-           that flips.
-
-           Reading the angle instead puts the trade exactly on the edge, and
-           it stays correct through the overshoot at either end. */
         let showing: 'letter' | 'sticker' | null = null;
         const face = () => {
           const a = gsap.utils.wrap(0, 360, gsap.getProperty(clip, 'rotationX') as number);
-          // between 90° and 270° the clip's front face points away from us
-          const next = a > 90 && a < 270 ? 'sticker' : 'letter';
-          if (next === showing) return;
-          showing = next;
-          gsap.set(letter, { opacity: next === 'letter' ? 1 : 0 });
-          gsap.set(sticker, { opacity: next === 'sticker' ? 1 : 0 });
+          const nextFace = a > 90 && a < 270 ? 'sticker' : 'letter';
+          if (nextFace === showing) return;
+          showing = nextFace;
+          gsap.set(letter, { opacity: nextFace === 'letter' ? 1 : 0 });
+          gsap.set(sticker, { opacity: nextFace === 'sticker' ? 1 : 0 });
         };
 
-        tl.to(clip, { rotationX: 180, duration: o.duration, ease: o.ease, onUpdate: face }, 0)
+        tl.to(clip, { rotationX: 180, duration: oSlot.duration, ease: oSlot.ease, onUpdate: face }, 0)
           .to({}, { duration: SWAP.hold })
-          // keep turning the same way rather than winding back
-          .to(clip, { rotationX: 360, duration: o.duration, ease: o.ease, onUpdate: face })
+          .to(clip, { rotationX: 360, duration: oSlot.duration, ease: oSlot.ease, onUpdate: face })
           .set(clip, { rotationX: 0 })
           .set(letter, { opacity: 1 })
           .set(sticker, { opacity: 0 });
@@ -167,32 +171,37 @@ export default function Hero() {
         return tl;
       }
 
-      // rolling swap: both move the same direction, letter out one edge,
-      // sticker in from the other
-      const from = o.entrance.kind === 'y' ? o.entrance.from : 0;
-      const axis = o.entrance.kind === 'y' ? 'yPercent' : 'xPercent';
+      /* The roll: both move the same way, the letter out one edge and the
+         illustration in from the other, so the clip is never empty. */
+      const from = oSlot.entrance.kind === 'y' ? oSlot.entrance.from : 0;
+      const axis = oSlot.entrance.kind === 'y' ? 'yPercent' : 'xPercent';
 
       gsap.set(sticker, { opacity: 1, [axis]: from });
 
-      tl.to(letter, { [axis]: -from, duration: o.duration, ease: o.ease }, 0)
-        .to(sticker, { [axis]: 0, duration: o.duration, ease: o.ease }, 0)
+      tl.to(letter, { [axis]: -from, duration: oSlot.duration, ease: oSlot.ease }, 0)
+        .to(sticker, { [axis]: 0, duration: oSlot.duration, ease: oSlot.ease }, 0)
         .to({}, { duration: SWAP.hold })
-        // …and roll back the other way
-        .to(sticker, { [axis]: from, duration: o.duration, ease: o.ease })
-        .to(letter, { [axis]: 0, duration: o.duration, ease: o.ease }, '<')
+        .to(sticker, { [axis]: from, duration: oSlot.duration, ease: oSlot.ease })
+        .to(letter, { [axis]: 0, duration: oSlot.duration, ease: oSlot.ease }, '<')
         .set(sticker, { opacity: 0 });
 
       return tl;
     }
 
     function cycle() {
-      const master = gsap.timeline({
-        onComplete: () => gsap.delayedCall(SWAP.idle, cycle),
+      if (!O_SLOTS.length) return;
+      const oSlot = O_SLOTS[next % O_SLOTS.length];
+      next += 1;
+      swapOne(oSlot).eventCallback('onComplete', () => {
+        timers.push(window.setTimeout(cycle, SWAP.idle * 1000));
       });
-      pickTwo().forEach((o) => master.add(swapOne(o), 0));
     }
 
-    gsap.delayedCall(ENTRANCE_END + SWAP.firstIdle, cycle);
+    /* `setTimeout`, NOT `gsap.delayedCall`: a delayed call lives on
+       `gsap.globalTimeline`, which the Loader PAUSES while its panel is up.
+       The swap's own tweens are on that timeline too and SHOULD be held —
+       but the clock that decides when to start one must not be. */
+    timers.push(window.setTimeout(cycle, (ENTRANCE_END + SWAP.firstIdle) * 1000));
 
     /* ── Magnet ─────────────────────────────────────────────────────────
        The letters lean toward the pointer. Carried over from the current
@@ -200,12 +209,10 @@ export default function Hero() {
        so this is continuity rather than one more thing added.
 
        It rides the SLOT, not the letter. Both inner layers are already
-       spoken for: the clip owns `rotationX` for the flip entrances and the
-       flip swap, and the glyph owns the `yPercent`/`xPercent` for its
-       entrance and the rolling swap. The slot is the one layer with nothing
-       on it, so the pull composes with all of that instead of fighting it —
-       and because the whole slot moves, the illustration an O is holding
-       comes along too.
+       spoken for: the clip owns `rotationX` for the flip entrances, and the
+       glyph owns the `yPercent`/`xPercent` for its own. The slot is the one
+       layer with nothing on it, so the pull composes with all of that
+       instead of fighting it.
 
        Each glyph is masked at its slot's edge, so the pull is bounded by
        the padding inside the em box rather than by taste: past it the
@@ -269,6 +276,10 @@ export default function Hero() {
 
     return () => {
       arm.kill();
+      /* GSAP reverts its own context; a pending `setTimeout` is not its to
+         revert, and one left running re-enters `cycle` against refs that
+         React has already detached. */
+      timers.forEach(clearTimeout);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('resize', measure);
@@ -293,7 +304,13 @@ export default function Hero() {
           data-word={word.name}
           className="absolute"
           style={{
-            left: pct(word.x, HERO_W),
+            /* CENTRED, not at the design's own `word.x`. 230:14543 stacks
+               the two lines on the middle of the box — GEORGE at 297.5 and
+               KOULOURIS at 174.2, which is exactly (1318 − width) / 2 for
+               each. `word.x` is kept in the data because it still carries
+               the original indent, and because the kerning inside a word is
+               measured from it. */
+            left: pct((HERO_W - word.w) / 2, HERO_W),
             top: pct(word.y, HERO_H),
             width: pct(word.w, HERO_W),
             height: pct(ROW_H, HERO_H),
@@ -302,7 +319,6 @@ export default function Hero() {
           {word.slots.map((slot, si) => {
             flat += 1;
             const idx = flat;
-            const isO = slot.file.startsWith('O');
             return (
               <div
                 key={si}
@@ -329,16 +345,18 @@ export default function Hero() {
                       maskSize: 'contain',
                     }}
                   />
-                  {/* only the O's ever hold an illustration, and it lives
-                      inside the clip so it shares the entrance's masking */}
-                  {isO && (
-                    // wrapper carries the motion (roll / flip); the image
-                    // keeps its own size and resting angle, so the two never
-                    // fight over `transform`
+                  {/* only a swappable O ever holds an illustration, and it
+                      lives inside the clip so it shares the entrance's
+                      masking */}
+                  {SWAPPABLE.includes(slot.file) && (
+                    /* the wrapper carries the motion, the image keeps its own
+                       size and resting angle — so the two never fight over
+                       `transform` */
                     <span
                       ref={(el) => { stickers.current[idx] = el; }}
                       className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0"
                     >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img alt="" aria-hidden="true" className="block max-w-none" />
                     </span>
                   )}

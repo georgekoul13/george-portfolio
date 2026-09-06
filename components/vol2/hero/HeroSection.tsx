@@ -5,169 +5,94 @@ import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import Hero from './Hero';
-import CtaButton from './CtaButton';
 import { ENTRANCE_END } from './heroData';
 
 gsap.registerPlugin(SplitText);
 
 /**
- * Hero section — geometry from Figma node 100:3483.
+ * Hero — Figma 230:14543.
  *
- * Section is 1440 × 953; the content frame sits at (60, 247) and is
- * 1320 × 582. Everything inside is positioned as a percentage of that
- * frame, so the composition holds its proportions as the page scales.
+ * Rebuilt 2026-09-05. The band used to be a 1320 × 582 frame with everything
+ * absolutely placed inside it: the wordmark hard left, the subtitle off in
+ * the top-right corner, a LEARN MORE button at the bottom.
  *
- * The section animates in two beats. The wordmark arrives first — Hero owns
- * the letters — and once they've settled the cursor flies in, presses the
- * braces into place and pulls them apart to reveal the subtitle, then the CTA
- * follows. Everything after the first beat is offset from ENTRANCE_END so
- * retiming a letter can't desynchronise it.
+ * It is the wordmark and the sentence under it, centred — 230:16015, which
+ * draws exactly that and nothing else.
+ *
+ * What went was the DECORATION around the sentence: the `{ }` braces and the
+ * mouse cursor hanging off their right end. George: *"let's remove the
+ * professional over-thinker here and do just a typography revealing."* Read
+ * once as removing the sentence, which was wrong — the frame he linked keeps
+ * the words and drops the ornament, and "just a typography revealing" is the
+ * treatment they get instead: 16/24, centred on a 336 measure, arriving line
+ * by line from behind a mask.
+ *
+ * — and the button is gone. George: *"what you have is wrong like i removed
+ * the button."* The "Scroll now" cue went the same way on 2026-09-05, at
+ * George's request: the panel that slides up over the hero is the invitation
+ * to scroll, so labelling it was saying twice what the motion already says.
+ *
+ * Measured off the frame at a 0.3139 render scale, which the wordmark itself
+ * confirms: GEORGE comes out 726 design px against a known 722.903, and
+ * KOULOURIS 968 against 969.529. On that scale both words sit at exactly the
+ * centre of the 1318 wordmark box — GEORGE at 297.5, KOULOURIS at 174.2 —
+ * and the gaps below are 96 and 24.
+ *
+ * It is a flex column now rather than an absolute frame. The design is a
+ * centred stack, so laying it out as one costs nothing and it survives a
+ * phone, which the fixed frame did not.
  */
 
-const FRAME_W = 1320;
-const FRAME_H = 582;
-/**
- * Figma section 100:3483 is 1440 × 953: header 0–97, then a gap before the
- * content frame, and 124px below it.
- *
- * Figma's gap is 150, which put 262px between the header and the *visible*
- * top of GEORGE — because two things sit between the frame and the ink: the
- * name box starts 42px into the frame, and every letterform is exported as a
- * 282-tall em box whose cap doesn't begin until y≈70. George asked for 200 to
- * the ink, so the gap absorbs both: 200 − 42 − 70 = 88.
- *
- * Only exact at 1440. The 42 and the 70 scale with the frame while this stays
- * fixed, so a narrower window reads tighter — same as it always did.
- */
-const GAP_TOP = 88;
-const GAP_BOTTOM = 124;
-const pctW = (v: number) => `${(v / FRAME_W) * 100}%`;
-const pctH = (v: number) => `${(v / FRAME_H) * 100}%`;
-
-/**
- * The cursor is the only loose element left in the hero — the star over
- * GEORGE and the heart beside KOULOURIS were removed 2026-08-20. It is
- * choreographed on its own anyway: it's what opens the braces.
- */
-const CURSOR = { x: 1195, y: 152, w: 84.853 };
-
-/** half the subtitle's width plus the flex gap: how far each brace travels */
-const BRACE_TRAVEL = 176;
 
 export default function HeroSection() {
   const root = useRef<HTMLDivElement>(null);
-  const cursor = useRef<HTMLImageElement>(null);
-  const braceL = useRef<HTMLSpanElement>(null);
-  const braceR = useRef<HTMLSpanElement>(null);
   const subtitle = useRef<HTMLParagraphElement>(null);
-  const cta = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
+      /* The wordmark parks and plays its own letters in `Hero`, which React
+         runs first because it is a child. Only the sentence is left. */
+      let split: SplitText | undefined;
+
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        // nothing will animate, so show it exactly as rendered
         gsap.set(root.current, { autoAlpha: 1 });
         return;
       }
 
-      const tl = gsap.timeline();
-
-      /* ── The cursor arrives once the letters have settled, then opens the
-            braces ─────────────────────────────────────────────────────── */
-      const land = ENTRANCE_END;
-
-      /* Every start state below is SET, never left to `from()`.
-         A `from` writes its start values only when its parent timeline
-         renders, and the Loader pauses `gsap.globalTimeline` during its own
-         render — before this effect ever runs. So the cursor, the braces and
-         the CTA were all sitting at their resting positions from first paint
-         and then "arrived" on top of themselves. Same defect as the wordmark
-         and the subtitle; same fix. */
-      gsap.set(cursor.current, { x: 300, y: 120, rotate: 28, scale: 0.5, autoAlpha: 0 });
-      tl.to(
-        cursor.current,
-        { x: 0, y: 0, rotate: 0, scale: 1, autoAlpha: 1, duration: 0.85, ease: 'power3.out' },
-        land,
-      )
-        // a small press, as if it clicked the braces apart. Starts after the
-        // arrival lands so the two aren't fighting over `scale`.
-        .to(cursor.current, { scale: 0.86, duration: 0.11, ease: 'power2.in' }, land + 0.85)
-        .to(cursor.current, { scale: 1, duration: 0.5, ease: 'back.out(2.6)' });
-
-      const open = land + 0.9;
-
-      /* The braces were the one thing in the hero that was already on screen
-         before anything happened — every letter, the cursor, the subtitle and
-         the CTA arrive, and they just sat there waiting to be pulled apart.
-         They now arrive too, popping in under the cursor as it presses, so
-         the press reads as the thing that put them there. Timed to finish on
-         the press rather than after it: they have to exist before they can be
-         opened.
-
-         Each brace is three nested elements because each transform needs an
-         owner of its own: the outer span takes the split, the inner span
-         takes this pop, and the image keeps the mirror on the right-hand one.
-         Two tweens sharing one element's transform is what made the braces
-         snap open, jump back 47px and open again; putting the pop on the
-         image instead would have folded away that mirror. */
-      const bracePops = [
-        braceL.current?.firstElementChild,
-        braceR.current?.firstElementChild,
-      ];
-      gsap.set(bracePops, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' });
-      tl.to(
-        bracePops,
-        { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' },
-        land + 0.62,
-      );
-
-      gsap.set(braceL.current, { x: BRACE_TRAVEL });
-      gsap.set(braceR.current, { x: -BRACE_TRAVEL });
-      gsap.set(cta.current, { y: 28, autoAlpha: 0 });
-
-      tl.to(braceL.current, { x: 0, duration: 0.9, ease: 'power3.out' }, open)
-        .to(braceR.current, { x: 0, duration: 0.9, ease: 'power3.out' }, open)
-        .to(cta.current, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, open + 0.3);
-
-      /* The subtitle reveals line by line from behind a mask — the same
-         technique as the scroll reveals elsewhere on the page. Splitting has
-         to wait for the real font, so the tween is added to the running
-         timeline afterwards and offset by however much of it has already
-         played. `autoSplit` is off deliberately: the paragraph has a fixed
-         width, so it can't rewrap, and re-splitting would replay the reveal
-         on every resize. */
-      let split: SplitText | undefined;
-
       /* Held invisible until the split has parked its lines. Splitting waits
          on `document.fonts.ready`, which can resolve at almost exactly the
          moment the loading panel leaves — and an unsplit paragraph is just
-         fully readable copy. Without this the sentence is briefly on screen
-         before it reveals itself. */
+         fully readable copy, which is what must not be on screen first. */
       gsap.set(subtitle.current, { autoAlpha: 0 });
 
       document.fonts.ready.then(() => {
         if (!subtitle.current) return;
         split = SplitText.create(subtitle.current, { type: 'lines', mask: 'lines' });
-        /* Parked first, then tweened back — never `from()`. A `from` writes
-           its start value only when the parent timeline renders, and the
-           Loader has the global timeline held while this is built, so the
-           lines were never pushed below their masks: the sentence sat fully
-           readable from first paint and then "revealed" itself on top of
-           its own visible copy. */
         gsap.set(split.lines, { yPercent: 110 });
         gsap.set(subtitle.current, { autoAlpha: 1 });
+
+        /* Timed off `gsap.globalTimeline`, not the wall clock. The letters'
+           entrance runs on that timeline and the Loader PAUSES it while its
+           panel is up — so a wall-clock delay would fire the sentence into a
+           wordmark that had not started arriving yet. Reading the same clock
+           the entrance is on keeps the two in step however long the loader
+           holds, and `max(0, …)` covers a late `fonts.ready`. */
+        const at = ENTRANCE_END + 0.15;
         gsap.to(split.lines, {
           yPercent: 0,
           stagger: 0.08,
           duration: 0.8,
           ease: 'power3.out',
-          delay: Math.max(0, open + 0.1 - tl.time()),
+          delay: Math.max(0, at - gsap.globalTimeline.time()),
         });
       });
 
-      /* Everything inside is now parked — the letters by Hero's own effect,
-         which React runs before this one because it is a child, and the
-         cursor, braces, CTA and subtitle by the sets above. Safe to uncover. */
+      /* `autoSplit` is off deliberately: the paragraph has a fixed measure so
+         it cannot rewrap, and re-splitting would replay the reveal on every
+         resize. */
+
+      /* Everything inside is parked now — the letters by `Hero`'s own effect
+         and the sentence by the set above — so the frame can be uncovered. */
       gsap.set(root.current, { autoAlpha: 1 });
 
       return () => split?.revert();
@@ -176,103 +101,47 @@ export default function HeroSection() {
   );
 
   return (
-    <section className="relative w-full" style={{ background: 'var(--bg-page)' }}>
+    <section
+      className="relative flex w-full items-center justify-center px-[var(--gutter)]"
+      /* `lvh` so the hero still covers once a phone's toolbar retracts —
+         see the note in `PanelStack`. */
+      style={{ background: 'var(--bg-page)', minHeight: '100lvh' }}
+    >
       <div
-        className="mx-auto w-full max-w-[1440px] px-[var(--gutter)]"
-        style={{ paddingTop: GAP_TOP, paddingBottom: GAP_BOTTOM }}
+        ref={root}
+        data-hero-frame
+        className="flex w-full max-w-[1320px] flex-col items-center"
+        /* Hidden in the SERVER's markup, and uncovered only once every part
+           inside has been parked — see the effect above. Parking happens at
+           hydration, which lands well after the loading panel starts to
+           leave, so without this the panel slides away from a hero that is
+           already fully drawn and then snaps out to animate in. */
+        style={{ visibility: 'hidden' }}
       >
-        <div
-          ref={root}
-          data-hero-frame
-          className="relative w-full"
-          /* Hidden in the SERVER's markup, and uncovered only once every
-             part inside has been parked — see the effect above.
+        {/* ── the wordmark ─────────────────────────────────────────────── */}
+        <Hero />
 
-             Parking happens at React hydration, which lands around 2.4s in
-             dev; the loading panel starts leaving at about 1.8s. So for the
-             whole of that exit the panel was sliding away from a hero that
-             was still sitting there fully drawn, and only then did it snap
-             out and animate in. No amount of correcting the tweens fixes
-             that — the markup itself has to start hidden, because until
-             hydration there is no JavaScript to hide it. */
-          style={{ aspectRatio: `${FRAME_W} / ${FRAME_H}`, visibility: 'hidden' }}
+        {/* ── the sentence ─────────────────────────────────────────────── */}
+        <p
+          ref={subtitle}
+          data-hero-subtitle
+          className="text-center"
+          style={{
+            /* The design's 96 is measured to the INK. Every letter is
+               exported in a 282-tall em box whose cap does not start until
+               about y=70, so the wordmark's own box runs ~72px past the
+               bottom of the letters and a plain 96 margin reads as 168.
+               72/1318 of the wordmark's width takes that back, and a
+               percentage margin resolves against the container's width, so
+               it stays correct at every size. */
+            marginTop: 'calc(var(--hero-gap-title) - 5.463%)',
+            font: 'var(--type-16-24-r)',
+            color: 'var(--text-primary)',
+            width: 'var(--hero-sub-w)',
+          }}
         >
-          {/* Name — occupies its own box at (0, 42), 1318 × 462 */}
-          <div
-            data-hero-part
-            className="absolute"
-            style={{ left: 0, top: pctH(42), width: pctW(1318) }}
-          >
-            <Hero />
-          </div>
-
-          <img
-            ref={cursor}
-            data-hero-cursor
-            src="/images/vol2/decor/cursor.svg"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute max-w-none"
-            style={{ left: pctW(CURSOR.x), top: pctH(CURSOR.y), width: pctW(CURSOR.w) }}
-          />
-
-          {/* Subtitle — braces are mirrored halves of one asset */}
-          <div
-            data-hero-part
-            data-hero-subtitle
-            className="absolute flex items-center gap-2"
-            style={{
-              left: pctW(936),
-              top: pctH(112),
-              width: pctW(384),
-              // braces are currentColor, so set it once for both
-              color: 'var(--text-primary)',
-            }}
-          >
-            {/* the spans carry the motion so GSAP never has to take over the
-                mirrored transform on the right-hand brace — outer span splits,
-                inner span pops */}
-            <span ref={braceL} className="block shrink-0">
-              <span className="block">
-                <img
-                  src="/images/vol2/ui/brace.svg"
-                  alt=""
-                  aria-hidden="true"
-                  className="block" style={{ height: 'var(--brace-h)', width: 'var(--brace-w)' }}
-                />
-              </span>
-            </span>
-            <p
-              ref={subtitle}
-              className="shrink-0"
-              style={{ font: 'var(--type-16-20-r)', color: 'var(--text-primary)', width: 336 }}
-            >
-              A professional over-thinker with a love for product and visual design
-            </p>
-            <span ref={braceR} className="block shrink-0">
-              <span className="block">
-                <img
-                  src="/images/vol2/ui/brace.svg"
-                  alt=""
-                  aria-hidden="true"
-                  className="block -scale-x-100" style={{ height: 'var(--brace-h)', width: 'var(--brace-w)' }}
-                />
-              </span>
-            </span>
-          </div>
-
-          {/* CTA — positioned by percentage, but kept at its natural size so
-              the label doesn't scale with the artwork. */}
-          <div
-            ref={cta}
-            data-hero-part
-            data-hero-cta
-            className="absolute"
-            style={{ left: 0, top: pctH(528) }}
-          >
-            <CtaButton />
-          </div>
-        </div>
+          A professional over-thinker with a love for product and visual design
+        </p>
       </div>
     </section>
   );

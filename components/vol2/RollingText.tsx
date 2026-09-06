@@ -69,7 +69,16 @@ export default function RollingText({
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        /* Every line is stacked in the same place and it is the DRUM that
+           decides which one faces you. Returning here without doing anything
+           left all four rendering at once, on top of each other — the band
+           came out as an unreadable pile of overlapping copy rather than as
+           a line that simply doesn't roll. Without motion there is only the
+           first line. */
+        gsap.set(gsap.utils.toArray<HTMLElement>('[data-roll]').slice(1), { autoAlpha: 0 });
+        return;
+      }
 
       const els = gsap.utils.toArray<HTMLElement>('[data-roll]');
       const splits: SplitText[] = [];

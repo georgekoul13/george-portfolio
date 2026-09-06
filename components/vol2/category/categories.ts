@@ -33,6 +33,13 @@ export interface Category {
    * is written as prose and the reveal does the shaping.
    */
   headline: string;
+  /**
+   * The line under the drawing on the new template (238:6357). Sentence
+   * case, unlike `headline`, which was the old left-aligned all-caps band —
+   * kept because the project pages still use it. Product's is the design's
+   * own words; the other two follow its shape.
+   */
+  intro: string;
   /** the words that arrive as beats rather than a plain wipe */
   beats: string[];
   /**
@@ -52,6 +59,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     label: 'Product',
     // Figma's own copy, minus its "HABBITS" typo
     headline: 'DESIGNING PRODUCTS, DESIGNING EXPERIENCES, DESIGNING HABITS AND SOMETHING ELSE',
+    intro: 'Designing habits, experiences & products.',
     beats: ['PRODUCTS', 'EXPERIENCES', 'HABITS'],
     slugs: [
       'gaspar-ai',
@@ -71,6 +79,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     label: 'Graphic',
     // placeholder copy — Figma only writes the Product page's lines
     headline: 'DESIGNING COVERS, DESIGNING MARKS, DESIGNING LETTERS AND SOMETHING ELSE',
+    intro: 'Designing covers, marks & letters.',
     beats: ['COVERS', 'MARKS', 'LETTERS'],
     slugs: ['book-cover', 'danai-michali', 'olga-posonidou', 'vasiliki-vozora', 'maria-fitsopoulou'],
   },
@@ -80,6 +89,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     label: 'Creative',
     // placeholder copy — Figma only writes the Product page's lines
     headline: 'DRAWING WORLDS, DRAWING POSTERS, DRAWING IDENTITIES AND SOMETHING ELSE',
+    intro: 'Drawing worlds, posters & identities.',
     beats: ['WORLDS', 'POSTERS', 'IDENTITIES'],
     slugs: ['deerislnd', 'athens-goes-mayan', 'arcana', 'in-pixels-we-see', 'cabaret', 'custom-typefaces'],
   },
@@ -152,9 +162,19 @@ const IMAGE_OVERRIDES: Record<string, string> = {
   'insurance-product-flows': 'insurance-product-1',
 };
 
-export function projectsFor(category: Category): CardProject[] {
+/**
+ * Cards for an arbitrary list of slugs, in the order given. Missing slugs are
+ * dropped rather than rendered empty.
+ *
+ * Split out of `projectsFor` so the home page's featured band can build the
+ * same cards without belonging to a category — George: *"for the featured
+ * project card use the same components like we use in the categories page."*
+ * `fallbackTag` is what a project with no entry in `TAGS` gets; every slug the
+ * band uses has one, so it is a floor rather than a common case.
+ */
+export function cardsForSlugs(slugs: string[], fallbackTag = 'PROJECT'): CardProject[] {
   const bySlug = new Map(projects.map((p) => [p.slug, p]));
-  return category.slugs.flatMap((slug) => {
+  return slugs.flatMap((slug) => {
     const p = bySlug.get(slug);
     if (!p) return [];
     return [{
@@ -162,7 +182,11 @@ export function projectsFor(category: Category): CardProject[] {
       title: p.title,
       subtitle: p.subtitle,
       image: orbit(IMAGE_OVERRIDES[p.slug] ?? `${p.slug}-1`),
-      tag: TAGS[p.slug] ?? category.label.toUpperCase(),
+      tag: TAGS[p.slug] ?? fallbackTag,
     }];
   });
+}
+
+export function projectsFor(category: Category): CardProject[] {
+  return cardsForSlugs(category.slugs, category.label.toUpperCase());
 }

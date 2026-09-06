@@ -75,38 +75,37 @@ video {
    CSS stops being re-emitted on every render.                              */
 
 @media (max-width: 899px) {
-  /* The hero frame is a fixed 1320 × 582 with everything placed on it by
-     percentage, which cannot reflow — held to it on a phone the subtitle
-     sits at 65% of the width and leaves the screen. Under 900px it stops
-     being a frame and becomes an ordinary column: wordmark, then braces and
-     subtitle beneath, then the CTA full width. Same move gsap.com makes. */
-  [data-hero-frame] {
-    aspect-ratio: auto !important;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 40px;
-  }
-  [data-hero-frame] > [data-hero-part] {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    width: 100% !important;
-  }
-  /* a pointer, drawn for a device that has one */
-  [data-hero-cursor] { display: none !important; }
-  [data-hero-subtitle] { justify-content: flex-start; }
-  [data-hero-subtitle] p { width: auto !important; flex: 1 1 auto; }
-  [data-hero-cta] > * { display: block; }
-  [data-hero-cta] a { width: 100%; justify-content: center; }
+  /* Rewritten 2026-09-05 for the centred hero (230:14543).
 
-  /* Figma indents KOULOURIS under the tail of GEORGE, spending 1318 units of
-     width to carry 969 units of letters. On a phone that overhang is paid
-     for in cap height, so both words go flush left: the box narrows to the
-     longer word and every letter grows 36% for free. */
+     Almost all of what was here served the OLD hero — a fixed 1320 × 582
+     frame with the wordmark, subtitle and a CTA placed on it by percentage,
+     which could not reflow. That frame is gone; the hero is an ordinary
+     centred column now, so the overrides that turned it into one are not
+     just unnecessary, they were fighting it. `align-items: stretch` in
+     particular beat the column's own centring and left "Scroll now" hard
+     against the left edge of a phone.
+
+     Two things are still worth doing narrow, and only two. */
+
+  /* Figma spends 1318 units of width to carry 969 units of letters, because
+     KOULOURIS is indented under the tail of GEORGE. On a phone that overhang
+     is paid for in cap height, so the box narrows to the longer word and
+     every letter grows 36% for free — but both words stay CENTRED on it,
+     which the design now asks for and the old rule broke by flushing them
+     left. GEORGE's offset is (100 − 74.5623) / 2.
+
+     This is the phone composition too — 238:10151 was briefly a five-row
+     reflow and is now back to the two centred lines, so it runs the whole
+     way down rather than stopping at a breakpoint. */
   [data-wordmark] { aspect-ratio: 969.529 / 462 !important; }
-  [data-word="GEORGE"] { left: 0% !important; width: 74.5623% !important; }
+  [data-word="GEORGE"] { left: 12.7189% !important; width: 74.5623% !important; }
   [data-word="KOULOURIS"] { left: 0% !important; width: 100% !important; }
+
+  /* The subtitle keeps its measure — `--hero-sub-w` already clamps to 222 at
+     390, which fits inside the gutters — and is only stopped from ever
+     running wider than the screen. `[data-hero-subtitle]` IS the paragraph
+     now; it used to be a wrapper around one. */
+  [data-hero-subtitle] { max-width: 100%; }
 }
 
 /* The centred card in the project strip shows what hover shows on a desktop
@@ -136,4 +135,124 @@ html[data-nav-open] {
 }
 html[data-nav-open] [data-header-rule] {
   opacity: 0;
+}
+
+
+/* ─── Scrollable without the bar ──────────────────────────────────────────
+   For rows that overflow sideways on purpose — the social cards, the
+   category marquee. The content still scrolls and drags; only the bar goes.
+   George: *"in the social media section let's remove the visible horizontal
+   scrollbar."* */
+.no-scrollbar {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* old Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                  /* WebKit */
+}
+
+
+/* ─── Hero, narrow — Figma 238:10151 ──────────────────────────────────────
+   The same two centred lines as everywhere else, in a 326 column on a 390
+   frame — 32px padding, so 83.59vw, which both the wordmark and the sentence
+   hold at any width.
+
+   The sentence stays CENTRED and drops to 16/20, and the gap above it closes
+   right up: the design's is 8, plus the 2.38 its own box carries under the
+   letters, so ~10 — 2.56vw at 390. `!important` because the desktop values
+   are inline styles on the element, which a stylesheet cannot reach.
+
+   It was briefly a five-row reflow (GEO / RGE / KOU / LOU / RIS) before
+   George reverted the node to this. */
+@media (max-width: 639px) {
+  [data-hero-frame] { max-width: 83.59vw; }
+
+  [data-hero-subtitle] {
+    width: 100% !important;
+    margin-top: 2.56vw !important;
+    font: var(--type-16-20-r) !important;
+  }
+}
+
+/* ─── Panel 1, narrow — Figma 238:11970 ───────────────────────────────────
+   A different composition, not the wide one squeezed. The two greetings come
+   out of the drawing's top corners and stack around it — HI THERE! above,
+   I'M GEORGE below, both centred at 32px Bold where the wide layout sets
+   them at 16 — with 48 between each and 64 down to the sentence.
+
+   `order` is what puts the drawing between two spans that precede it in the
+   markup, so the DOM keeps reading "greeting, greeting, drawing" (which is
+   the sensible reading order) while the eye gets the design's arrangement.
+
+   The drawing itself changes shape too: its canvas is 609 × 434 wide and
+   326 × 434 narrow — the FIGURE is the same 286 either way, so only the
+   canvas around it shrinks, and the figure's share of it goes 47% → 87.9%.
+   Without that the drawing would scale down with the column and end up half
+   the size the design draws it. */
+@media (max-width: 639px) {
+  [data-portrait] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  /* `!important` throughout this block: the wide values are INLINE styles on
+     these elements — `font` and `aspect-ratio` among them — and a stylesheet
+     cannot otherwise reach them. */
+  [data-portrait] [data-hi],
+  [data-portrait] [data-me] {
+    position: static;
+    order: 0;
+    font: 700 32px/1 var(--font-sans) !important;
+    letter-spacing: 0.02em;
+    /* cap trim, so the 48 gaps are measured to the ink like the design's */
+    margin-top: -0.1585em;
+    margin-bottom: -0.1415em;
+  }
+  [data-portrait] [data-me] { order: 2; }
+  [data-portrait] [data-avatar] { order: 1; }
+
+  [data-avatar] { aspect-ratio: 326 / 434 !important; }
+  [data-avatar] [data-avatar-fig] {
+    width: 87.87% !important;
+    margin-left: -43.935% !important;
+  }
+
+  /* 64 from the drawing group down to the sentence, not the wide 124 */
+  #intro [data-hold] > [data-portrait] + * { margin-top: 64px !important; }
+
+  /* the panel's own 32px gutters, wider than the page's */
+  #intro,
+  [aria-label='Design services'] { padding-inline: 32px !important; }
+}
+
+/* ─── Panel 2, narrow — Figma 239:5024 ────────────────────────────────────
+   The marquee's cards get bigger and ROUNDED on a phone — one card holds the
+   middle with its neighbours peeking either side, where the wide layout runs
+   square-cornered cards edge to edge. `--cs-card` clamps to 260 at this
+   width, which is smaller than the design's and leaves three cards fighting
+   for the frame. */
+@media (max-width: 639px) {
+  #work [data-card] {
+    width: 300px !important;
+    height: 255px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* The featured band's inline `height: 100svh` — set by the rank's branch —
+   survives the swap to the phone's list. Both branches return a `<section>`,
+   so React reconciles by type and keeps the same DOM node; GSAP has also
+   written to that element's inline styles, and React then leaves `height`
+   alone however the branch sets it. A distinct `key` would give a fresh node
+   but cannot be used: the rank is PINNED, so ScrollTrigger has re-parented it
+   into a `.pin-spacer`, and unmounting makes React look for the node under a
+   parent that no longer owns it — `removeChild` throws and the page dies.
+
+   A stylesheet `!important` beats a plain inline value, which is the one
+   route left. Without it the list — far taller than a viewport — overflows
+   its own 844px box and lands on top of the footer. */
+@media (max-width: 639px) {
+  [data-band-list] { height: auto !important; }
 }

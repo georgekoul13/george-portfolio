@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import gsap from 'gsap';
@@ -9,6 +9,8 @@ import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 
 import './scrollDefaults';
+import ProjectCards from './category/ProjectCards';
+import { cardsForSlugs } from './category/categories';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -252,6 +254,30 @@ export const DEFAULTS = {
 
 /** the width every length in DEFAULTS was fitted at */
 const DESIGN_W = 1440;
+/** below this stage width the rank is zoomed rather than scaled down */
+/**
+ * Pinned scroll the headline gets ENTIRELY TO ITSELF. Nothing else moves and
+ * nothing else is on screen for the whole of it — see `arrive`.
+ */
+const ENTRY_RUN = 800;
+/**
+ * The share of the rank's leg over which the cards fade up as they sweep in.
+ * Shorter than the headline's exit (0.2), so they are arriving while the line
+ * is still on its way out rather than after it has gone — George: *"bring the
+ * cards as the text is moving outside of the frame."*
+ */
+const CARDS_FADE = 0.1;
+/**
+ * How many of the fourteen the phone shows. George: *"the featured will be
+ * the one under the other but only 10 in the responsive."* The 3D rank is a
+ * pointer instrument — it wants a cursor over a wide stage and a drag across
+ * it — so narrow it is not scaled down, it is replaced by a plain stacked
+ * list, and the list is cut to ten rather than made to scroll forever.
+ */
+const MOBILE_COUNT = 10;
+const MOBILE_UNDER = 700;
+/** how much of the screen the leading card should hold on a phone */
+const MOBILE_LEAD = 0.66;
 
 /**
  * The line that leads the band in — Figma 210:5708, taking the place the
@@ -279,14 +305,18 @@ const RATE = 150;
  * `ox + (cx - ox) * P/(P + depth)`, so solving that back gives a depth of
  * roughly four places back.
  *
- * Four was still too shallow: it put the whole rank across the frame while
- * the line was still being read, so the images arrived before the sentence
- * did. At seven only the leading two or three are in frame during the
- * headline, clustered at the right the way the reference has them.
+ * Four was too shallow: it put the whole rank across the frame while the
+ * line was still being read. Seven left only the leading two or three in
+ * frame — better, and still wrong, because "two or three" is exactly what
+ * George kept seeing before the text. Depth alone can never settle this: how
+ * much of the rank is in frame depends on the stage width, so a number tuned
+ * at 1440 leaks cards on a wider screen.
+ *
+ * So the rank no longer moves at all until the headline is done, and it is
+ * held INVISIBLE for that whole leg rather than merely pushed far enough
+ * back to be unlikely to show. Seven is now just where it waits.
  */
 const START = -7;
-/** how far the entry leg carries it before the pin takes over */
-const ENTRY = -4.5;
 /** extra cards' worth of travel so the last one clears the frame */
 const TAIL = 3;
 /**
@@ -305,6 +335,18 @@ export default function PerspectiveGallery({
   const stage = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
 
+  /* Read in an effect so the server's markup and the client's first pass
+     agree; the rank is what renders on the server and a phone swaps to the
+     list on hydration. */
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
   /* The tuner rewrites this on every slider drag; the render loop reads it
      rather than closing over a value, so a change lands on the next frame
      without rebuilding the ScrollTrigger. */
@@ -316,6 +358,12 @@ export default function PerspectiveGallery({
 
   useGSAP(
     () => {
+      /* Nothing to rig narrow — there is no stage, no pin and no rank, just
+         a list. `narrow` is a dependency below so crossing the breakpoint
+         reverts this context and rebuilds rather than leaving a pinned
+         ScrollTrigger behind on a layout that no longer has one. */
+      if (narrow) return;
+
       const section = root.current!;
       const cards = gsap.utils.toArray<HTMLElement>('[data-pcard]');
       if (!cards.length) return;
@@ -343,9 +391,28 @@ export default function PerspectiveGallery({
          phone. Angles and the two origin percentages are ratios already, so
          they stay put. `perspective` has to go on the stage's style because
          CSS resolves it on the parent, not on the transformed child. */
+      /* 0 while the headline has the screen to itself, 1 once the rank has
+         fully arrived. Multiplied into every card's opacity below, which is
+         what guarantees no image can precede the text on ANY viewport —
+         unlike a starting depth, which only makes it unlikely. */
+      let arrive = 0;
+
       const render = () => {
         const c = t.current;
-        const k = stage.current!.offsetWidth / DESIGN_W;
+        /* Every distance in this band is `k` times a design pixel, so the
+           whole rank scales with the stage — correct, and useless on a
+           phone: at 390 the lead card comes out about 130px wide and the
+           ones behind it are thumbnails of a thumbnail.
+           
+           A phone is not a small desktop here, it is a closer camera. `k` is
+           floored so the lead card holds roughly two-thirds of the screen,
+           which means fewer cards are in frame at once and each of them can
+           actually be read. Everything else — perspective, depth, spread,
+           hover — is expressed in terms of `k`, so nothing else changes. */
+        const raw = stage.current!.offsetWidth;
+        const k = raw < MOBILE_UNDER
+          ? Math.max(raw / DESIGN_W, (raw * MOBILE_LEAD) / c.cardW)
+          : raw / DESIGN_W;
         const h = hover.current;
         const P = c.perspective * k;
 
@@ -428,8 +495,8 @@ export default function PerspectiveGallery({
             /* the focus curve is the ONLY thing that scales a card; hover
                does not touch it — see `hoverShift` */
             scale: focus,
-            opacity: gone ? 0 : h === null || on ? 1 : c.restDim,
-            visibility: gone ? 'hidden' : 'visible',
+            opacity: gone ? 0 : (h === null || on ? 1 : c.restDim) * arrive,
+            visibility: gone || arrive <= 0.001 ? 'hidden' : 'visible',
           });
         }
       };
@@ -438,6 +505,7 @@ export default function PerspectiveGallery({
          scrub and the drag both write `target`, and this is the only thing
          that ever moves `p`. Two sources, one integrator, no fighting. */
       const tick = () => {
+        arrive = gsap.utils.clamp(0, 1, bandP() / CARDS_FADE);
         state.target = position() + state.drag;
         state.p += (state.target - state.p) * 0.12;
         render();
@@ -445,29 +513,58 @@ export default function PerspectiveGallery({
       };
       gsap.ticker.add(tick);
 
-      const travel = () => (N + TAIL) * RATE;
+      /* The rank now covers the whole distance from where it waits, so the
+         travel has to pay for those seven places too — otherwise the same
+         scroll carries it further and the cards sweep past faster than the
+         rate says they do. */
+      const travel = () => (N + TAIL - START) * RATE;
 
-      /* Two triggers, read every frame rather than each writing the position
-         itself. `entry` runs while the section is still climbing the screen,
-         so the first cards are already arriving as the text above scrolls
-         away — the overlap the reference has, and the reason the band does
-         not read as "text, then a gallery". `main` is the pin and carries
-         the rest. Reading both in the ticker means they can never fight over
-         who last wrote the value. */
-      const entry = ScrollTrigger.create({
-        trigger: section,
-        start: 'top bottom',
-        end: 'top top',
-      });
-
+      /* ONE trigger, and it does not begin until the panel has arrived.
+         
+         The band used to have a second `entry` trigger running from `top
+         bottom` to `top top`, so the headline was already assembling and the
+         first cards already sliding in while the section was still climbing
+         the screen. That was right when the band simply followed the page.
+         It is wrong now: this panel rides up over the categories, and George
+         asked for *"the next section that comes on top must first come and
+         then reveal the text with the images"* — so nothing may happen until
+         the panel is actually here.
+         
+         The old entry leg is not lost, it is folded into the FRONT of the
+         pin: `ENTRY_RUN` px of the pinned scroll now do what the climb used
+         to do. Same choreography, same overlap between the line leaving and
+         the first cards arriving — just all of it after the arrival rather
+         than during it. */
       const main = ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: () => `+=${travel()}`,
+        end: () => `+=${ENTRY_RUN + travel()}`,
         pin: true,
         scrub: true,
         invalidateOnRefresh: true,
       });
+
+      /** where the entry leg ends, as a fraction of the whole pin */
+      const entryShare = () => ENTRY_RUN / (ENTRY_RUN + travel());
+      /** 0 → 1 across the reveal, then held at 1 */
+      const entryP = () => gsap.utils.clamp(0, 1, main.progress / entryShare());
+
+      /* The rank's own share of the entry leg, which starts LATER than the
+         headline's. George: *"in the featured projects let's reveal the cards
+         AFTER some of the above text is shown."*
+
+         Both used to read `entryP` directly, so the first cards were already
+         sliding in from the right while the opening characters of "WHERE
+         EVERY PROJECT IS" were still arriving, and the two entrances fought
+         each other for the same moment. Holding the rank until the headline
+         is `CARDS_AFTER` of the way through gives the line the opening beat
+         to itself, and still leaves the two overlapping — the cards begin
+         while the last words are landing, which is what keeps it one
+         movement rather than two things taking turns. */
+
+      /** 0 until the reveal is done, then 0 → 1 across the rank */
+      const bandP = () =>
+        gsap.utils.clamp(0, 1, (main.progress - entryShare()) / (1 - entryShare()));
 
       /* The line rides the same two triggers as the rank rather than getting
          a ScrollTrigger of its own. It has to: once the section pins, every
@@ -493,7 +590,7 @@ export default function PerspectiveGallery({
         /* Arriving. The stagger runs left to right across BOTH lines as one
            run, so the sentence assembles in reading order instead of the two
            lines racing each other. */
-        const e = entry.progress;
+        const e = entryP();
         const n = Math.max(1, chars.length - 1);
         chars.forEach((el, i) => {
           const lead = (i / n) * SPREAD;
@@ -505,12 +602,21 @@ export default function PerspectiveGallery({
         /* leaving: it scrolls up and out over the first fifth of the pin,
            while the first cards are already coming in from the right —
            which is the whole reason the two read as one movement */
-        const out = gsap.utils.clamp(0, 1, main.progress / 0.2);
-        gsap.set(head, { yPercent: -out * 130, opacity: 1 - out });
+        /* leaving: it scrolls up and out over the first fifth of the RANK,
+           while the first cards are already coming in from the right — which
+           is the whole reason the two read as one movement. Keyed to the
+           rank rather than to the pin, so the reveal above finishes before
+           the line starts to go. */
+        const out = gsap.utils.clamp(0, 1, bandP() / 0.2);
+        /* −50 is the baseline that turns `top: 50%` into a true centre; the
+           rest carries it clear of the top edge. 250 rather than 130 because
+           it now starts from the middle and has half a screen further to go
+           before it is actually out of frame. */
+        gsap.set(head, { yPercent: -50 - out * 250, opacity: 1 - out });
       };
 
       const position = () =>
-        START + (ENTRY - START) * entry.progress + (N + TAIL - ENTRY) * main.progress;
+        START + (N + TAIL - START) * bandP();
 
       /* Drag rides ON TOP of the scroll position rather than replacing it,
          so letting go doesn't snap back to wherever the page happens to be. */
@@ -543,7 +649,7 @@ export default function PerspectiveGallery({
         split?.revert();
         window.removeEventListener('resize', onResize);
         gsap.ticker.remove(tick);
-        entry.kill();
+
         main.kill();
         section.removeEventListener('pointerdown', down);
         section.removeEventListener('pointermove', move);
@@ -551,25 +657,86 @@ export default function PerspectiveGallery({
         section.removeEventListener('pointercancel', up);
       };
     },
-    { scope: root, dependencies: [] },
+    /* `revertOnUpdate` is NOT the default. Without it `useGSAP` re-runs the
+       callback on a dependency change but never calls the previous cleanup —
+       so crossing into the phone layout left the rank's ticker running over
+       a stage React had already unmounted, and `render()` threw on a null
+       element every single frame. */
+    { scope: root, dependencies: [narrow], revertOnUpdate: true },
   );
+
+  /* ── the phone: a list, not a rank ──────────────────────────────────
+     The same headline, then the first ten one under the other. Nothing here
+     is pinned or scrubbed: the band's whole mechanic is a pointer sweeping a
+     wide stage, and there is neither a pointer nor a stage on a phone. */
+  if (narrow) {
+    return (
+      <section
+        data-band-list
+        ref={root}
+        className="relative w-full"
+        style={{
+          background: 'var(--bg-page)',
+          /* Explicit, and it matters. This `<section>` is the SAME DOM node
+             the rank uses — React reconciles by type, so the branches share
+             it — and the rank's branch sets `height: 100svh`. GSAP has also
+             written `translate/rotate/scale` onto it, and once inline styles
+             are mutated outside React its style bookkeeping no longer matches
+             the element. Left implicit, the 100svh survived the swap and the
+             list, far taller than a viewport, overflowed its own 844px box
+             and landed on top of the footer.
+
+             A distinct `key` would force a fresh node and fix it more
+             cleanly, but it cannot be used here: the rank is PINNED, so
+             ScrollTrigger has re-parented that section into a `.pin-spacer`,
+             and unmounting it makes React look for the node under a parent
+             that no longer owns it — `removeChild` throws and the page dies. */
+          height: 'auto',
+          paddingTop: 'var(--section-pad-y)',
+        }}
+      >
+        <h2
+          className="px-[var(--gutter)] text-center uppercase"
+          style={{ ...CAP_TRIM, font: 'var(--type-24-24-l)', color: 'var(--text-primary)' }}
+        >
+          {HEADLINE.join(' ')}
+        </h2>
+
+        {/* The category pages' own cards, not a second set drawn to look
+            like them — George: *"use the same components like we use in the
+            categories page for the projects."* `ProjectCards` brings its own
+            section, gutters, chip, hover and entrance, and its grid is
+            single-column at this width, which is exactly the one-under-the-
+            other the design asks for. */}
+        <ProjectCards projects={cardsForSlugs(CARDS.slice(0, MOBILE_COUNT).map((c) => c.slug))} />
+      </section>
+    );
+  }
 
   return (
     <section
       ref={root}
       className="relative w-full"
-      style={{ height: '100svh', background: 'var(--bg-page)', touchAction: 'pan-y' }}
+      style={{
+        /* `lvh` — see `PanelStack`. */
+        height: '100lvh',
+        background: 'var(--bg-page)',
+        touchAction: 'pan-y',
+        paddingInline: 'var(--gutter)',
+      }}
     >
       {/* Behind the clip on purpose: in the reference a card that reaches
           the headline passes IN FRONT of it. */}
       <div
         data-headline
         className="pointer-events-none absolute inset-x-0 flex justify-center px-[var(--gutter)]"
-        /* High, not centred. The reference puts its headline's cap at about
-           8% of the viewport and centres the rank at 50%, which is what keeps
-           the two clear of each other — at 26% the second line ran straight
-           through the incoming cards. */
-        style={{ top: '9%' }}
+        /* Centred now, not high. Keeping it clear of the rank used to be the
+           whole problem — the second line ran through the incoming cards — and
+           the answer was to push the line up out of their way. It is the wrong
+           answer: it makes the line fight for the frame with something that
+           should not be there yet. The cards are held off until it has been
+           read, so the line can simply have the middle of the screen. */
+        style={{ top: 'var(--band-head-top)' }}
       >
         <h2
           className="text-center uppercase"

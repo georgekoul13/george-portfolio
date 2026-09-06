@@ -68,7 +68,7 @@ export default function SocialLinks() {
        1048px, so under about that width they stop sharing the row and it
        scrolls sideways instead — which keeps the 32px type inside its card
        rather than spilling out of it. */
-    <div className="mt-12 flex items-start gap-4 overflow-x-auto">
+    <div className="no-scrollbar mt-12 flex items-start gap-4 overflow-x-auto">
       {SOCIALS.map((s) => (
         <a
           key={s.label}
