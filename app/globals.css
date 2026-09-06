@@ -213,7 +213,14 @@ html[data-nav-open] [data-header-rule] {
   [data-portrait] [data-me] { order: 2; }
   [data-portrait] [data-avatar] { order: 1; }
 
-  [data-avatar] { aspect-ratio: 326 / 434 !important; }
+  /* 326 is the design's canvas width (238:11970), not just what a 390 frame
+     happens to leave after its gutters. Without the cap the drawing grows
+     with the column — 494 wide and 798 tall at a 558 viewport — and takes
+     the whole composition with it. */
+  [data-avatar] {
+    aspect-ratio: 326 / 434 !important;
+    max-width: 326px !important;
+  }
   [data-avatar] [data-avatar-fig] {
     width: 87.87% !important;
     margin-left: -43.935% !important;

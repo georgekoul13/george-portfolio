@@ -54,7 +54,11 @@ export default function CategoryPage({ params }: { params: { category: string } 
       <MenuBar />
 
       <main style={{ background: 'var(--bg-page)' }}>
+        {/* `followed`: the block below rides up over this panel, so it keeps
+            the closing viewport that the home page's last panel does not
+            need — see `PanelStack`. */}
         <PanelStack
+          followed
           panels={[
             {
               key: 'intro',

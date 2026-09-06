@@ -35,13 +35,9 @@ import CopyrightSection from '@/components/vol2/CopyrightSection';
  * screen — word by word as you scroll, and un-written as you scroll back
  * up — so `stretchRun` below is what actually gives them room to play in.
  *
- * Panel 3 sits OUTSIDE the stack, as ordinary content that scrolls up over
- * panel 2 exactly as a panel would. It has to: it holds two sections that
- * pin themselves — the category strip and the projects band — and nested
- * inside a stack panel neither got any pin spacing at all, so the strip had
- * nothing to travel across and the band's rank never advanced. It also
- * keeps them clear of the scale the stack applies, which would turn their
- * pinned `position: fixed` into a local coordinate system.
+ * Panel 3 is a real panel now, and it carries all three of its sections at
+ * once. Nothing inside it pins any more — the band asks the panel to hold
+ * for it instead — so the whole page is exactly three pinned panels.
  */
 export default function Vol2Page() {
   return (
@@ -110,29 +106,46 @@ export default function Vol2Page() {
               ),
               style: { background: 'var(--bg-page)', color: 'var(--text-primary)' },
             },
+            {
+              /* The last panel, and it is all three sections — George: *"the
+                 last panel in home has the learn more, the featured projects
+                 and the footer section."* Which is what 235:4907 draws: one
+                 frame, not three that arrive in turn.
+
+                 So they scroll THROUGH it rather than over each other. The
+                 panel is far taller than the window, so its content is
+                 carried up by the overscroll — categories, then the band,
+                 then the footer — and only the panel itself ever slid over
+                 anything.
+
+                 What made this impossible before was the band: it pinned
+                 itself, and a pinned section nested inside a pinned panel
+                 gets no pin spacing, so its rank never advanced. It no
+                 longer pins. It declares `data-hold` instead and the panel
+                 parks it, which is the same mechanism the about panel's
+                 sentence and chips use. Every reveal in here is now driven
+                 either by that hold or by the element's live rect — nothing
+                 inside reads its own position in the document, because
+                 inside a pinned panel that position is a lie. */
+              key: 'last',
+              shoulder: true,
+              revealRun: 200,
+              /* The footer is the end of the page; there is nothing after it
+                 that needs the panel to sit still first. */
+              tailRun: 0,
+              content: (
+                <>
+                  <CategoryStrip />
+                  <ProjectsBand />
+                  <FooterSection />
+                  <CopyrightSection />
+                </>
+              ),
+              style: { background: 'var(--bg-page)' },
+            },
           ]}
         />
 
-        {/* ── panel 3 (235:4907) — outside the stack, see the note above ──
-            `ConnectSection` is gone with the ID card — George: "id must be
-            removed", and that card was the whole point of the band: a folder
-            whose flap opens to lift it out. The footer carries the contact
-            links, so nothing is orphaned. Both files are still on disk if it
-            comes back. */}
-        {/* The shoulder lives on `CategoryStrip`, the FIRST child, not here.
-            A radius on this wrapper drew nothing: every section inside paints
-            its own `--bg-page`, and an opaque child square-corners whatever
-            its parent rounded. The usual fix — `overflow: hidden` — is not
-            available, because clipping an ancestor of `ProjectsBand` would
-            turn its pinned `position: fixed` into a local coordinate system
-            and break the pin outright. Rounding the child that actually
-            paints the corner costs nothing and clips nothing. */}
-        <div className="relative z-10" style={{ background: 'var(--bg-page)' }}>
-          <CategoryStrip />
-          <ProjectsBand />
-          <FooterSection />
-          <CopyrightSection />
-        </div>
       </main>
     </div>
   );

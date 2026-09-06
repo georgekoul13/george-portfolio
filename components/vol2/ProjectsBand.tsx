@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
+import { getHoldProgress } from './holdProgress';
 
 import './scrollDefaults';
 import ProjectCards from './category/ProjectCards';
@@ -320,6 +321,25 @@ const START = -7;
 /** extra cards' worth of travel so the last one clears the frame */
 const TAIL = 3;
 /**
+ * The rank's whole distance, in px of scroll. The rank covers every place
+ * from where it waits, so the travel has to pay for those seven too —
+ * otherwise the same scroll carries it further and the cards sweep past
+ * faster than `RATE` says they do.
+ */
+const TRAVEL = (N + TAIL - START) * RATE;
+/**
+ * What the band asks the panel to hold for: the entry leg and the rank.
+ *
+ * It is an attribute rather than a pin now. The band is the middle screen of
+ * the home page's last panel, and a pinned section nested inside a pinned
+ * panel gets no pin spacing of its own — its rank never advanced. So instead
+ * of pinning itself it declares a HOLD: `PanelStack` parks it in the middle
+ * of the window, spends this many px of scroll going nowhere, and publishes
+ * the progress for the band to read. Same scroll, same choreography, one
+ * pin instead of two. See `holdProgress`.
+ */
+const HOLD_RUN = ENTRY_RUN + TRAVEL;
+/**
  * A card smaller than this is not drawn. The whole point of putting the
  * vanishing point off the right edge is that a card small enough is ALREADY
  * out of frame, so it can stop being drawn without anyone seeing it go.
@@ -513,12 +533,6 @@ export default function PerspectiveGallery({
       };
       gsap.ticker.add(tick);
 
-      /* The rank now covers the whole distance from where it waits, so the
-         travel has to pay for those seven places too — otherwise the same
-         scroll carries it further and the cards sweep past faster than the
-         rate says they do. */
-      const travel = () => (N + TAIL - START) * RATE;
-
       /* ONE trigger, and it does not begin until the panel has arrived.
          
          The band used to have a second `entry` trigger running from `top
@@ -535,19 +549,13 @@ export default function PerspectiveGallery({
          to do. Same choreography, same overlap between the line leaving and
          the first cards arriving — just all of it after the arrival rather
          than during it. */
-      const main = ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: () => `+=${ENTRY_RUN + travel()}`,
-        pin: true,
-        scrub: true,
-        invalidateOnRefresh: true,
-      });
+      /** 0 → 1 across the panel's hold on this section — the old pin */
+      const mainP = () => getHoldProgress(section);
 
-      /** where the entry leg ends, as a fraction of the whole pin */
-      const entryShare = () => ENTRY_RUN / (ENTRY_RUN + travel());
+      /** where the entry leg ends, as a fraction of the whole hold */
+      const entryShare = ENTRY_RUN / HOLD_RUN;
       /** 0 → 1 across the reveal, then held at 1 */
-      const entryP = () => gsap.utils.clamp(0, 1, main.progress / entryShare());
+      const entryP = () => gsap.utils.clamp(0, 1, mainP() / entryShare);
 
       /* The rank's own share of the entry leg, which starts LATER than the
          headline's. George: *"in the featured projects let's reveal the cards
@@ -564,7 +572,7 @@ export default function PerspectiveGallery({
 
       /** 0 until the reveal is done, then 0 → 1 across the rank */
       const bandP = () =>
-        gsap.utils.clamp(0, 1, (main.progress - entryShare()) / (1 - entryShare()));
+        gsap.utils.clamp(0, 1, (mainP() - entryShare) / (1 - entryShare));
 
       /* The line rides the same two triggers as the rank rather than getting
          a ScrollTrigger of its own. It has to: once the section pins, every
@@ -650,7 +658,6 @@ export default function PerspectiveGallery({
         window.removeEventListener('resize', onResize);
         gsap.ticker.remove(tick);
 
-        main.kill();
         section.removeEventListener('pointerdown', down);
         section.removeEventListener('pointermove', move);
         section.removeEventListener('pointerup', up);
@@ -676,6 +683,10 @@ export default function PerspectiveGallery({
         ref={root}
         className="relative w-full"
         style={{
+          /* The shoulder for the whole last block. It is the first thing
+             in there, and the block is not a stack panel, so the rounded top
+             has to be painted by whatever actually draws the background at
+             that edge — see the note in `page.tsx`. */
           background: 'var(--bg-page)',
           /* Explicit, and it matters. This `<section>` is the SAME DOM node
              the rank uses — React reconciles by type, so the branches share
@@ -717,6 +728,10 @@ export default function PerspectiveGallery({
     <section
       ref={root}
       className="relative w-full"
+      /* The panel parks this screen and spends `HOLD_RUN` px on it — the pin
+         this section used to own. It is exactly a viewport tall, so parking
+         it at the centre of the window is parking it at the top. */
+      data-hold={HOLD_RUN}
       style={{
         /* `lvh` — see `PanelStack`. */
         height: '100lvh',

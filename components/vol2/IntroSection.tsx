@@ -109,7 +109,15 @@ export default async function IntroSection({
           <Avatar svg={svg} />
         </div>
 
-        {/* 558 − 434 = 124 between the drawing and the sentence */}
+        {/* 558 − 434 = 124 between the drawing and the sentence.
+
+            A hold of its OWN, nested inside the group's. Narrow, the group
+            comes to ~938 against an 844 viewport — it cannot be framed, and
+            centring it clips the drawing's top and the sentence's bottom
+            together. `PanelStack` falls back to this one whenever the group
+            does not fit, so the sentence is still parked and read; wide, the
+            group fits and this is ignored. */}
+        <div data-hold>
         <RevealText
           /* Scrubbed against its own position on screen. It sits inside a
              pinned panel, where a scrubbed ScrollTrigger never advances —
@@ -124,6 +132,7 @@ export default async function IntroSection({
         >
           {sentence}
         </RevealText>
+        </div>
       </div>
     </section>
   );

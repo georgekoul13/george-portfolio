@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useRef, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { setHoldProgress } from './holdProgress';
@@ -134,8 +134,41 @@ export interface PanelDef {
   style?: CSSProperties;
 }
 
-export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
+export default function PanelStack({
+  panels: defs,
+  followed = false,
+}: {
+  panels: PanelDef[];
+  /**
+   * Whether ordinary content follows the stack in the flow and slides up
+   * over the last panel the way a panel would.
+   *
+   * It decides whether the last panel gets the closing viewport described at
+   * the foot of the timeline below. On the home page nothing follows — the
+   * last panel carries the footer — so that viewport would be a screen of
+   * dead scroll the document has no room for. On a category page a whole
+   * block follows, and without the viewport the panel unpins the moment its
+   * own content is done and scrolls out from under its own successor.
+   */
+  followed?: boolean;
+}) {
   const root = useRef<HTMLDivElement>(null);
+  /**
+   * Bumped when the HOLDS inside the panels change, to rebuild the whole
+   * stack. A hold's length is baked into the timeline as a duration, so a
+   * refresh cannot fix a hold that has appeared, vanished or changed size —
+   * only rebuilding can.
+   *
+   * Both of those happen for real. `ProjectsBand` renders a 3D rank above
+   * 700px and a plain stacked list below it, and only the rank asks for a
+   * hold; the server renders the rank either way, so on a phone the hold is
+   * there for the first render and gone immediately after. The stack was
+   * built with 4400px of hold and the spacer written without it — the pin
+   * ran 4400px past the end of the document, so it never finished and the
+   * footer could not be scrolled to at all. Resizing past that breakpoint,
+   * or past the one where a nested hold takes over, does the same thing.
+   */
+  const [rev, setRev] = useState(0);
 
   useGSAP(
     () => {
@@ -157,6 +190,31 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
         const next = inFlow.nextElementSibling as HTMLElement | null;
         return next?.hasAttribute('data-panel-gap') ? next : null;
       };
+
+      /* Which `[data-hold]`s a panel ACTUALLY runs. Holds nest, and only one
+         of a nested pair is ever used (the rule is spelled out where they are
+         placed on the timeline below) — so this cannot be "every `[data-hold]`
+         inside the panel". The pin and the spacer after it are two halves of
+         the same measurement, and when they disagreed by one hold the panel
+         unpinned a whole viewport before its successor arrived and scrolled
+         away on its own: the about panel's pin ended at 5427 while the
+         categories only began covering at 6145. */
+      const fits = (el: HTMLElement) => el.offsetHeight <= window.innerHeight;
+      const pickHolds = (box: HTMLElement) => {
+        const all = gsap.utils.toArray<HTMLElement>('[data-hold]', box);
+        return all.filter((el) => {
+          const nested = all.find((o) => o !== el && el.contains(o));
+          if (nested) return fits(el);
+          const outer = all.find((o) => o !== el && o.contains(el));
+          if (outer) return !fits(outer);
+          return true;
+        });
+      };
+      const runOf = (el: HTMLElement) => Number(el.dataset.hold) || window.innerHeight;
+
+      /** every hold this build is committed to, as one comparable string */
+      const holdSignature = () =>
+        panels.map((p) => pickHolds(inner(p)).map(runOf).join(',')).join('|');
 
       /* The spacer depends on the window height, so it has to be rewritten
          before ScrollTrigger measures anything — otherwise a resize leaves
@@ -188,11 +246,13 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
              what George asked for: the previous panel's scroll and
              animation finish, and then the new one comes on top. */
           const d = defs[i];
-          const holdRun = gsap.utils
-            .toArray<HTMLElement>('[data-hold]', inner(panel))
-            .reduce((n, el) => n + (Number(el.dataset.hold) || window.innerHeight), 0);
+          const holdRun = pickHolds(inner(panel)).reduce((n, el) => n + runOf(el), 0);
+          /* `stretchRun` only buys anything on a panel that HAS an overscroll
+             to stretch, and the pin ignores it otherwise — so the spacer has
+             to ignore it on exactly the same panels. */
+          const stretch = overflow > 0 ? d?.stretchRun ?? 0 : 0;
           gap.style.height =
-            `${overflow + (d?.revealRun ?? 0) + (d?.tailRun ?? 0) + (d?.stretchRun ?? 0) + holdRun}px`;
+            `${overflow + (d?.revealRun ?? 0) + (d?.tailRun ?? 0) + stretch + holdRun}px`;
         });
       };
       setGaps();
@@ -204,23 +264,6 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
          and the panel is SCALED by the recede, and a rect would carry both;
          `offsetTop` is layout, so it reads the same whatever is applied on
          top. `[data-panel-inner]` is positioned so the walk terminates on it. */
-      /* `--panel-radius` in PIXELS.
-
-         `getPropertyValue` hands back the custom property's raw text — the
-         whole `clamp(24px, …, 40px)` — not what it resolves to, so parsing it
-         yields NaN and the radius silently became 0. A throwaway element with
-         the token applied is the only way to read the computed length, since
-         GSAP needs a number to tween to. */
-      const panelRadius = () => {
-        const probe = document.createElement('div');
-        probe.style.cssText =
-          'position:absolute;visibility:hidden;pointer-events:none;border-top-left-radius:var(--panel-radius)';
-        document.body.appendChild(probe);
-        const px = parseFloat(getComputedStyle(probe).borderTopLeftRadius) || 0;
-        probe.remove();
-        return px;
-      };
-
       const offsetWithin = (el: HTMLElement, box: HTMLElement) => {
         let y = 0;
         let n: HTMLElement | null = el;
@@ -232,6 +275,10 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
       };
 
       panels.forEach((panel, i) => {
+        /* The last panel gets no closing viewport unless something follows
+           the stack to do the covering — see `followed`, and the dead hold
+           at the foot of the timeline. */
+        const isLast = i === panels.length - 1 && !followed;
         const box = inner(panel);
         const diff = box.offsetHeight - window.innerHeight;
         const ratio = diff > 0 ? diff / (diff + window.innerHeight) : 0;
@@ -248,11 +295,19 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
            is clamped to the travel that actually exists, so a block at the
            very bottom of a panel simply holds at the end of the overscroll
            rather than asking for room the panel has not got. */
-        const holds = gsap.utils
-          .toArray<HTMLElement>('[data-hold]', box)
+        /* Holds can NEST, and only one of a nested pair is used.
+
+           A hold's job is to park a block where it can be read in full, so a
+           block TALLER than the viewport cannot do that job — centring it
+           clips both of its ends at once. When that happens the outer defers
+           to whatever hold sits inside it: on a phone the intro's group (the
+           drawing, both greetings and the sentence, ~938) overflows an 844
+           screen, so the sentence's own hold takes over and is parked alone.
+           Wide, the group fits and the nested one is ignored. */
+        const holds = pickHolds(box)
           .map((el) => ({
             el,
-            run: Number(el.dataset.hold) || window.innerHeight,
+            run: runOf(el),
             at: gsap.utils.clamp(
               0,
               overflow,
@@ -278,8 +333,20 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
             trigger: panel,
             /* the panel is whole on screen before anything happens to it */
             start: 'bottom bottom',
+            /* The content scrolling through, every hold, AND one more
+               viewport — the window during which the NEXT panel slides up
+               over this one.
+
+               That last viewport is not optional. Cut it and the panel
+               unpins the moment its own content is done and scrolls away
+               under its successor, which is the opposite of layering: the
+               outgoing panel has to stay exactly where it is while it is
+               covered. It used to be spent on the recede; it is now spent
+               standing still. */
             end: () =>
-              `+=${(ratio ? box.offsetHeight : window.innerHeight) + hold + tail + stretch + holdRun}`,
+              `+=${Math.max(0, box.offsetHeight - window.innerHeight) +
+                (isLast ? 0 : window.innerHeight) +
+                hold + tail + stretch + holdRun}`,
             pinSpacing: false,
             pin: true,
             scrub: true,
@@ -324,11 +391,17 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
                scrub its own reveal. A proxy object rather than a bare
                `tl.to({}, …)` so there is something to publish from. */
             const p = { v: 0 };
+            /* Published to the chosen element AND to every hold nested inside
+               it. A block reads its progress off `closest('[data-hold]')`,
+               which finds the NEAREST one — so when the outer is the one being
+               held, the sentence would otherwise look up an element nobody is
+               driving and sit at 0 forever. */
+            const targets = [h.el, ...gsap.utils.toArray<HTMLElement>('[data-hold]', h.el)];
             tl.to(p, {
               v: 1,
               duration: h.run / window.innerHeight,
               ease: 'none',
-              onUpdate: () => setHoldProgress(h.el, p.v),
+              onUpdate: () => targets.forEach((el) => setHoldProgress(el, p.v)),
             });
           });
 
@@ -363,42 +436,32 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
            clipped edge is only a problem while you can still read what is
            being clipped; at 0.2 the ribbons are a suggestion behind the
            arriving panel rather than two arcs with their ends cut off. */
-        /* The token, not the panel's CURRENT top radius.
+        /* ── no recede ──────────────────────────────────────────────
+           The panel stays exactly where it is and the next one slides up
+           over it. That is the whole transition — GSAP's "layered pinning"
+           (pen VwbywPd), which George asked for, minus its infinite loop
+           (a cloned first panel and a `maxScroll` wrap-around, neither of
+           which belongs on a page with an end).
 
-           Reading the panel was wrong for a panel with no shoulder — the
-           FIRST viewport of a page, which is full-bleed and square by design.
-           It read 0 and so receded as a bare square rectangle: a card with no
-           corners, which is what looked broken on the category template,
-           where the cream intro IS the first viewport.
+           What went was the shrink: the panel used to scale to 0.7 and fade
+           to nothing as it left, which read as a card falling backwards. It
+           is now covered rather than dismissed, and the only thing marking
+           the join is the arriving panel's own rounded shoulder.
 
-           Every panel becomes a card once it starts shrinking, so every panel
-           gets the same corners on the way out. A panel that arrived on a
-           shoulder is already at this radius on top and only its bottom
-           moves; one that started square rounds all four. Square at rest for
-           the first viewport, identical cards for all of them in motion. */
-        const radius = panelRadius();
-        const shoulderRadius = parseFloat(getComputedStyle(panel).borderTopLeftRadius) || 0;
+           What replaces it is a dead hold of exactly one viewport — the
+           panel pinned, nothing moving, while the next one slides up and
+           covers it. One unit is one viewport height throughout this
+           timeline (see the arithmetic at the top of the file), so this also
+           keeps that conversion intact: drop it and every hold above it
+           silently changes length.
 
-        tl.fromTo(
-          panel,
-          {
-            scale: 1,
-            opacity: 1,
-            borderTopLeftRadius: shoulderRadius,
-            borderTopRightRadius: shoulderRadius,
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
-          },
-          {
-            scale: 0.7,
-            opacity: 0.2,
-            borderTopLeftRadius: radius,
-            borderTopRightRadius: radius,
-            borderBottomLeftRadius: radius,
-            borderBottomRightRadius: radius,
-            duration: 0.9,
-          },
-        ).to(panel, { opacity: 0, duration: 0.1 });
+           The LAST panel does not get one. Nothing follows it to do the
+           covering, so the viewport would be a screen of scrolling at the
+           very bottom of the page during which absolutely nothing happens —
+           and worse, it is a screen the page has no room for: the document
+           ends where the spacer ends, so the pin could never reach its own
+           end and the panel would sit unfinished at the foot of the page. */
+        if (!isLast) tl.to({}, { duration: 1 });
       });
 
       /* Two refreshes AFTER the spacers exist and the triggers are built.
@@ -443,8 +506,15 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
       let queued = 0;
       let primed = false;
       let refreshing = false;
+      const builtWith = holdSignature();
 
       const recompute = () => {
+        /* A changed hold cannot be refreshed away — it is a duration in a
+           timeline that already exists — so this rebuilds instead. */
+        if (holdSignature() !== builtWith) {
+          setRev((n) => n + 1);
+          return;
+        }
         refreshing = true;
         setGaps();
         ScrollTrigger.refresh();
@@ -480,7 +550,10 @@ export default function PanelStack({ panels: defs }: { panels: PanelDef[] }) {
         ScrollTrigger.removeEventListener('refreshInit', setGaps);
       };
     },
-    { scope: root },
+    /* `revertOnUpdate` is NOT the default: without it a rebuild would leave
+       the previous pins and their spacers in place and simply add a second
+       set on top. */
+    { scope: root, dependencies: [rev, followed], revertOnUpdate: true },
   );
 
   return (

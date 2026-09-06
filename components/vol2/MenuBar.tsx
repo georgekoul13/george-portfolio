@@ -59,6 +59,10 @@ const NAV = [
   { label: 'About',    href: '/contact' },
 ];
 
+/** the design's 2px between every tile, in one place — the collapse below
+    has to cancel exactly one of these */
+const GAP = 2;
+
 /** 4px radius, and the 32px height both paddings resolve to */
 const TILE = 'flex shrink-0 items-center gap-[4px] rounded-[4px] px-[14px] py-[11px]';
 
@@ -124,6 +128,13 @@ export default function MenuBar() {
     return { ...n, href, active: pathname === href || (!n.href && pathname === base) };
   });
 
+  /* Shut, the tile says where you ARE rather than what the button does —
+     George: *"in the closed version let's have the name of the page, so in
+     home HOME."* The burger beside it already says it opens a menu, so the
+     word was spent twice. Falls back to "Menu" on a page that is not in the
+     nav — a project page, say — where there is no name to give. */
+  const here = items.find((i) => i.active)?.label ?? 'Menu';
+
   useGSAP(
     () => {
       const railEl = rail.current;
@@ -185,10 +196,23 @@ export default function MenuBar() {
       /* ── the MENU label ──
          Collapses to nothing rather than fading in place: in the recording
          the tile is gone before the first pill has finished arriving. */
+      /* The PADDING collapses with the width. `box-sizing: border-box`
+         cannot compress padding below its own size, so a tile animated to
+         `width: 0` still renders its 14px either side — 28px of tile that
+         looks like nothing but still sits in the row, turning the 2px gap
+         beside the close button into 32. Every gap in the row is 2 now. */
       set(
         menuEl,
         {
           width: open ? 0 : menuEl.scrollWidth,
+          paddingLeft: open ? 0 : 14,
+          paddingRight: open ? 0 : 14,
+          /* A zero-width element still sits BETWEEN two gaps — the one after
+             the burger and the one before the rail — so the close button
+             ended up 4px from the first pill where every other tile is 2.
+             Pulling one gap back makes the collapsed tile disappear from the
+             row entirely rather than leave its spacing behind. */
+          marginRight: open ? -GAP : 0,
           autoAlpha: open ? 0 : 1,
           duration: open ? 0.28 : 0.4,
           ease: 'power2.out',
@@ -252,7 +276,9 @@ export default function MenuBar() {
       morph(barTop.current, -4, 45);
       morph(barBottom.current, 4, -45);
     },
-    { scope: root, dependencies: [open, stacked] },
+    /* `here` is a dependency: the tile is measured with `scrollWidth`, and a
+       longer or shorter word changes what it collapses from. */
+    { scope: root, dependencies: [open, stacked, here] },
   );
 
   /* Escape closes it wherever focus is; a click anywhere else does too. The
@@ -313,7 +339,7 @@ export default function MenuBar() {
           className={`${TILE} hidden overflow-hidden sm:flex`}
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="whitespace-nowrap uppercase" style={LABEL}>Menu</span>
+          <span className="whitespace-nowrap uppercase" style={LABEL}>{here}</span>
         </div>
       </div>
 

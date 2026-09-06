@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
+import { scrubToPosition } from './scrubToPosition';
 
 import './scrollDefaults';
 
@@ -96,9 +97,15 @@ export default function CategoryStrip() {
          in a left-to-right stagger — because George asked for exactly that:
          *"let's have the explore more revealed like the other text."*
 
-         Scrubbed on an ordinary ScrollTrigger, which is available here and is
-         not inside `ProjectsBand`: this section is in normal flow and pins
-         nothing, so its own position is a truthful trigger. */
+         Scrubbed against the line's LIVE rect, not a ScrollTrigger. This
+         section is the first screen of the last panel now, and a panel with
+         more content than the window carries that content upward with a
+         tween — so the headline's position in the DOCUMENT never changes and
+         a trigger keyed to it would sit at 0 forever. The rect is the real
+         on-screen position whatever produced it; see `scrubToPosition`.
+
+         Same range the trigger had — top at 88% of the viewport to top at
+         45% — so the reveal reads exactly as it did. */
       const head = section.querySelector<HTMLElement>('[data-head]')!;
       document.fonts.ready.then(() => {
         const split = SplitText.create(head, { type: 'chars' });
@@ -106,18 +113,9 @@ export default function CategoryStrip() {
         if (reduce) return;
 
         gsap.set(head, { autoAlpha: 1 });
-        gsap.from(chars, {
-          yPercent: 100,
-          opacity: 0,
-          ease: 'power3.out',
-          stagger: 0.03,
-          scrollTrigger: {
-            trigger: head,
-            start: 'top 88%',
-            end: 'top 45%',
-            scrub: 0.6,
-          },
-        });
+        const tl = gsap.timeline({ paused: true });
+        tl.from(chars, { yPercent: 100, opacity: 0, ease: 'power3.out', stagger: 0.03 });
+        cleanup.push(scrubToPosition(head, tl, { from: 0.88, to: 0.45 }));
         cleanup.push(() => split.revert());
       });
 
@@ -319,14 +317,14 @@ export default function CategoryStrip() {
            905 and should keep setting its own size. `lvh` for the reason in
            `PanelStack` — a phone's toolbar retracts and `svh` would come up
            short. */
+        /* Exactly one viewport, so the panel wrapping this has no overscroll
+           to run — its content is the screen. The SHOULDER is the panel's now,
+           not this section's: it is a `[data-panel]` in its own right, and
+           `PanelStack` draws the rounded top for anything with `shoulder`. */
         minHeight: '100lvh',
         paddingBlock: 'var(--section-pad-y)',
         background: 'var(--bg-page)',
         gap: 'var(--cs-gap-head)',
-        /* the arriving-panel shoulder: this is the first thing in panel 3 and
-           therefore the edge that rides up over the about panel */
-        borderTopLeftRadius: 'var(--panel-radius)',
-        borderTopRightRadius: 'var(--panel-radius)',
       }}
     >
       <h2
