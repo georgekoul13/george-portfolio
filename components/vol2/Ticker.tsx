@@ -46,18 +46,25 @@ export default function Ticker() {
       if (!track) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+      /* The distance after which the view repeats, measured rather than
+         derived. Half the track's width is NOT it: the flex gaps sit between
+         the ten children, so the second copy starts one gap further along
+         than half — and the strip jumped by exactly that gap on every wrap,
+         which is what stopped it reading as a loop. The offset between the
+         first item of each copy is the repeat exactly. */
+      const items = Array.from(track.children) as HTMLElement[];
+      const lap = () =>
+        items.length >= 2 ? items[items.length / 2].offsetLeft - items[0].offsetLeft : 0;
+
       let x = 0;
       let last = performance.now();
       const tick = () => {
         const now = performance.now();
         const dt = (now - last) / 1000;
         last = now;
-        /* The list is rendered TWICE, so at exactly half the track's width
-           the view is identical to the start and the offset can jump back
-           with nothing to see. */
-        const half = track.scrollWidth / 2;
-        if (half > 0) {
-          x = (x + SPEED * dt) % half;
+        const d = lap();
+        if (d > 0) {
+          x = (x + SPEED * dt) % d;
           gsap.set(track, { x: -x });
         }
       };
@@ -74,7 +81,10 @@ export default function Ticker() {
       className="w-full overflow-hidden"
       style={{ background: 'var(--ticker-bg)', paddingBlock: 22 }}
     >
-      <div data-track className="flex w-max items-center" style={{ gap: 20, paddingInline: 32 }}>
+      {/* No side padding on the TRACK: it would sit inside the repeat and
+          push the second copy out of step with the first. The strip runs edge
+          to edge, which is what an endless one has to do anyway. */}
+      <div data-track className="flex w-max items-center" style={{ gap: 20 }}>
         {[0, 1].map((copy) =>
           ITEMS.map((item, i) => (
             <span key={`${copy}-${i}`} className="flex shrink-0 items-center" style={{ gap: 20 }}>

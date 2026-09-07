@@ -304,13 +304,13 @@ export default function Hero() {
           data-word={word.name}
           className="absolute"
           style={{
-            /* CENTRED, not at the design's own `word.x`. 230:14543 stacks
-               the two lines on the middle of the box — GEORGE at 297.5 and
-               KOULOURIS at 174.2, which is exactly (1318 − width) / 2 for
-               each. `word.x` is kept in the data because it still carries
-               the original indent, and because the kerning inside a word is
-               measured from it. */
-            left: pct((HERO_W - word.w) / 2, HERO_W),
+            /* Hard left, both of them — 255:7046. The wordmark used to be
+               centred in its box, which is what 230:14543 drew when it was
+               the middle of a full-width hero; it now opens a column and
+               starts where the column does. `word.x` is kept in the data
+               because it still carries the original indent, and because the
+               kerning inside a word is measured from it. */
+            left: 0,
             top: pct(word.y, HERO_H),
             width: pct(word.w, HERO_W),
             height: pct(ROW_H, HERO_H),

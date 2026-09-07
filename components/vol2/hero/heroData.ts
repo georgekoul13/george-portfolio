@@ -8,7 +8,21 @@
  * variant of the glyph.
  */
 
-export const HERO_W = 1318;
+/**
+ * The wordmark's box is the WIDEST WORD, not the design frame it was
+ * measured in.
+ *
+ * 255:7046 sets the wordmark hard left in its column and lets KOULOURIS run
+ * the full 791 of it. Measured inside a 1318 frame the two words are 723 and
+ * 969.5 with the indent between them, so a box of 1318 leaves 348 of air on
+ * one side or the other however the words are placed inside it — which is
+ * what made the wordmark read as centred and 36% smaller than the node's.
+ *
+ * At 969.529 the long word spans the box exactly, the short one takes its
+ * 74.6% of it, and both start at 0. Everything else in this file is measured
+ * against `word.w`, so the kerning is untouched.
+ */
+export const HERO_W = 969.529;
 export const HERO_H = 462;
 /** every letterform is exported at this height */
 export const ROW_H = 282;

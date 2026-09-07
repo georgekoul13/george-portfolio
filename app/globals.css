@@ -87,19 +87,12 @@ video {
 
      Two things are still worth doing narrow, and only two. */
 
-  /* Figma spends 1318 units of width to carry 969 units of letters, because
-     KOULOURIS is indented under the tail of GEORGE. On a phone that overhang
-     is paid for in cap height, so the box narrows to the longer word and
-     every letter grows 36% for free — but both words stay CENTRED on it,
-     which the design now asks for and the old rule broke by flushing them
-     left. GEORGE's offset is (100 − 74.5623) / 2.
-
-     This is the phone composition too — 238:10151 was briefly a five-row
-     reflow and is now back to the two centred lines, so it runs the whole
-     way down rather than stopping at a breakpoint. */
-  [data-wordmark] { aspect-ratio: 969.529 / 462 !important; }
-  [data-word="GEORGE"] { left: 12.7189% !important; width: 74.5623% !important; }
-  [data-word="KOULOURIS"] { left: 0% !important; width: 100% !important; }
+  /* The wordmark's narrowing to the longer word is in `heroData` now, at
+     every width — 255:7046 asks for it wide as well — and both words are
+     flush left there. What used to be here did the same narrowing but kept
+     GEORGE centred on the box, which is what 230:14543 drew when the hero
+     was a centred column; on a phone it left GEORGE floating 45px in from
+     the K below it, against 255:9406, which flushes both. */
 
   /* The subtitle keeps its measure — `--hero-sub-w` already clamps to 222 at
      390, which fits inside the gutters — and is only stopped from ever
