@@ -261,11 +261,17 @@ export default function CategoryStrip() {
       style={{
         width: 'var(--cs-card)',
         height: 'var(--cs-card-h)',
-        /* 16, the same as every project card on the site. George: *"let's
-           have cohesive corners everywhere in our images."* These were
-           square wide and 16 narrow, which is how the two ended up
-           disagreeing on a laptop and agreeing on a phone. */
-        borderRadius: 16,
+        /* Square. George, looking at the strip: *"let's remove the rounded
+           corners on these images."*
+
+           They were 16 for one round, to settle an earlier note about
+           cohesive corners — these were square wide and 16 narrow, so they
+           agreed with the project cards on a phone and not on a laptop. That
+           is fixed either way; this picks the other answer. The project cards
+           are still 16, so the two disagree again — worth knowing rather than
+           quietly matching them, since squaring those touches every category
+           page and the featured list too. */
+        borderRadius: 0,
         background: 'var(--bg-raised)',
       }}
     >
