@@ -250,6 +250,13 @@ html[data-nav-open] [data-header-rule] {
   }
 }
 
+/* The panel that arrives over the base screen sets its own opening distance
+   — `--content-pad-top`, 200/56 — so whatever lands first inside it must not
+   add its own on top. Only the top: everything below keeps its rhythm. */
+[data-panel-content] > :first-child {
+  padding-top: 0 !important;
+}
+
 /* `ProjectCards` brings its own vertical rhythm, which is right when it is
    a section in its own right and wrong directly under a title that has
    already spaced itself with `--titled-gap`. Only the top goes: the bottom
@@ -272,4 +279,35 @@ html[data-nav-open] [data-header-rule] {
    its own 844px box and lands on top of the footer. */
 @media (max-width: 639px) {
   [data-band-list] { height: auto !important; }
+}
+
+/* ── The base screen (255:7046 / 255:9406) ───────────────────────────────
+   Wide: the title over the line in a 792 column, the drawing in a 460 one
+   beside them, 48 apart both ways — the ratio the node draws.
+
+   Narrow: one column, and the drawing moves BETWEEN the title and the line.
+   That is why this is a grid with named areas rather than a flex row: the
+   three boxes are siblings in the markup and each breakpoint says where they
+   go, so neither layout has to be the other one bent into shape. */
+[data-base-body] {
+  grid-template-columns: 792fr 460fr;
+  grid-template-areas:
+    'title  figure'
+    'text   figure';
+  column-gap: 48px;
+  row-gap: 48px;
+}
+[data-base-title] { grid-area: title; }
+[data-base-figure] { grid-area: figure; }
+[data-base-text] { grid-area: text; }
+
+@media (max-width: 899px) {
+  [data-base-body] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'title'
+      'figure'
+      'text';
+    row-gap: 24px;
+  }
 }

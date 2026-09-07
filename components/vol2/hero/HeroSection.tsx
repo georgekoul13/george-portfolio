@@ -41,6 +41,15 @@ gsap.registerPlugin(SplitText);
  * It is a flex column now rather than an absolute frame. The design is a
  * centred stack, so laying it out as one costs nothing and it survives a
  * phone, which the fixed frame did not.
+ *
+ * ── it is no longer the screen ────────────────────────────────────────
+ * 255:7046 makes this the LEFT COLUMN of a base screen — wordmark over a
+ * 32/40 line, hard left, with the drawing beside it on cream. So this
+ * component is now just that column, and `BaseScreen` owns the screen: the
+ * background, the height, the gutters and the drawing. Everything it still
+ * does — the letters arriving, the O swapping, the sentence unmasking line
+ * by line on load — is unchanged, because George's *"everything else will
+ * stay the same"* covers the motion as much as the parts.
  */
 
 
@@ -101,16 +110,11 @@ export default function HeroSection() {
   );
 
   return (
-    <section
-      className="relative flex w-full items-center justify-center px-[var(--gutter)]"
-      /* `lvh` so the hero still covers once a phone's toolbar retracts —
-         see the note in `PanelStack`. */
-      style={{ background: 'var(--bg-page)', minHeight: '100lvh' }}
-    >
+    <div className="w-full">
       <div
         ref={root}
         data-hero-frame
-        className="flex w-full max-w-[1320px] flex-col items-center"
+        className="flex w-full flex-col items-start"
         /* Hidden in the SERVER's markup, and uncovered only once every part
            inside has been parked — see the effect above. Parking happens at
            hydration, which lands well after the loading panel starts to
@@ -125,7 +129,6 @@ export default function HeroSection() {
         <p
           ref={subtitle}
           data-hero-subtitle
-          className="text-center"
           style={{
             /* The design's 96 is measured to the INK. Every letter is
                exported in a 282-tall em box whose cap does not start until
@@ -134,15 +137,18 @@ export default function HeroSection() {
                72/1318 of the wordmark's width takes that back, and a
                percentage margin resolves against the container's width, so
                it stays correct at every size. */
-            marginTop: 'calc(var(--hero-gap-title) - 5.463%)',
-            font: 'var(--type-16-24-r)',
+            marginTop: 'calc(48px - 5.463%)',
+            /* 32/40 at 1440 now (255:7046) rather than 16/24 — the line has a
+               column of its own on the base screen instead of sitting under a
+               centred wordmark. */
+            font: 'var(--type-32-40-r)',
             color: 'var(--text-primary)',
-            width: 'var(--hero-sub-w)',
+            width: '100%',
           }}
         >
           A professional over-thinker with a love for product and visual design
         </p>
       </div>
-    </section>
+    </div>
   );
 }

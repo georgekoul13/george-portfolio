@@ -143,6 +143,11 @@
   --type-24-24-l: 300 24px/24px var(--font-sans);
   --type-24-24-b: 700 24px/24px var(--font-sans);
   --type-24-24-m: 500 24px/24px var(--font-sans);   /* the green project count */
+  --type-24-24-r: 400 24px/24px var(--font-sans);   /* the base screen's ticker */
+  /* The base screen's line under the wordmark — 32/40 at 1440 (255:7046),
+     stepping down to the old 16/24 on a phone, where 32 would take four
+     lines and crowd the drawing off the screen. */
+  --type-32-40-r: 400 clamp(16px, calc(10.36px + 1.503vw), 32px)/clamp(24px, calc(18.36px + 1.503vw), 40px) var(--font-sans);
   --type-32-32-m: 500 32px/32px var(--font-sans);
   --type-32-40-sb: 600 32px/40px var(--font-sans);  /* project summary line */
   --type-48-48-b: 700 clamp(30px, calc(23.66px + 1.69vw), 48px)/clamp(30px, calc(23.66px + 1.69vw), 48px) var(--font-sans);   /* the "Categories" chip */
@@ -390,11 +395,27 @@
 :root {
   --titled-pad-top: 124px;
   --titled-gap: 56px;
+  /* From the top edge of the panel that arrives over the base screen down to
+     its first section — George: *"the top padding of this panel on top will
+     have 200px and 56 in the responsive."* */
+  --content-pad-top: 200px;
+  /* The ticker keeps the PAGE's colours wherever it sits. It lives on the
+     base screen, which is a `data-tone="light"` panel — and that re-maps
+     every semantic token inside it, so `--bg-raised` there is the pale one
+     and the strip came out cream-on-cream. 255:8423 draws it dark against
+     the cream, which is the whole reason it reads as a separate object, so
+     it names the ramp directly rather than the role. */
+  --ticker-bg: var(--neutral-800);
+  --ticker-fg: var(--neutral-50);
+
+  /* the base screen's own breathing room, 124 at 1440 (255:7046) */
+  --base-pad-y: clamp(48px, calc(29.69px + 4.883vw), 124px);
 }
 @media (max-width: 899px) {
   :root {
     --titled-pad-top: 48px;
     --titled-gap: 24px;
+    --content-pad-top: 56px;
   }
 }
 @media (max-width: 480px) { :root { --copyright-size: 15px; } }
