@@ -318,6 +318,19 @@ html[data-nav-open] [data-header-rule] {
     position: relative;
     aspect-ratio: 460 / 553;
     overflow: clip;
+    /* …and never taller than the room actually left on the screen. The
+       column's share of the WIDTH decides its size normally, which is right
+       until the window is short — then the drawing simply ran off the
+       bottom, and the menu with it. Capping the WIDTH rather than the height
+       is what keeps the aspect: the ratio does the rest. */
+    /* `width: 100%` is load-bearing next to the auto margin below: an auto
+       margin on a grid item switches it from stretching its track to
+       shrink-to-fit, and the drawing inside is absolutely positioned, so
+       there is nothing to fit and the whole figure collapsed to zero. */
+    width: 100%;
+    max-width: calc((100lvh - var(--ticker-h) - 2 * var(--base-pad-y)) * 460 / 553);
+    /* what pushes the capped box to the column's right edge */
+    margin-inline-start: auto;
   }
   [data-base-figure] [data-avatar] {
     position: absolute;

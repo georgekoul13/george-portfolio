@@ -34,8 +34,9 @@ const ITEMS = [
 
 /** px per second — slow enough to read a word as it goes by */
 const SPEED = 42;
-/** the sticker's drawn size */
-const ICON = 28.5;
+/** the sticker's size. 28.5 in the node, a step down here —
+    George: *"we can make the ribbon a bit smaller."* */
+const ICON = 24;
 
 export default function Ticker() {
   const root = useRef<HTMLDivElement>(null);
@@ -79,7 +80,7 @@ export default function Ticker() {
       ref={root}
       aria-hidden="true"
       className="w-full overflow-hidden"
-      style={{ background: 'var(--ticker-bg)', paddingBlock: 22 }}
+      style={{ background: 'var(--ticker-bg)', paddingBlock: 16 }}
     >
       {/* No side padding on the TRACK: it would sit inside the repeat and
           push the second copy out of step with the first. The strip runs edge
@@ -97,7 +98,7 @@ export default function Ticker() {
               />
               <span
                 className="whitespace-nowrap"
-                style={{ font: 'var(--type-24-24-r)', color: 'var(--ticker-fg)' }}
+                style={{ font: 'var(--type-20-24-r)', color: 'var(--ticker-fg)' }}
               >
                 {item.label}
               </span>

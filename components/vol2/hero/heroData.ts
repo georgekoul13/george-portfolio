@@ -23,7 +23,23 @@
  * against `word.w`, so the kerning is untouched.
  */
 export const HERO_W = 969.529;
-export const HERO_H = 462;
+/**
+ * The box is the INK, not the letters' export boxes.
+ *
+ * Every letterform is exported in a 282-tall slot with its cap starting
+ * around y=68 and its baseline around y=213 — so a box of 2 rows at 0 and
+ * 180 runs from 0 to 462 while the ink only runs 68 to 393. That empty 68
+ * above and 69 below is why the wordmark sat low in its column with a hole
+ * over it, and why the 48 to the line under it measured about 117 on the
+ * screen. George: *"here there should not be empty but start from the
+ * beginning"* and *"make the gap between koulouris and the text smaller."*
+ *
+ * 325 is 393 − 68, and each word moves up by the same 68, so the box now
+ * holds exactly the letters. The rows still overhang it top and bottom —
+ * they are absolutely placed and nothing clips them — which is what keeps
+ * the round letters' overshoot intact.
+ */
+export const HERO_H = 325;
 /** every letterform is exported at this height */
 export const ROW_H = 282;
 
@@ -62,7 +78,8 @@ export const WORDS: Word[] = [
   {
     name: 'GEORGE',
     x: 0,
-    y: 0,
+    /* −68: the row's own empty space above the caps, taken back out. */
+    y: -68,
     w: 722.903,
     slots: [
       { file: 'G 1', x: 0,       w: 126, entrance: { kind: 'y', from: 100 },  duration: 0.7,  ease: 'power2.out' },
@@ -76,7 +93,7 @@ export const WORDS: Word[] = [
   {
     name: 'KOULOURIS',
     x: 348.471,
-    y: 180,
+    y: 112,
     w: 969.529,
     slots: [
       { file: 'K 1', x: 0,       w: 123, entrance: { kind: 'y', from: 100 },  duration: 0.6,  ease: 'power2.out' },
