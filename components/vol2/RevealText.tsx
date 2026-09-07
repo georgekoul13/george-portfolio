@@ -98,8 +98,14 @@ const spread = (chars: Element[], total: number, cap: number) =>
  * four — which adds up to fifteen seconds or so on a long line. Scrolling
  * spends that at whatever rate you like; a page load cannot, so the finished
  * timeline is scaled to fit this instead.
+ *
+ * 2.5, not 5. George: *"let's make the revealing text animation of the hero
+ * in the inner pages quicker."* This is the first thing on a category page
+ * and there is nothing else to look at while it runs, so the reader is
+ * waiting on it rather than watching it — five seconds of waiting reads as
+ * the page being slow, not as the line being written.
  */
-const LOAD_SECONDS = 5;
+const LOAD_SECONDS = 2.5;
 
 /**
  * Big left-aligned display text with a word-by-word scroll reveal.
