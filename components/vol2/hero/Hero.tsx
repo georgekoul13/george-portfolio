@@ -56,6 +56,12 @@ export default function Hero() {
   useGSAP(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    /* Uncovered at the END of this effect, after the start states below have
+       been written — see the note on the element itself. Reduced motion has
+       no start states to write, so it is uncovered immediately. */
+    const show = () => gsap.set(root.current, { visibility: 'inherit' });
+    if (reduce) show();
+
     /* ── Entrance: every letter arrives its own way ─────────────────────
        Modelled on gsap.com, where each glyph animates a different property
        with its own duration and ease rather than one staggered tween.    */
@@ -101,6 +107,10 @@ export default function Hero() {
           }
         }),
       );
+
+      /* Every letter is now parked outside its clip, so there is nothing
+         readable to flash — safe to uncover. */
+      show();
     }
 
     if (reduce) return;
@@ -294,7 +304,17 @@ export default function Hero() {
       ref={root}
       data-wordmark
       className="relative w-full"
-      style={{ aspectRatio: `${HERO_W} / ${HERO_H}` }}
+      /* Hidden in the SERVER's markup, and uncovered by the effect above
+         once every letter has been parked outside its clip.
+
+         Parking happens at hydration, which lands well after the loading
+         panel starts to leave — so without this the panel slides away from a
+         wordmark that is already fully drawn, holds there for several frames,
+         and only then snaps out to animate in. That is exactly what George's
+         recording shows. The gate used to live on a wrapper in
+         `HeroSection`; it came off with that wrapper and had to come back
+         here, where the thing it guards actually is. */
+      style={{ aspectRatio: `${HERO_W} / ${HERO_H}`, visibility: 'hidden' }}
       aria-label="George Koulouris"
       role="img"
     >
