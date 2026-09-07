@@ -26,7 +26,19 @@ export default function FooterSection() {
          with everything else rather than staying tight against the band */
       style={{ paddingTop: 'var(--section-pad-y)', paddingBottom: 'var(--section-pad-y)' }}
     >
-      <RevealText className="max-w-[1100px]" beats={['freelance collaborations', 'say hi!']}>
+      {/* `pinned`, because the footer is inside the home page's last panel
+          now. The default mode scrubs on a ScrollTrigger keyed to the
+          paragraph's position in the DOCUMENT, and a pinned panel does not
+          move through the document — it translates its content — so the
+          reveal ran against the wrong scroll entirely: on a phone the line
+          finished writing itself while it was still below the fold and
+          arrived already done. `pinned` scrubs against the live rect
+          instead. See `RevealText` and `scrubToPosition`. */}
+      <RevealText
+        play="pinned"
+        className="max-w-[1100px]"
+        beats={['freelance collaborations', 'say hi!']}
+      >
         {`Reach out for freelance collaborations or just to say hi! :-)`}
       </RevealText>
 
