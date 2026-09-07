@@ -293,10 +293,18 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
       };
 
       /* iOS hands out orientation only after an explicit grant, and only
-         asks from inside a real gesture — so the request rides the first
-         touch rather than firing on mount, where it would be refused
-         silently and the drawing would simply never move. */
+         asks from inside a real gesture — so the request rides a touch
+         rather than firing on mount, where it is refused silently and the
+         drawing simply never moves.
+
+         Not `{ once: true }`. The call REJECTS outright on an insecure
+         origin, and the first touch on a page is very often one the reader
+         did not mean as an answer to anything; burning the only attempt on
+         it left the drawing frozen for the rest of the visit with nothing to
+         say why. It re-asks on each touch until it is granted, and stops
+         asking the moment it is. */
       const ask = () => {
+        if (armed) return;
         DOE?.requestPermission?.()
           .then((state) => {
             if (state === 'granted') listen();
@@ -305,7 +313,7 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
       };
       if (coarse && DOE) {
         if (typeof DOE.requestPermission === 'function') {
-          window.addEventListener('touchend', ask, { once: true });
+          window.addEventListener('touchend', ask);
         } else {
           listen();
         }
