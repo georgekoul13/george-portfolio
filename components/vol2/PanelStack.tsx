@@ -351,6 +351,27 @@ export default function PanelStack({
             pin: true,
             scrub: true,
             invalidateOnRefresh: true,
+            /* ── a covered panel leaves ────────────────────────────────
+               George: *"the background panel should not be scrollable —
+               ideally it must be removed at some point."*
+
+               Once the pin ends the panel is completely hidden behind its
+               successor, and until now it stayed there: painted, hit-tested,
+               and still holding live scroll containers. The category strip's
+               marquee is one, so a drag that began over the covered panel was
+               answered by a row of cards nobody could see.
+
+               `visibility` rather than `display`, and never on the last
+               panel (nothing covers it): a hidden element keeps its box, so
+               every measurement this file takes on a refresh still reads the
+               same. It comes straight back on the way up. */
+            onLeave: () => {
+              if (isLast) return;
+              gsap.set(panel, { visibility: 'hidden', pointerEvents: 'none' });
+            },
+            onEnterBack: () => {
+              gsap.set(panel, { visibility: 'inherit', pointerEvents: 'auto' });
+            },
             onEnter: () => {
               if (revealed) return;
               revealed = true;
@@ -544,6 +565,12 @@ export default function PanelStack({
       const late = window.setTimeout(() => ScrollTrigger.refresh(), 400);
 
       return () => {
+        /* A rebuild re-runs every trigger from scratch, and `onLeave` only
+           fires on the way past — so a panel hidden by the previous build
+           would stay hidden for good. */
+        panels.forEach((panel) =>
+          gsap.set(panel, { visibility: 'inherit', pointerEvents: 'auto' }),
+        );
         ro.disconnect();
         cancelAnimationFrame(queued);
         window.clearTimeout(late);
@@ -588,6 +615,24 @@ export default function PanelStack({
                    Identical to `svh` on a desktop, where there is no
                    retracting chrome — so this changes nothing there. */
                 height: '100lvh',
+                /* …and a bleed underneath it anyway, because `lvh` is only
+                   as good as the browser's idea of it. George: *"when the
+                   panel reaches the top of the screen the background of the
+                   panel should fill the whole viewport — in all devices, in
+                   all pages."* A pinned panel is `position: fixed`, and on a
+                   phone the visual viewport grows and shrinks under a fixed
+                   element as the toolbar retracts, so any disagreement of a
+                   few px shows as a strip of page background along the
+                   bottom edge.
+
+                   A box-shadow rather than a child element: `overflow:
+                   hidden` above clips descendants but NOT the element's own
+                   shadow, so this paints half a screen of the panel's own
+                   colour directly below it without anything to clip it and
+                   without adding a pixel of layout. It sits under the next
+                   panel, which comes later in the DOM, so it can never show
+                   through the one arriving over the top. */
+                boxShadow: '0 50vh 0 0 var(--bg-page)',
                 ...(d.shoulder
                   ? {
                       borderTopLeftRadius: 'var(--panel-radius)',

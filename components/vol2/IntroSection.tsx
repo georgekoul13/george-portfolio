@@ -53,12 +53,23 @@ export default async function IntroSection({
   sentence = HOME_SENTENCE,
   underlined = UNDERLINED,
   beats = BEATS,
+  bare = false,
 }: {
   /** the line under the drawing. The category pages pass their own — the
       composition is the same, only the sentence changes (238:6357). */
   sentence?: string;
   underlined?: string[];
   beats?: string[];
+  /**
+   * The category variant — 238:6357, which is this composition with the two
+   * corner greetings taken off and the line a step larger.
+   *
+   * They earn their place on the home page and nowhere else: "HI THERE!" and
+   * "I'M GEORGE" are an introduction, and by the time you are on a category
+   * page you have already been introduced. What is left is exactly what the
+   * node draws — the drawing, 124, and one centred line at the display size.
+   */
+  bare?: boolean;
 } = {}) {
   const svg = await readFile(
     path.join(process.cwd(), 'public/images/vol2/avatar/george.svg'),
@@ -92,20 +103,24 @@ export default async function IntroSection({
             these three attributes; `order` is what puts the drawing between
             two elements that precede it in the markup. */}
         <div data-portrait className="relative">
-          <span
-            data-hi
-            className="absolute left-0 top-0 uppercase"
-            style={{ ...CORNER, color: 'var(--text-primary)' }}
-          >
-            Hi there!
-          </span>
-          <span
-            data-me
-            className="absolute right-0 top-0 uppercase"
-            style={{ ...CORNER, color: 'var(--text-primary)' }}
-          >
-            I&rsquo;m George
-          </span>
+          {!bare && (
+            <>
+              <span
+                data-hi
+                className="absolute left-0 top-0 uppercase"
+                style={{ ...CORNER, color: 'var(--text-primary)' }}
+              >
+                Hi there!
+              </span>
+              <span
+                data-me
+                className="absolute right-0 top-0 uppercase"
+                style={{ ...CORNER, color: 'var(--text-primary)' }}
+              >
+                I&rsquo;m George
+              </span>
+            </>
+          )}
           <Avatar svg={svg} />
         </div>
 
@@ -123,8 +138,11 @@ export default async function IntroSection({
              pinned panel, where a scrubbed ScrollTrigger never advances —
              see `scrubToPosition`. */
           play="pinned"
-          /* a step down from the display size — see `--type-64-72-r` */
-          font="var(--type-64-72-r)"
+          /* The home page steps DOWN from the display size — see
+             `--type-64-72-r` — because it has two greetings above competing
+             for the eye. 238:6357 has neither, so the category line is the
+             display size itself, 72/80. */
+          font={bare ? 'var(--type-72-80-r)' : 'var(--type-64-72-r)'}
           className="text-center"
           style={{ marginTop: 'var(--intro-gap)' }}
           underlined={underlined}

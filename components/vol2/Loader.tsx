@@ -99,7 +99,32 @@ export default function Loader() {
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
 
+    /* `overflow: hidden` on the body is not a scroll lock on a phone.
+       George: *"when the loading happens the background page should not be
+       scrollable."* It was: a finger dragged across the loader still
+       scrolled the document underneath it, so the panels behind had already
+       moved by the time the panel lifted.
+
+       Cancelling the gestures themselves is the only thing that holds on
+       every browser, and it is the one lock that changes no layout at all —
+       which matters here, because a body that becomes a scroll container
+       stops being the containing block the pinned panels are measured
+       against (see the reduced-motion note below for what that costs).
+       `passive: false` or the browser is entitled to ignore the
+       `preventDefault`. */
+    const swallow = (e: Event) => e.preventDefault();
+    const lockGestures = () => {
+      window.addEventListener('wheel', swallow, { passive: false });
+      window.addEventListener('touchmove', swallow, { passive: false });
+    };
+    const freeGestures = () => {
+      window.removeEventListener('wheel', swallow);
+      window.removeEventListener('touchmove', swallow);
+    };
+    lockGestures();
+
     const release = () => {
+      freeGestures();
       document.body.style.overflow = overflow;
       gsap.globalTimeline.resume();
       setGone(true);
@@ -121,6 +146,7 @@ export default function Loader() {
          that gets the least looking at. */
       return () => {
         clearTimeout(t);
+        freeGestures();
         document.body.style.overflow = overflow;
       };
     }
@@ -154,6 +180,7 @@ export default function Loader() {
     return () => {
       cancelAnimationFrame(kick);
       clearTimeout(cap);
+      freeGestures();
       document.body.style.overflow = overflow;
     };
   }, []);

@@ -68,7 +68,11 @@ export default function CategoryPage({ params }: { params: { category: string } 
                  only there to keep the recede off the sentence's heels. */
               revealRun: 200,
               tailRun: 500,
-              content: <IntroSection sentence={category.intro} underlined={[]} beats={[]} />,
+              /* `bare` — 238:6357: the drawing and one centred line, without
+                 the home page's two corner greetings. */
+              content: (
+                <IntroSection bare sentence={category.intro} underlined={[]} beats={[]} />
+              ),
               style: { background: 'var(--bg-page)', color: 'var(--text-primary)' },
             },
           ]}

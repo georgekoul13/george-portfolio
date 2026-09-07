@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
+import { createPortal } from 'react-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -50,13 +51,45 @@ const ILLUSTRATIONS = [
 export default function CursorTrail({ stage }: { stage: RefObject<HTMLElement> }) {
   const root = useRef<HTMLSpanElement>(null);
 
+  /**
+   * The pool lives on `<body>`, not where this component sits in the tree.
+   *
+   * The illustrations are `position: fixed`, thrown to the cursor's own
+   * `clientX/clientY`. That only means "the viewport" while no ancestor has
+   * a transform — and every one of these now has one: the copyright band is
+   * inside the home page's last panel, and a panel with more content than
+   * the window carries that content on a `translateY`. A transformed
+   * ancestor becomes the containing block for `fixed`, so the coordinates
+   * were being read against a box scrolled thousands of px up the page.
+   *
+   * That is both of the things George saw: nothing appearing under the
+   * cursor in the band, and a scatter of stickers sitting over the featured
+   * projects, which is simply where those throws landed.
+   *
+   * A portal puts them back in the viewport's coordinate system without
+   * moving the listeners, which stay on the section so the trail still only
+   * lives in its own band.
+   */
+  const [pool, setPool] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const host = document.createElement('span');
+    host.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(host);
+    setPool(host);
+    return () => host.remove();
+  }, []);
+
   useGSAP(
     () => {
       const section = stage.current;
-      if (!section) return;
+      if (!section || !pool) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      const flair = gsap.utils.toArray<HTMLElement>('[data-flair]');
+      /* Scoped to this component's own pool. Unscoped, `toArray` searches
+         the whole document, so two bands on one page would throw each
+         other's illustrations. */
+      const flair = gsap.utils.toArray<HTMLElement>('[data-flair]', pool);
       const wrap = gsap.utils.wrap(0, flair.length);
       let index = 0;
       let inside = false;
@@ -149,7 +182,7 @@ export default function CursorTrail({ stage }: { stage: RefObject<HTMLElement> }
         section.removeEventListener('touchmove', onTouchMove);
       };
     },
-    { scope: root, dependencies: [stage] },
+    { scope: root, dependencies: [stage, pool] },
   );
 
   return (
@@ -162,15 +195,19 @@ export default function CursorTrail({ stage }: { stage: RefObject<HTMLElement> }
        and fully opaque. In the demo these live in a `.flair` rule for exactly
        this reason. */
     <span ref={root} aria-hidden="true">
-      {Array.from({ length: POOL }).map((_, i) => (
-        <img
-          key={i}
-          data-flair
-          src={encodeURI(`/images/vol2/stickers/${ILLUSTRATIONS[i % ILLUSTRATIONS.length]}.svg`)}
-          alt=""
-          className="pointer-events-none fixed z-10 w-[50px] max-w-none opacity-0"
-        />
-      ))}
+      {pool &&
+        createPortal(
+          Array.from({ length: POOL }).map((_, i) => (
+            <img
+              key={i}
+              data-flair
+              src={encodeURI(`/images/vol2/stickers/${ILLUSTRATIONS[i % ILLUSTRATIONS.length]}.svg`)}
+              alt=""
+              className="pointer-events-none fixed z-10 w-[50px] max-w-none opacity-0"
+            />
+          )),
+          pool,
+        )}
     </span>
   );
 }

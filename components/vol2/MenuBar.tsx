@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { returnTo } from './backTarget';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -118,6 +119,28 @@ export default function MenuBar() {
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
   }, []);
+
+  /**
+   * Back — Figma 238:6401, the menu as it appears on a category page: an
+   * outlined tile carrying a left arrow, ahead of the burger.
+   *
+   * Where it goes is `backTarget`'s answer, not the browser's. `history.back()`
+   * would throw someone who arrived on a shared link straight off the site,
+   * and would walk someone who hopped project → project → project back
+   * through every one of them; `returnTo` remembers only the LISTING pages,
+   * so a category returns you home and a project returns you to the grid you
+   * were actually browsing. Home is the fallback for a cold arrival.
+   *
+   * Read in an effect because it comes out of `sessionStorage`, which the
+   * server has no view of — so the tile is absent from the first paint and
+   * appears with hydration rather than rendering a destination that turns
+   * out to be wrong.
+   */
+  const [back, setBack] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pathname.startsWith('/vol2') || pathname === '/vol2') return setBack(null);
+    setBack(returnTo(pathname) ?? '/vol2');
+  }, [pathname]);
 
   /* Vol2 is a parallel surface, so every link has to stay inside it — a
      bare `/product` is the LIVE page, and following it mid-test drops you
@@ -306,6 +329,47 @@ export default function MenuBar() {
     >
       {/* kept together so the column above can rise out of them */}
       <div className="flex items-center gap-[2px]">
+        {back && (
+          /* 238:6401 draws this one OUTLINED where the other two are filled
+             — a quieter control, because it is the one you use when you are
+             done rather than the one you came for. The border is kept and
+             the fill is not: that node sits on a cream frame, so its
+             transparent tile reads as a light square with a dark arrow, and
+             this menu floats over cream panels AND dark ones. Left
+             transparent it was a cream arrow on cream — an empty box. The
+             surface comes back so the glyph is legible wherever the menu
+             happens to be, and the border still marks it apart.
+
+             The glyph is the menu's own `icon/arrow-down` turned a quarter
+             turn clockwise, which is what the node does. Drawn as a mask,
+             like every other icon here, so the export's hard-coded stroke
+             colour cannot fight the tile it sits in. */
+          <Link
+            href={back}
+            aria-label="Back"
+            className="flex size-[32px] shrink-0 items-center justify-center rounded-[4px] p-[7px]"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
+              transition: 'border-color .25s ease',
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="block size-[18px] rotate-90"
+              style={{
+                background: 'currentColor',
+                maskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
+                WebkitMaskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
+                maskSize: '100% 100%',
+                WebkitMaskSize: '100% 100%',
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+              }}
+            />
+          </Link>
+        )}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}

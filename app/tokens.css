@@ -217,6 +217,10 @@
   --cs-gap:      clamp(20px, 3.9vw, 56px);
   --cs-gap-head: clamp(40px, calc(19.4px + 5.5vw), 88px);
   --cs-radius:   clamp(16px, calc(10.4px + 1.5vw), 32px);
+  /* George, on a phone: *"the gap in the learn more panel is a bit big."*
+     88 is the 1440 number and the clamp already floors it at 40, but 40
+     under a 72/80 heading that has itself dropped to phone size still reads
+     as a hole between the line and the cards. 24 on the rule of 8. */
   /* inside a marquee card, behind its label */
   --cs-label-pad: clamp(16px, calc(10.4px + 1.5vw), 32px);
 
@@ -377,6 +381,7 @@
    ALL THE WAY" runs 402px at its drawn 20px, wider than a 375 phone, and it
    cannot wrap because it turns on a drum. It sets smaller instead. */
 :root { --copyright-size: 20px; }
+@media (max-width: 700px) { :root { --cs-gap-head: 24px; } }
 @media (max-width: 480px) { :root { --copyright-size: 15px; } }
 @media (min-width: 481px) and (max-width: 599px) { :root { --copyright-size: 17px; } }
 
