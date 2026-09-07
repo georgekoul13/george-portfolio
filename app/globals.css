@@ -291,15 +291,52 @@ html[data-nav-open] [data-header-rule] {
    go, so neither layout has to be the other one bent into shape. */
 [data-base-body] {
   grid-template-columns: 792fr 460fr;
-  grid-template-areas:
-    'title  figure'
-    'text   figure';
+  grid-template-areas: 'copy figure';
   column-gap: 48px;
   row-gap: 48px;
+  /* `center`, not the default. The grid is a flex child filling the screen,
+     so its rows are auto-sized and then STRETCHED into whatever height is
+     left over — which quietly turned the node's 48 between the wordmark and
+     the line into 157, because each row grew and its item centred inside it.
+     Centring the whole block instead keeps the rows the size of their
+     contents and puts the slack outside them, where it belongs. */
+  align-content: center;
 }
-[data-base-title] { grid-area: title; }
+
+/* 255:7046 frames the drawing in a PORTRAIT window — 460 x 553, clipped —
+   with the drawing itself much larger inside it than the canvas it is
+   authored on: the body stroke is 365 of the window's 460, where the old
+   composition drew it at 286 of 609. That is why it read as a small picture
+   in a wide box here.
+
+   The window is the design's aspect and the drawing is scaled to 166% of it,
+   which lands the body at 359 against the node's 365 and leaves ~50px of
+   clear space each side, against the node's 47. Its own `max-width` cap has
+   to go with it: that cap exists to stop the drawing overwhelming a short
+   window, and inside a fixed-aspect frame the frame already decides.
+
+   Wide only. 255:9406 shows the WHOLE figure on a phone — head, torso and
+   both hands, at the full width of the column — where cropping it to this
+   window took the ears and the shoulders off. The narrow composition draws
+   the drawing complete and lets the column decide its size, which is what it
+   already did. */
+@media (min-width: 900px) {
+  [data-base-figure] {
+    position: relative;
+    aspect-ratio: 460 / 553;
+    overflow: clip;
+  }
+  [data-base-figure] [data-avatar] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 166%;
+    max-width: none !important;
+  }
+}
+[data-base-copy] { grid-area: copy; }
 [data-base-figure] { grid-area: figure; }
-[data-base-text] { grid-area: text; }
 
 @media (max-width: 899px) {
   [data-base-body] {
@@ -310,4 +347,9 @@ html[data-nav-open] [data-header-rule] {
       'text';
     row-gap: 24px;
   }
+  /* the wrapper steps out of the way so its two children can be placed
+     either side of the drawing — see the note in `BaseScreen` */
+  [data-base-copy] { display: contents; }
+  [data-base-title] { grid-area: title; }
+  [data-base-text] { grid-area: text; }
 }

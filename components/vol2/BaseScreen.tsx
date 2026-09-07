@@ -61,17 +61,26 @@ export default async function BaseScreen({
         className="grid w-full flex-1 items-center px-[var(--gutter)]"
         style={{ paddingBlock: 'var(--base-pad-y)' }}
       >
-        <div data-base-title className="min-w-0">
-          {title}
+        {/* The title and the line are ONE cell wide, and three cells narrow.
+            They have to be both: a grid item that spans two rows — which the
+            drawing does wide — makes those rows grow to fit it, and the 48
+            between the title and the line grew with them. So wide they are a
+            column of their own with the 48 inside it, and narrow this
+            wrapper becomes `display: contents` and hands them back to the
+            grid, where the drawing can sit between them. */}
+        <div data-base-copy className="flex min-w-0 flex-col" style={{ gap: 48 }}>
+          <div data-base-title className="min-w-0">
+            {title}
+          </div>
+
+          <BaseText style={{ font: 'var(--type-32-40-r)', color: 'var(--text-primary)' }}>
+            {text}
+          </BaseText>
         </div>
 
         <div data-base-figure className="min-w-0">
           <Avatar svg={svg} />
         </div>
-
-        <BaseText style={{ font: 'var(--type-32-40-r)', color: 'var(--text-primary)' }}>
-          {text}
-        </BaseText>
       </div>
     </section>
   );

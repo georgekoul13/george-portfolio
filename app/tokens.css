@@ -408,8 +408,10 @@
   --ticker-bg: var(--neutral-800);
   --ticker-fg: var(--neutral-50);
 
-  /* the base screen's own breathing room, 124 at 1440 (255:7046) */
-  --base-pad-y: clamp(48px, calc(29.69px + 4.883vw), 124px);
+  /* The base screen's own breathing room: 124 at 1440, which is what
+     255:7046 draws, down to 48 on a 390 phone. The first clamp reached 124
+     only past 1900px and left 1440 sitting at 100. */
+  --base-pad-y: clamp(48px, calc(19.77px + 7.238vw), 124px);
 }
 @media (max-width: 899px) {
   :root {
