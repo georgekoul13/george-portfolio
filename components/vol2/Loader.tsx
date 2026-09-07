@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 
 /**
@@ -85,14 +85,36 @@ function holdEverything() {
   gsap.globalTimeline.pause();
 }
 
+/**
+ * Whether the curtain has already been through a full cycle in this
+ * document. Module scope on purpose: it has to outlive the component, since
+ * every vol2 page renders its own `<Loader />` and a client-side navigation
+ * mounts a fresh one.
+ *
+ * George: *"something is wrong with the menu when you go to a category and
+ * come back to home."* This was it, and the menu was only the visible half.
+ * The curtain was replaying on EVERY soft navigation — pausing the global
+ * timeline again, holding the page blank for the best part of six seconds,
+ * and leaving the menu stranded mid-morph while it did. It is a page-LOAD
+ * curtain: it covers fonts landing and the window loading, neither of which
+ * happens twice. So it plays once and then stands down.
+ *
+ * Set on RELEASE rather than on mount, so StrictMode's double mount — which
+ * unmounts and remounts before anything has finished — still shows it.
+ */
+let played = false;
+
 export default function Loader() {
-  holdEverything();
+  /* Read once, so the value cannot change under the component mid-life. */
+  const skip = useRef(played).current;
+  if (!skip) holdEverything();
 
   const [leaving, setLeaving] = useState(false);
   const [creeping, setCreeping] = useState(false);
   const [gone, setGone] = useState(false);
 
   useEffect(() => {
+    if (skip) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // scroll is locked while the panel is up, so nothing can be moved past
@@ -124,6 +146,7 @@ export default function Loader() {
     lockGestures();
 
     const release = () => {
+      played = true;
       freeGestures();
       document.body.style.overflow = overflow;
       gsap.globalTimeline.resume();
@@ -183,9 +206,9 @@ export default function Loader() {
       freeGestures();
       document.body.style.overflow = overflow;
     };
-  }, []);
+  }, [skip]);
 
-  if (gone) return null;
+  if (skip || gone) return null;
 
   const panelY = leaving ? '-100vh' : creeping ? `-${CREEP_TO}px` : '0px';
 

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
+import ArrivingBlock from '@/components/vol2/ArrivingBlock';
 import IntroSection from '@/components/vol2/IntroSection';
 import FooterSection from '@/components/vol2/FooterSection';
 import CopyrightSection from '@/components/vol2/CopyrightSection';
@@ -82,18 +83,19 @@ export default function CategoryPage({ params }: { params: { category: string } 
             the radius on the first child (which is how the home page does
             it): nothing in here pins, so clipping costs nothing, and it means
             the corner survives whatever ends up first in this block. */}
-        <div
+        <ArrivingBlock
           className="relative z-10"
           style={{
             background: 'var(--bg-page)',
             overflow: 'clip',
-            borderTopLeftRadius: 'var(--panel-radius)',
-            borderTopRightRadius: 'var(--panel-radius)',
             /* The same shoulder padding the home page's arriving block has.
                Without it "All projects" sat hard against the block's own top
                edge, so the two templates opened differently. George: *"all
                panels should have the same rounded corners, paddings etc."* */
-            paddingTop: 'var(--section-pad-y)',
+            /* 56 to the title, the same as the home page's "Learn more" —
+               George: *"the gap from the text to the top of its panel is
+               still too much, make it around 56px."* */
+            paddingTop: '56px',
           }}
         >
           {/* The title gets a screen of its own, so this block opens the
@@ -106,14 +108,14 @@ export default function CategoryPage({ params }: { params: { category: string } 
               it taller, and `lvh` for the reason in `PanelStack`. The title
               keeps its own top-left alignment; only the band it sits in
               changes. */}
-          <div className="flex w-full flex-col justify-center" style={{ minHeight: '100lvh' }}>
+          <div className="flex w-full flex-col justify-start" style={{ minHeight: '100lvh' }}>
             <CategoryTitle count={projects.length} />
           </div>
 
           <ProjectCards projects={projects} />
           <FooterSection />
           <CopyrightSection />
-        </div>
+        </ArrivingBlock>
       </main>
     </div>
   );

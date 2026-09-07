@@ -601,6 +601,24 @@
   }
 }
 
+/* And a step quieter again on a phone. George sent a photo of this screen
+   captioned only *"in the responsive this is the view of the ribbons in my
+   phone"* — no target, so this is a judgement: at 0.8 the two slices are as
+   heavy as the chips they are supposed to be framing, and the lower one
+   comes far enough in to crowd the last chip. 0.62 turns each corner back
+   into a suggestion of an arc. The centres move a little further out with
+   it, because a smaller copy placed at the same point shows a thinner
+   slice at the edge — these keep roughly the ink the 899 tuning had. */
+@media (max-width: 640px) {
+  :root {
+    --ribbon-scale: 0.62;
+    --ribbon-a-x: -96px;
+    --ribbon-a-y: 26%;
+    --ribbon-b-x: calc(100% + 44px);
+    --ribbon-b-y: 72%;
+  }
+}
+
 /* The left copy is rotated, so its bounding box is 795 wide where the right
    one is 566 — it needs the bigger push of the two.
    Tuned against the INK, not the boxes: the bounding box of a rotated

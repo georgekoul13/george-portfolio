@@ -327,6 +327,30 @@ export default function PanelStack({
         const holdDur = hold / window.innerHeight;
         const tailDur = tail / window.innerHeight;
 
+        /* The shoulder rounds off as the panel climbs and is gone by the
+           time it is whole on the screen — `top bottom` to `bottom bottom`
+           is exactly that climb, and `bottom bottom` is also where the pin
+           begins, so the radius reaches 0 on the frame the panel lands. It
+           runs on the panel's own document position, which is honest here:
+           the panel is still in ordinary flow while it arrives. */
+        if (defs[i]?.shoulder) {
+          gsap.fromTo(
+            panel,
+            { '--shoulder': 1 },
+            {
+              '--shoulder': 0,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: panel,
+                start: 'top bottom',
+                end: 'bottom bottom',
+                scrub: true,
+                invalidateOnRefresh: true,
+              },
+            },
+          );
+        }
+
         let revealed = false;
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -633,10 +657,22 @@ export default function PanelStack({
                    panel, which comes later in the DOM, so it can never show
                    through the one arriving over the top. */
                 boxShadow: '0 50vh 0 0 var(--bg-page)',
+                /* The shoulder is only drawn while the panel is ARRIVING.
+                   George: *"can we remove the rounded corners when the panel
+                   is at the top of the viewport?"* — and he is right: the
+                   radius is there to round the edge that rides up over the
+                   panel below, and once this one owns the whole screen there
+                   is no edge left to round. Two rounded notches of the panel
+                   underneath showing through the top corners is all it is by
+                   then.
+
+                   Driven by `--shoulder`, tweened 1 → 0 across the arrival in
+                   the effect above, so it is scrubbed with the panel rather
+                   than snapping off when it lands. */
                 ...(d.shoulder
                   ? {
-                      borderTopLeftRadius: 'var(--panel-radius)',
-                      borderTopRightRadius: 'var(--panel-radius)',
+                      borderTopLeftRadius: 'calc(var(--panel-radius) * var(--shoulder, 1))',
+                      borderTopRightRadius: 'calc(var(--panel-radius) * var(--shoulder, 1))',
                     }
                   : null),
                 ...d.style,

@@ -120,6 +120,12 @@ export default function MenuBar() {
     return () => mq.removeEventListener('change', sync);
   }, []);
 
+  /* The menu shuts when you go somewhere. You opened it to leave, so leaving
+     it open across the navigation is both wrong to look at and a state the
+     open/close tween then has to be talked out of — it survives the soft
+     navigation, because this component does. */
+  useEffect(() => setOpen(false), [pathname]);
+
   /**
    * Back — Figma 238:6401, the menu as it appears on a category page: an
    * outlined tile carrying a left arrow, ahead of the burger.
@@ -349,7 +355,10 @@ export default function MenuBar() {
             aria-label="Back"
             className="flex size-[32px] shrink-0 items-center justify-center rounded-[4px] p-[7px]"
             style={{
-              background: 'var(--bg-surface)',
+              /* `--bg-raised`, a step up from the row's `--bg-surface` — the
+                 same lift the close button gets, so the two controls that
+                 take you OUT of something read alike. */
+              background: 'var(--bg-raised)',
               border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
               transition: 'border-color .25s ease',
@@ -430,7 +439,15 @@ export default function MenuBar() {
             href={item.href}
             tabIndex={open ? undefined : -1}
             aria-current={item.active ? 'page' : undefined}
-            className={TILE}
+            /* `invisible opacity-0` in the MARKUP, not only in GSAP.
+               George: *"the menu is open on loading."* It was — the rail is
+               `w-0` with overflow deliberately VISIBLE (see above), so until
+               hydration runs and GSAP writes `autoAlpha`, every pill spills
+               out of a zero-width box in plain sight. On a cold load that is
+               the entire time the loader is up. A class is exactly the right
+               weight here: GSAP writes inline `visibility`/`opacity`, which
+               beat it the moment the menu is actually opened. */
+            className={`${TILE} invisible opacity-0`}
             style={{ background: 'var(--bg-surface)' }}
           >
             {item.active && (

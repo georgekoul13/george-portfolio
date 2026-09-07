@@ -261,8 +261,11 @@ export default function CategoryStrip() {
       style={{
         width: 'var(--cs-card)',
         height: 'var(--cs-card-h)',
-        /* square, per the design — the rounded strip is gone */
-        borderRadius: 0,
+        /* 16, the same as every project card on the site. George: *"let's
+           have cohesive corners everywhere in our images."* These were
+           square wide and 16 narrow, which is how the two ended up
+           disagreeing on a laptop and agreeing on a phone. */
+        borderRadius: 16,
         background: 'var(--bg-raised)',
       }}
     >
@@ -303,7 +306,7 @@ export default function CategoryStrip() {
       ref={root}
       id="work"
       aria-label="Categories"
-      className="relative flex w-full flex-col items-center justify-center overflow-hidden"
+      className="relative flex w-full flex-col items-center justify-start overflow-hidden"
       style={{
         /* The first screen of the last block, which arrives over the about
            panel exactly as a stack panel does — so it has to fill the
@@ -322,7 +325,14 @@ export default function CategoryStrip() {
            not this section's: it is a `[data-panel]` in its own right, and
            `PanelStack` draws the rounded top for anything with `shoulder`. */
         minHeight: '100lvh',
-        paddingBlock: 'var(--section-pad-y)',
+        /* George: *"the learn more, all projects gap from the text to the top
+           of its panel is still too much, make it around 56px."* So the
+           headline is measured from the top of the panel rather than centred
+           in it — centring in a full viewport is what put a screen's worth of
+           empty above a single line. `justify-start` above is the other half
+           of it. */
+        paddingTop: '56px',
+        paddingBottom: 'var(--section-pad-y)',
         background: 'var(--bg-page)',
         gap: 'var(--cs-gap-head)',
       }}

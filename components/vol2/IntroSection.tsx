@@ -134,10 +134,18 @@ export default async function IntroSection({
             group fits and this is ignored. */}
         <div data-hold>
         <RevealText
-          /* Scrubbed against its own position on screen. It sits inside a
-             pinned panel, where a scrubbed ScrollTrigger never advances —
-             see `scrubToPosition`. */
-          play="pinned"
+          /* Scrubbed against its own position on screen — it sits inside a
+             pinned panel, where a scrubbed ScrollTrigger never advances; see
+             `scrubToPosition`.
+
+             Except on a category page, where it plays on arrival instead.
+             George: *"in the category intro the text is missing — in these
+             pages let's reveal the text when the user lands without the
+             scroll."* And it has to be that way round: this is the FIRST
+             screen there, so a reveal keyed to scrolling asks the reader to
+             scroll past the sentence in order to be shown it. The home page
+             has a hero above it and no such problem. */
+          play={bare ? 'load' : 'pinned'}
           /* The home page steps DOWN from the display size — see
              `--type-64-72-r` — because it has two greetings above competing
              for the eye. 238:6357 has neither, so the category line is the
