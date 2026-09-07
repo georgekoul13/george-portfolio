@@ -331,10 +331,11 @@ export default function CategoryStrip() {
            in it — centring in a full viewport is what put a screen's worth of
            empty above a single line. `justify-start` above is the other half
            of it. */
-        paddingTop: '56px',
+        paddingTop: 'var(--titled-pad-top)',
         paddingBottom: 'var(--section-pad-y)',
         background: 'var(--bg-page)',
-        gap: 'var(--cs-gap-head)',
+        /* shared with the category listing's title — see `--titled-gap` */
+        gap: 'var(--titled-gap)',
       }}
     >
       <h2

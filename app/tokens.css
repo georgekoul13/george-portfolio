@@ -215,7 +215,6 @@
   --cs-card:     clamp(260px, 41.7vw, 600px);
   --cs-card-h:   calc(var(--cs-card) * 490 / 600);
   --cs-gap:      clamp(20px, 3.9vw, 56px);
-  --cs-gap-head: clamp(40px, calc(19.4px + 5.5vw), 88px);
   --cs-radius:   clamp(16px, calc(10.4px + 1.5vw), 32px);
   /* George, on a phone: *"the gap in the learn more panel is a bit big."*
      88 is the 1440 number and the clamp already floors it at 40, but 40
@@ -381,7 +380,23 @@
    ALL THE WAY" runs 402px at its drawn 20px, wider than a 375 phone, and it
    cannot wrap because it turns on a drum. It sets smaller instead. */
 :root { --copyright-size: 20px; }
-@media (max-width: 700px) { :root { --cs-gap-head: 24px; } }
+/* ── The titled bands ────────────────────────────────────────────────────
+   Two sections open the same way — the home page's "Learn more" and a
+   category's "All projects" — so they share their rhythm rather than each
+   carrying its own numbers. George: *"in this section template — home learn
+   more and this section — give a 124px top padding in desktop and 48 in
+   responsive, and the gap between the title and images should be 56px in
+   desktop and 24 in responsive."* Both on the rule of 8. */
+:root {
+  --titled-pad-top: 124px;
+  --titled-gap: 56px;
+}
+@media (max-width: 899px) {
+  :root {
+    --titled-pad-top: 48px;
+    --titled-gap: 24px;
+  }
+}
 @media (max-width: 480px) { :root { --copyright-size: 15px; } }
 @media (min-width: 481px) and (max-width: 599px) { :root { --copyright-size: 17px; } }
 

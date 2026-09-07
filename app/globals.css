@@ -228,6 +228,9 @@ html[data-nav-open] [data-header-rule] {
 
   /* 64 from the drawing group down to the sentence, not the wide 124 */
   #intro [data-hold] > [data-portrait] + * { margin-top: 64px !important; }
+  /* …except on a category page, which is 48 at every width — the drawing
+     and the one line under it are set as a single object there. */
+  #intro[data-bare] [data-hold] > [data-portrait] + * { margin-top: 48px !important; }
 
   /* the panel's own 32px gutters, wider than the page's */
   #intro,
@@ -245,6 +248,14 @@ html[data-nav-open] [data-header-rule] {
     width: 300px !important;
     height: 255px !important;
   }
+}
+
+/* `ProjectCards` brings its own vertical rhythm, which is right when it is
+   a section in its own right and wrong directly under a title that has
+   already spaced itself with `--titled-gap`. Only the top goes: the bottom
+   still holds the grid off the footer. */
+[data-titled-band] > section {
+  padding-top: 0;
 }
 
 /* The featured band's inline `height: 100svh` — set by the rank's branch —

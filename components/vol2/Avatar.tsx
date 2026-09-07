@@ -122,7 +122,14 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
       const stage = root.current;
       if (!stage) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      /* A pointer to follow, or a phone to be tilted — but not both, and no
+         longer "a pointer or nothing". This used to return here on anything
+         that was not a mouse, which is why the drawing sat frozen on a phone;
+         the rig below is now built for either input and only the LISTENERS
+         differ. */
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const coarse = window.matchMedia('(pointer: coarse)').matches;
+      if (!fine && !coarse) return;
 
       /* Every layer is wrapped in a `[data-rig]` group carrying no transform
          of its own. The placement lives on the group INSIDE it, so GSAP can
@@ -174,12 +181,9 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
          panel except the moment you crossed the picture itself. */
       const host = stage.closest('section') ?? stage;
 
-      const move = (e: PointerEvent) => {
-        const hb = host.getBoundingClientRect();
-        if (!hb.width || !hb.height) return;
-        const u = gsap.utils.clamp(-1, 1, ((e.clientX - hb.left) / hb.width - 0.5) * 2);
-        const v = gsap.utils.clamp(-1, 1, ((e.clientY - hb.top) / hb.height - 0.5) * 2);
-
+      /** Where he is looking, as two numbers in −1…1. The cursor is one way
+          of arriving at them; a phone's gyroscope, below, is the other. */
+      const aim = (u: number, v: number) => {
         const y = vert(v);
         eyeX(u * X);
         eyeY(y);
@@ -211,6 +215,15 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
         hRS(u > 0 ? near : far);
       };
 
+      const move = (e: PointerEvent) => {
+        const hb = host.getBoundingClientRect();
+        if (!hb.width || !hb.height) return;
+        aim(
+          gsap.utils.clamp(-1, 1, ((e.clientX - hb.left) / hb.width - 0.5) * 2),
+          gsap.utils.clamp(-1, 1, ((e.clientY - hb.top) / hb.height - 0.5) * 2),
+        );
+      };
+
       const leave = () => {
         eyeX(0); eyeY(0);
         browX(0); browY(0); browS(1);
@@ -220,11 +233,90 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
       };
 
       /* so he is already watching you before you reach him */
-      host.addEventListener('pointermove', move);
-      host.addEventListener('pointerleave', leave);
+      if (fine) {
+        host.addEventListener('pointermove', move);
+        host.addEventListener('pointerleave', leave);
+      }
+
+      /* ── the phone's answer to the cursor ─────────────────────────────
+         George: *"let's also give a gyroscope UI effect to the illustration
+         on mobile."* There is no cursor to follow on a phone, so he follows
+         the phone instead — tilt it and he looks that way, exactly as far as
+         he would look if you had moved a mouse the same fraction across him.
+
+         Feeding the same `aim` rather than a second set of rules is the
+         whole point: it is one behaviour with two inputs, so nothing about
+         how he looks can drift apart between a laptop and a phone.
+
+         The FIRST reading is taken as level. However you happen to be
+         holding the phone when he comes on screen is his straight-ahead —
+         which is the only definition that works, since nobody holds a phone
+         at 0°, and an absolute one would leave him permanently staring at
+         the floor.
+
+         Smoothed on the ticker rather than driven straight off the event:
+         the sensor is noisy at rest and jitters a face that is supposed to
+         be still. The same 0.12 lerp the rest of this build uses. */
+      const DOE =
+        typeof DeviceOrientationEvent === 'undefined'
+          ? null
+          : (DeviceOrientationEvent as unknown as {
+              requestPermission?: () => Promise<PermissionState | string>;
+            });
+
+      /** degrees of tilt that buy a full look, either way */
+      const TILT = 24;
+      let level: number | null = null;
+      let tu = 0;
+      let tv = 0;
+      let cu = 0;
+      let cv = 0;
+
+      const onTilt = (e: DeviceOrientationEvent) => {
+        if (e.gamma == null || e.beta == null) return;
+        if (level === null) level = e.beta;
+        tu = gsap.utils.clamp(-1, 1, e.gamma / TILT);
+        tv = gsap.utils.clamp(-1, 1, (e.beta - level) / TILT);
+      };
+      const settle = () => {
+        cu += (tu - cu) * 0.12;
+        cv += (tv - cv) * 0.12;
+        aim(cu, cv);
+      };
+
+      let armed = false;
+      const listen = () => {
+        if (armed) return;
+        armed = true;
+        window.addEventListener('deviceorientation', onTilt);
+        gsap.ticker.add(settle);
+      };
+
+      /* iOS hands out orientation only after an explicit grant, and only
+         asks from inside a real gesture — so the request rides the first
+         touch rather than firing on mount, where it would be refused
+         silently and the drawing would simply never move. */
+      const ask = () => {
+        DOE?.requestPermission?.()
+          .then((state) => {
+            if (state === 'granted') listen();
+          })
+          .catch(() => {});
+      };
+      if (coarse && DOE) {
+        if (typeof DOE.requestPermission === 'function') {
+          window.addEventListener('touchend', ask, { once: true });
+        } else {
+          listen();
+        }
+      }
+
       return () => {
         host.removeEventListener('pointermove', move);
         host.removeEventListener('pointerleave', leave);
+        window.removeEventListener('touchend', ask);
+        window.removeEventListener('deviceorientation', onTilt);
+        gsap.ticker.remove(settle);
       };
     },
     { scope: root },

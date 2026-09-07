@@ -95,7 +95,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
             /* 56 to the title, the same as the home page's "Learn more" —
                George: *"the gap from the text to the top of its panel is
                still too much, make it around 56px."* */
-            paddingTop: '56px',
+            paddingTop: 'var(--titled-pad-top)',
           }}
         >
           {/* The title gets a screen of its own, so this block opens the
@@ -108,11 +108,16 @@ export default function CategoryPage({ params }: { params: { category: string } 
               it taller, and `lvh` for the reason in `PanelStack`. The title
               keeps its own top-left alignment; only the band it sits in
               changes. */}
-          <div className="flex w-full flex-col justify-start" style={{ minHeight: '100lvh' }}>
+          {/* The title and the grid are ONE band, `--titled-gap` apart.
+              George: *"in the section after, the title is too much away from
+              the projects."* It was a screen away, literally: the title had
+              `min-height: 100lvh` to give it a screen of its own, which is a
+              fine idea when the next thing is a long way down the page and a
+              strange one when it is the content the title names. */}
+          <div data-titled-band className="flex w-full flex-col" style={{ gap: 'var(--titled-gap)' }}>
             <CategoryTitle count={projects.length} />
+            <ProjectCards projects={projects} />
           </div>
-
-          <ProjectCards projects={projects} />
           <FooterSection />
           <CopyrightSection />
         </ArrivingBlock>

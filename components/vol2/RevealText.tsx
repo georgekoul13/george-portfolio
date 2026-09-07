@@ -146,6 +146,23 @@ export default function RevealText({
       const text = container.querySelector<HTMLElement>('[data-split]')!;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      /**
+       * Whether the `load` reveal has already run once in this component's
+       * life. `autoSplit` re-runs `onSplit` on every reflow and each run
+       * builds a FRESH timeline — which, in `load` mode, is a timeline that
+       * plays. So the sentence wrote itself, and then wrote itself again the
+       * next time anything on the page changed height: a pin spacer being
+       * measured, an image landing, the arriving block resizing. That is the
+       * stutter in George's recording, and it is only ever visible here,
+       * because `scroll` and `pinned` build timelines that are driven rather
+       * than played and so re-splitting them is invisible.
+       *
+       * Later splits still rebuild the timeline — they must, or a re-wrapped
+       * line would be left in whatever state the old one ended in — they just
+       * arrive at the end of it instead of performing it.
+       */
+      let loadPlayed = false;
+
       let split: SplitText | undefined;
       /* `onSplit` can run many times — `autoSplit` re-runs it on every
          reflow — and each run arms a new observer, so they are collected
@@ -362,6 +379,9 @@ export default function RevealText({
                would change nothing. */
             if (play === 'load' && tl.duration() > 0) {
               tl.timeScale(tl.duration() / LOAD_SECONDS);
+              /* Once. A re-split jumps to the finished state. */
+              if (loadPlayed) tl.progress(1);
+              loadPlayed = true;
             }
 
             /* Plays once, on whichever comes first: the panel's cue, or the

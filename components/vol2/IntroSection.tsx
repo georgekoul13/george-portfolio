@@ -77,7 +77,12 @@ export default async function IntroSection({
   );
 
   return (
-    <section id="intro" className="w-full px-[var(--gutter)]" style={{ paddingBlock: 'var(--intro-pad-y)' }}>
+    <section
+      id="intro"
+      data-bare={bare || undefined}
+      className="w-full px-[var(--gutter)]"
+      style={{ paddingBlock: 'var(--intro-pad-y)' }}
+    >
       {/* `data-hold` on the WHOLE GROUP — the drawing and the sentence
           together, not the sentence on its own.
 
@@ -146,13 +151,19 @@ export default async function IntroSection({
              scroll past the sentence in order to be shown it. The home page
              has a hero above it and no such problem. */
           play={bare ? 'load' : 'pinned'}
-          /* The home page steps DOWN from the display size — see
-             `--type-64-72-r` — because it has two greetings above competing
-             for the eye. 238:6357 has neither, so the category line is the
-             display size itself, 72/80. */
-          font={bare ? 'var(--type-72-80-r)' : 'var(--type-64-72-r)'}
+          /* 64/72 on both. It was the display size on a category page,
+             where nothing competes with it — but at 72 the line wrapped to
+             three on a phone and pushed the drawing off the top, and George
+             asked for it smaller anyway. */
+          font="var(--type-64-72-r)"
           className="text-center"
-          style={{ marginTop: 'var(--intro-gap)' }}
+          /* 48 on a category page against the home page's 124. George, on
+             the recording: *"let's make the text smaller, around 64px, and
+             bring closer to the illustration — give it 48px gap."* Without
+             two greetings framing it the drawing and the line are the whole
+             composition, so they are set as one object rather than as two
+             things sharing a screen. */
+          style={{ marginTop: bare ? 48 : 'var(--intro-gap)' }}
           underlined={underlined}
           beats={beats}
         >
