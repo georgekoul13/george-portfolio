@@ -253,6 +253,17 @@ html[data-nav-open] [data-header-rule] {
   padding-top: 0 !important;
 }
 
+/* "Learn more" is given more room than the panel's own rhythm — George:
+   *"make the learn more have 200px distance up and below."* Expressed as the
+   DIFFERENCE from `--panel-gap` rather than as a flat margin, because the gap
+   is already between these siblings: at 1440 the panel gap is 200 and this
+   resolves to 0, and on a phone it tops the 124 up to the same 200. Margins
+   on a flex item add to the gap rather than collapsing into it, so the two
+   simply sum. */
+#work {
+  margin-block: calc(200px - var(--panel-gap));
+}
+
 /* `ProjectCards` brings its own vertical rhythm, which is right when it is
    a section in its own right and wrong directly under a title that has
    already spaced itself with `--titled-gap`. Only the top goes: the bottom
