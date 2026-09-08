@@ -35,8 +35,8 @@ const INSET = (BOX - GLYPH) / 2;
 const SOCIALS = [
   { label: 'Email',     href: 'mailto:georgekoul13@gmail.com' },
   { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/george-koulouris/' },
-  { label: 'Instagram', href: 'https://www.instagram.com/' },
-  { label: 'Behance',   href: 'https://www.behance.net/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/george_koulouris/' },
+  { label: 'Behance',   href: 'https://www.behance.net/george_koulouris' },
 ];
 
 /**
