@@ -34,7 +34,7 @@ gsap.registerPlugin(ScrollTrigger);
  * part in the proportion it was drawn at.
  */
 
-const GAP = 40;
+/* the numbers themselves live in `--cards-gap` / `--cards-row-gap` */
 const LARGE_ASPECT = '640 / 480';
 const MEDIUM_ASPECT = '1240 / 960'; // 413.33 × 320
 
@@ -157,9 +157,12 @@ export default function ProjectCards({ projects }: { projects: CardProject[] }) 
 
   return (
     <section ref={root} className="w-full px-[var(--gutter)] py-20">
-      <div className="flex flex-col" style={{ gap: GAP + 40 }}>
+      {/* Both gaps are TOKENS, not inline numbers: an inline gap beats a
+          stylesheet rule, and below `lg` these two have to become equal —
+          see `--cards-row-gap`. */}
+      <div className="flex flex-col" style={{ gap: 'var(--cards-row-gap)' }}>
         {featured.length > 0 && (
-          <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: GAP }}>
+          <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: 'var(--cards-gap)' }}>
             {featured.map((p) => (
               <Card key={p.slug} project={p} large />
             ))}
@@ -167,7 +170,11 @@ export default function ProjectCards({ projects }: { projects: CardProject[] }) 
         )}
 
         {rows.map((row, i) => (
-          <div key={i} className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" style={{ gap: GAP }}>
+          <div
+            key={i}
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
+            style={{ gap: 'var(--cards-gap)' }}
+          >
             {row.map((p) => (
               <Card key={p.slug} project={p} large={false} />
             ))}

@@ -431,6 +431,17 @@
      is the only thing at the top of the column on a phone */
   --cat-mark-w: 54px;
 
+  /* The project grid. `--cards-gap` is between cards in a row, and
+     `--cards-row-gap` between the rows — 40 and 80, which is the design's
+     rhythm while there ARE rows.
+
+     Below `lg` every grid in there collapses to one column, so the rows stop
+     being rows and the two gaps become one sequence down the page: 40, 40,
+     80, 40… George: *"in the responsive all the project cards must have the
+     same distance between them."* They are equal there. */
+  --cards-gap: 40px;
+  --cards-row-gap: 80px;
+
   --ticker-h: 43px;
   /* `--bg-page`'s ramp, named directly. The strip sits inside a
      `data-tone="light"` panel, which re-maps every semantic token — so
@@ -452,6 +463,15 @@
      windows give the padding back. */
   --base-pad-y: clamp(48px, min(calc(19.77px + 7.238vw), 11.5vh), 124px);
 }
+/* `lg`, not the usual 899: this is where the LAST of those grids collapses
+   to a single column — the rows go `lg:grid-cols-2`, the featured pair
+   `xl:grid-cols-2`. */
+@media (max-width: 1023px) {
+  :root {
+    --cards-row-gap: var(--cards-gap);
+  }
+}
+
 @media (max-width: 899px) {
   :root {
     --titled-pad-top: 48px;
