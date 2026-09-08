@@ -297,6 +297,7 @@ html[data-nav-open] [data-header-rule] {
    three boxes are siblings in the markup and each breakpoint says where they
    go, so neither layout has to be the other one bent into shape. */
 [data-base-body] {
+  padding-block: var(--base-pad-y);
   grid-template-columns: 792fr 460fr;
   grid-template-areas: 'copy figure';
   column-gap: 48px;
@@ -406,5 +407,23 @@ html[data-nav-open] [data-header-rule] {
   [data-base-mark] {
     position: static;
     grid-area: mark;
+  }
+
+  /* Room to climb. A category hero is taller than a phone by design —
+     262:5841 is 1161 against an 844 screen — but only by about 58px, which
+     is less than the menu is tall: the last line of the title finished its
+     travel still sitting under the burger. George: *"give a bit scrolling
+     area to the category hero, so if the burger sits on the text the text
+     will move upwards and the user can read it before the panel comes."*
+     
+     Extra bottom padding is the lever, because the panel's overscroll
+     carries its content up by exactly the amount the content overflows the
+     screen. 120 buys the line a clear pass above the menu, and the panel's
+     `tailRun` then holds it there before the next one arrives.
+
+     `[data-has-mark]` only: the home base has no overflow at all and must
+     keep none — everything in it has to be visible without scrolling. */
+  [data-base-body][data-has-mark] {
+    padding-bottom: calc(var(--base-pad-y) + 120px);
   }
 }

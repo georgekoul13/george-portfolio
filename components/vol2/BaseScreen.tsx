@@ -77,8 +77,10 @@ export default async function BaseScreen({
            composition changes when there is a mark, and CSS needs to be able
            to ask */
         data-has-mark={mark ? '' : undefined}
+        /* The vertical padding lives in CSS, not here — a category hero adds
+           to it below `lg` so its content has room to climb past the menu,
+           and an inline value would win over that. */
         className="grid w-full flex-1 items-center px-[var(--gutter)]"
-        style={{ paddingBlock: 'var(--base-pad-y)' }}
       >
         {mark ? <div data-base-mark>{mark}</div> : null}
 
