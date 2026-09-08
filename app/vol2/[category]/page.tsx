@@ -3,7 +3,7 @@ import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
 import BaseScreen from '@/components/vol2/BaseScreen';
-import Wordmark from '@/components/vol2/Wordmark';
+import Monogram from '@/components/vol2/Monogram';
 import FooterSection from '@/components/vol2/FooterSection';
 import CopyrightSection from '@/components/vol2/CopyrightSection';
 import CategoryTitle from '@/components/vol2/category/CategoryTitle';
@@ -75,7 +75,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
               tailRun: 300,
               content: (
                 <BaseScreen
-                  mark={<Wordmark />}
+                  mark={<Monogram />}
                   title={
                     <h1
                       className="uppercase"

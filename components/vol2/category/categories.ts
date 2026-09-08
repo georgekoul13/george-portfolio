@@ -43,9 +43,11 @@ export interface Category {
   /**
    * The line under the title on the hero — 255:9087's "Subtitle".
    *
-   * Undefined everywhere for now, and the hero simply omits it: the node
-   * carries Lorem, and inventing three sentences of positioning copy is
-   * George's call rather than mine. Set it and the hero picks it up.
+   * The node carries Lorem. George: *"if you can find better copy you can
+   * replace it"* — so these are written to the site's own register rather
+   * than to a brief: short, flat, faintly dry, and making no claim that
+   * would need checking. MINE, not George's, and the first thing to change
+   * if they do not sound like him.
    */
   lead?: string;
   /** the words that arrive as beats rather than a plain wipe */
@@ -68,6 +70,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     // Figma's own copy, minus its "HABBITS" typo
     headline: 'DESIGNING PRODUCTS, DESIGNING EXPERIENCES, DESIGNING HABITS AND SOMETHING ELSE',
     intro: 'Designing habits, experiences & products.',
+    lead: 'Research, flows and interfaces — the unglamorous half of design, done properly.',
     beats: ['PRODUCTS', 'EXPERIENCES', 'HABITS'],
     slugs: [
       'gaspar-ai',
@@ -88,6 +91,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     // placeholder copy — Figma only writes the Product page's lines
     headline: 'DESIGNING COVERS, DESIGNING MARKS, DESIGNING LETTERS AND SOMETHING ELSE',
     intro: 'Designing covers, marks & letters.',
+    lead: 'Covers, marks and layouts. Mostly type, mostly restraint.',
     beats: ['COVERS', 'MARKS', 'LETTERS'],
     slugs: ['book-cover', 'danai-michali', 'olga-posonidou', 'vasiliki-vozora', 'maria-fitsopoulou'],
   },
@@ -98,6 +102,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     // placeholder copy — Figma only writes the Product page's lines
     headline: 'DRAWING WORLDS, DRAWING POSTERS, DRAWING IDENTITIES AND SOMETHING ELSE',
     intro: 'Drawing worlds, posters & identities.',
+    lead: 'Posters, identities and illustrated worlds — the briefs that say “have fun with it”.',
     beats: ['WORLDS', 'POSTERS', 'IDENTITIES'],
     slugs: ['deerislnd', 'athens-goes-mayan', 'arcana', 'in-pixels-we-see', 'cabaret', 'custom-typefaces'],
   },

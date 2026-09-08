@@ -425,8 +425,10 @@
      where this floors at 24. */
   --cat-title: 700 clamp(40px, calc(28.11px + 3.048vw), 72px)/clamp(40px, calc(25.89px + 3.619vw), 78px) var(--font-sans);
   --cat-lead: 400 clamp(24px, calc(21.03px + 0.762vw), 32px)/clamp(32px, calc(29.03px + 0.762vw), 40px) var(--font-sans);
-  /* the small wordmark above it — see `Wordmark` for why narrow is bigger */
-  --cat-mark-w: 148px;
+  /* the GK monogram above it — 53.8 x 32 in 262:10147, stepping up narrow
+     in the same proportion the full wordmark did there (240/148), since it
+     is the only thing at the top of the column on a phone */
+  --cat-mark-w: 54px;
 
   --ticker-h: 43px;
   /* `--bg-page`'s ramp, named directly. The strip sits inside a
@@ -454,7 +456,7 @@
     --titled-pad-top: 48px;
     --titled-gap: 56px;
     --panel-gap: 124px;
-    --cat-mark-w: 240px;
+    --cat-mark-w: 88px;
     --content-pad-top: 56px;
   }
 }
