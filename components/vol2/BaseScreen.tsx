@@ -34,12 +34,24 @@ import BaseText from './BaseText';
  * to do another mini restructure to make it more simple."*
  */
 export default async function BaseScreen({
+  mark,
   title,
   text,
+  textFont = 'var(--type-32-40-r)',
 }: {
+  /**
+   * A small wordmark above the title, on the pages whose title is words
+   * rather than the wordmark itself — 255:9087. Wide it sits in the corner
+   * and takes no part in the column's own layout; narrow it is the first
+   * thing in the column, which is why it is a sibling rather than something
+   * inside the copy.
+   */
+  mark?: ReactNode;
   /** the wordmark on the home page, a page title everywhere else */
   title: ReactNode;
-  text: ReactNode;
+  text?: ReactNode;
+  /** the category hero's lead is a step larger narrow — see `--cat-lead` */
+  textFont?: string;
 }) {
   const svg = await readFile(
     path.join(process.cwd(), 'public/images/vol2/avatar/george.svg'),
@@ -58,9 +70,15 @@ export default async function BaseScreen({
 
       <div
         data-base-body
+        /* the attribute, not the presence of a child: the whole narrow
+           composition changes when there is a mark, and CSS needs to be able
+           to ask */
+        data-has-mark={mark ? '' : undefined}
         className="grid w-full flex-1 items-center px-[var(--gutter)]"
         style={{ paddingBlock: 'var(--base-pad-y)' }}
       >
+        {mark ? <div data-base-mark>{mark}</div> : null}
+
         {/* The title and the line are ONE cell wide, and three cells narrow.
             They have to be both: a grid item that spans two rows — which the
             drawing does wide — makes those rows grow to fit it, and the 48
@@ -73,9 +91,9 @@ export default async function BaseScreen({
             {title}
           </div>
 
-          <BaseText style={{ font: 'var(--type-32-40-r)', color: 'var(--text-primary)' }}>
-            {text}
-          </BaseText>
+          {text ? (
+            <BaseText style={{ font: textFont, color: 'var(--text-primary)' }}>{text}</BaseText>
+          ) : null}
         </div>
 
         <div data-base-figure className="min-w-0">

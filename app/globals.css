@@ -358,6 +358,18 @@ html[data-nav-open] [data-header-rule] {
 [data-base-copy] { grid-area: copy; }
 [data-base-figure] { grid-area: figure; }
 
+/* The mark takes no part in the wide layout: 255:9087 puts it in the corner
+   above a column that is placed by its own centring, so making it a grid row
+   would push that column down by however tall the mark is. It is absolute
+   against the body's padding box, which is exactly the content's top-left. */
+[data-base-body][data-has-mark] { position: relative; }
+[data-base-mark] {
+  position: absolute;
+  top: var(--base-pad-y);
+  left: var(--gutter);
+  color: var(--text-primary);
+}
+
 @media (max-width: 899px) {
   [data-base-body] {
     grid-template-columns: minmax(0, 1fr);
@@ -372,4 +384,23 @@ html[data-nav-open] [data-header-rule] {
   [data-base-copy] { display: contents; }
   [data-base-title] { grid-area: title; }
   [data-base-text] { grid-area: text; }
+
+  /* WITH a mark the order is different — 262:5841 puts the mark first, the
+     drawing second and the title and lead TOGETHER under it, 56 apart with
+     24 inside. So the copy stays a column here rather than dissolving. */
+  [data-base-body][data-has-mark] {
+    grid-template-areas:
+      'mark'
+      'figure'
+      'copy';
+    row-gap: 56px;
+  }
+  [data-base-body][data-has-mark] [data-base-copy] {
+    display: flex;
+    gap: 24px;
+  }
+  [data-base-mark] {
+    position: static;
+    grid-area: mark;
+  }
 }

@@ -418,6 +418,16 @@
      trims to the cap and the baseline, so the type occupies 11.2 rather than
      a 24 line box. Named because the base screen has to subtract it to work
      out how much height is left for everything else. */
+  /* ── The category hero (255:9087 wide, 262:5841 narrow) ──────────────
+     A bold uppercase line over a lighter lead. Both ends are the nodes':
+     72/78 and 32/40 at 1440, 40/40 and 24/32 at 390. The lead is NOT
+     `--type-32-40-r`, which the home page uses — that one floors at 16,
+     where this floors at 24. */
+  --cat-title: 700 clamp(40px, calc(28.11px + 3.048vw), 72px)/clamp(40px, calc(25.89px + 3.619vw), 78px) var(--font-sans);
+  --cat-lead: 400 clamp(24px, calc(21.03px + 0.762vw), 32px)/clamp(32px, calc(29.03px + 0.762vw), 40px) var(--font-sans);
+  /* the small wordmark above it — see `Wordmark` for why narrow is bigger */
+  --cat-mark-w: 148px;
+
   --ticker-h: 43px;
   /* `--bg-page`'s ramp, named directly. The strip sits inside a
      `data-tone="light"` panel, which re-maps every semantic token — so
@@ -444,6 +454,7 @@
     --titled-pad-top: 48px;
     --titled-gap: 56px;
     --panel-gap: 124px;
+    --cat-mark-w: 240px;
     --content-pad-top: 56px;
   }
 }

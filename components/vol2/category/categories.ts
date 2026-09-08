@@ -40,6 +40,14 @@ export interface Category {
    * own words; the other two follow its shape.
    */
   intro: string;
+  /**
+   * The line under the title on the hero — 255:9087's "Subtitle".
+   *
+   * Undefined everywhere for now, and the hero simply omits it: the node
+   * carries Lorem, and inventing three sentences of positioning copy is
+   * George's call rather than mine. Set it and the hero picks it up.
+   */
+  lead?: string;
   /** the words that arrive as beats rather than a plain wipe */
   beats: string[];
   /**

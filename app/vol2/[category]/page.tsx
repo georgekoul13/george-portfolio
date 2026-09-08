@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation';
 import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
-import ArrivingBlock from '@/components/vol2/ArrivingBlock';
-import IntroSection from '@/components/vol2/IntroSection';
+import BaseScreen from '@/components/vol2/BaseScreen';
+import Wordmark from '@/components/vol2/Wordmark';
 import FooterSection from '@/components/vol2/FooterSection';
 import CopyrightSection from '@/components/vol2/CopyrightSection';
 import CategoryTitle from '@/components/vol2/category/CategoryTitle';
@@ -11,8 +11,16 @@ import ProjectCards from '@/components/vol2/category/ProjectCards';
 import { CATEGORIES, projectsFor, type CategorySlug } from '@/components/vol2/category/categories';
 
 /**
- * Category template — Figma 238:6357 (the cream panel) and 238:4773 (the
- * dark one under it). One page each for Product, Graphic and Creative.
+ * Category template — Figma 255:9087 (the hero) and 262:5841 (its phone),
+ * with the content on a panel over the top. One page each for Product,
+ * Graphic and Creative.
+ *
+ * It is the home page's structure with one substitution: George — *"we are
+ * going to have a similar hero and one panel coming on to it… just make sure
+ * the padding gaps of the home panel are here too."* So the same
+ * `BaseScreen`, the same `--content-pad-top` and `--panel-gap`, and the only
+ * difference is what sits at the top of the base — the wordmark shrinks to a
+ * mark in the corner and the category's own line becomes the title.
  *
  * ── what changed from 147:9780 ────────────────────────────────────────
  * The old template was a top `Header`, a left-aligned all-caps headline over
@@ -55,72 +63,67 @@ export default function CategoryPage({ params }: { params: { category: string } 
       <MenuBar />
 
       <main style={{ background: 'var(--bg-page)' }}>
-        {/* `followed`: the block below rides up over this panel, so it keeps
-            the closing viewport that the home page's last panel does not
-            need — see `PanelStack`. */}
         <PanelStack
-          followed
           panels={[
             {
-              key: 'intro',
+              /* The hero. `tone: "light"` re-maps every semantic token
+                 inside, so the mark, the title and the lead are all dark on
+                 the cream without naming a colour. */
+              key: 'base',
               tone: 'light',
-              /* Short: there is no hero above this one, so the panel is
-                 already whole on screen when the page opens and the hold is
-                 only there to keep the recede off the sentence's heels. */
               revealRun: 200,
-              tailRun: 500,
-              /* `bare` — 238:6357: the drawing and one centred line, without
-                 the home page's two corner greetings. */
+              tailRun: 300,
               content: (
-                <IntroSection bare sentence={category.intro} underlined={[]} beats={[]} />
+                <BaseScreen
+                  mark={<Wordmark />}
+                  title={
+                    <h1
+                      className="uppercase"
+                      style={{ font: 'var(--cat-title)', color: 'var(--text-primary)' }}
+                    >
+                      {category.intro}
+                    </h1>
+                  }
+                  text={category.lead}
+                  textFont="var(--cat-lead)"
+                />
               ),
               style: { background: 'var(--bg-page)', color: 'var(--text-primary)' },
             },
+            {
+              /* Everything the page says, on the home page's rhythm — the
+                 same `--content-pad-top` to open it and `--panel-gap`
+                 between its sections. */
+              key: 'content',
+              shoulder: true,
+              revealRun: 200,
+              tailRun: 0,
+              content: (
+                <div
+                  data-panel-content
+                  className="flex flex-col"
+                  style={{ paddingTop: 'var(--content-pad-top)', gap: 'var(--panel-gap)' }}
+                >
+                  {/* The title and the grid are ONE band, `--titled-gap`
+                      apart — the same pairing the home page's "Learn more"
+                      makes with its strip. */}
+                  <div
+                    data-titled-band
+                    className="flex w-full flex-col"
+                    style={{ gap: 'var(--titled-gap)' }}
+                  >
+                    <CategoryTitle count={projects.length} />
+                    <ProjectCards projects={projects} />
+                  </div>
+
+                  <FooterSection />
+                  <CopyrightSection />
+                </div>
+              ),
+              style: { background: 'var(--bg-page)' },
+            },
           ]}
         />
-
-        {/* The shoulder it rides up on. `overflow: clip` rather than putting
-            the radius on the first child (which is how the home page does
-            it): nothing in here pins, so clipping costs nothing, and it means
-            the corner survives whatever ends up first in this block. */}
-        <ArrivingBlock
-          className="relative z-10"
-          style={{
-            background: 'var(--bg-page)',
-            overflow: 'clip',
-            /* The same shoulder padding the home page's arriving block has.
-               Without it "All projects" sat hard against the block's own top
-               edge, so the two templates opened differently. George: *"all
-               panels should have the same rounded corners, paddings etc."* */
-            /* 56 to the title, the same as the home page's "Learn more" —
-               George: *"the gap from the text to the top of its panel is
-               still too much, make it around 56px."* */
-            paddingTop: 'var(--titled-pad-top)',
-          }}
-        >
-          {/* The title gets a screen of its own, so this block opens the
-              way the home page's does — George: *"make it uniform."* Both
-              arriving blocks are now one viewport before their content
-              begins, rather than one presenting a composed screen and the
-              other dropping you straight into a grid.
-
-              `min-height` so a long title or a narrow window can still push
-              it taller, and `lvh` for the reason in `PanelStack`. The title
-              keeps its own top-left alignment; only the band it sits in
-              changes. */}
-          {/* The title and the grid are ONE band, `--titled-gap` apart.
-              George: *"in the section after, the title is too much away from
-              the projects."* It was a screen away, literally: the title had
-              `min-height: 100lvh` to give it a screen of its own, which is a
-              fine idea when the next thing is a long way down the page and a
-              strange one when it is the content the title names. */}
-          <div data-titled-band className="flex w-full flex-col" style={{ gap: 'var(--titled-gap)' }}>
-            <CategoryTitle count={projects.length} />
-            <ProjectCards projects={projects} />
-          </div>
-          <FooterSection />
-          <CopyrightSection />
-        </ArrivingBlock>
       </main>
     </div>
   );
