@@ -678,23 +678,29 @@
    bottom right, which reads as a band that stops rather than one passing
    through.
 
-   Scaling it DOWN cannot fix that, and scaling it up alone does not either:
-   the scale transforms the drawing inside a box that does not move, so a
-   bigger arc reaches further past the edges but its tail still lands where
-   the box puts it. What hides the ends is moving the boxes out past the
-   corners — A up and left, B down and right — with just enough scale that
-   the visible slice is still a piece of arc rather than a sliver.
+   Pushing the whole box out past the corner hides the ends, but it also
+   hides the arc: George, on that version — *"the ribbons got too big, which
+   results that are not so visible; make them a bit smaller like they were so
+   more of them are visible."*
+
+   What resolves the two is the PATH's own shape rather than its size. Both
+   of its endpoints sit on the same side of its box — (537.9, 83.6) and
+   (444.8, 790), the right edge — and the curve bulges away from them. So the
+   ends hide by putting THAT side off the screen and letting the bulge cross
+   it: A's ends off to the left, B's off to the right. The scale is then free
+   to come back down to 0.7, which is what makes the band thin and shows a
+   long run of arc instead of a corner tip.
 
    (A previous attempt at this went into a `max-width: 640px` block, which
    never applied on a phone because this one overrides it. That block is
    gone.) */
 @media (max-width: 599px) {
   :root {
-    --ribbon-scale: 0.95;
-    --ribbon-a-x: -140px;
-    --ribbon-a-y: -18%;
-    --ribbon-b-x: calc(100% + 130px);
-    --ribbon-b-y: 118%;
+    --ribbon-scale: 0.7;
+    --ribbon-a-x: -72px;
+    --ribbon-a-y: 18%;
+    --ribbon-b-x: calc(100% + 66px);
+    --ribbon-b-y: 86%;
   }
 }
 
