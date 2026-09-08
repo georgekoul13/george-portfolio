@@ -443,7 +443,7 @@
   :root {
     --titled-pad-top: 48px;
     --titled-gap: 56px;
-    --panel-gap: 96px;
+    --panel-gap: 124px;
     --content-pad-top: 56px;
   }
 }
