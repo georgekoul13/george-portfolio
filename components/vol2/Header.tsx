@@ -14,10 +14,10 @@ const NAV = [
   { label: 'Product',  href: '/product' },
   { label: 'Graphic',  href: '/graphic' },
   { label: 'Creative', href: '/creative' },
-  /* Figma's category, project and contact frames all end the nav on
-     CONTACT where the home frame ends it on ABOUT. Contact is the one with a
-     page behind it, so it takes the slot until About has a design. */
-  { label: 'Contact',  href: '/contact' },
+  /* Figma ends this nav on CONTACT, and the home frame on ABOUT. Both are
+     gone — George dropped the two pages, and the contact route went to
+     `archive/` with them, so the slot would now point at nothing. The three
+     categories are the whole nav, which is what `MenuBar` already shows. */
 ];
 
 /**

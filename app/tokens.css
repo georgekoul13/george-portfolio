@@ -192,22 +192,6 @@
    Where a panel that is being COVERED sticks to. The menu still lives in
    a fixed top bar; when it moves to the bottom pill this becomes 0 and
    nothing else has to change. */
-/* ─── Hero ────────────────────────────────────────────────────────────
-   Figma 230:14543, measured at a 0.3139 render scale — the scale is
-   self-checking, since the wordmark comes out 726/968 against a known
-   722.903/969.529. Gaps of 96 and 24 below the wordmark and the subtitle;
-   the subtitle's measure is 336 and the cursor 64. */
-:root {
-  /* 96 below the wordmark, and the subtitle's 336 measure. Both are the
-     design's, and both survived the braces and the cursor being cut — what
-     went was the decoration around the sentence, not the sentence. */
-  --hero-gap-title:  clamp(40px, calc(20.3px + 5.26vw), 96px);
-  --hero-sub-w:      clamp(220px, calc(179.2px + 10.89vw), 336px);
-  --hero-gap-scroll: clamp(16px, calc(13.2px + 0.75vw), 24px);
-  /* the scroll cue is the quietest thing on the screen — 12 on the ramp */
-  --hero-scroll-font: 400 clamp(10px, calc(9.3px + 0.19vw), 12px)/1.4 var(--font-sans);
-}
-
 /* ─── Categories, as a horizontal strip ───────────────────────────────
    Figma 235:4973: three 600 × 490 cards, 56 apart, radius 32, under a
    72/80 heading with 88 between them. The strip comes to 1912 in a 1440
@@ -221,7 +205,6 @@
   --cs-card:     clamp(260px, 41.7vw, 600px);
   --cs-card-h:   calc(var(--cs-card) * 490 / 600);
   --cs-gap:      clamp(20px, 3.9vw, 56px);
-  --cs-radius:   clamp(16px, calc(10.4px + 1.5vw), 32px);
   /* George, on a phone: *"the gap in the learn more panel is a bit big."*
      88 is the 1440 number and the clamp already floors it at 40, but 40
      under a 72/80 heading that has itself dropped to phone size still reads
@@ -253,37 +236,10 @@
    outermost ring at r609. Everything below is that frame divided back out,
    so each number means at 1440 exactly what the design says. */
 :root {
-  /* Exactly the screen, capped at the design's 960.
-     
-     It has to FILL: this panel is sticky, so anything shorter than the
-     viewport leaves the next panel showing underneath it while it is
-     supposed to be the whole view — which is what a width-based clamp did
-     on a phone, where it came out 566 tall against an 844 screen. And
-     anything taller than the viewport would pin its own top and put its
-     bottom out of reach. 960 is the design's height in a 1080 frame. */
-  --cat-h:       min(100svh, 960px);
-  --cat-card:    clamp(280px, calc(167.3px + 30.05vw), 600px);
-  --cat-card-h:  calc(var(--cat-card) / 2);      /* the card is 2:1 */
-  --cat-radius:  clamp(16px, calc(13.2px + 0.75vw), 24px);
+  /* The label on a marquee card. The rest of this set — the field, the
+     card geometry, the deck's live centre — went to `archive/` with
+     `CategoryDeck`; this is the one line `CategoryStrip` still reads. */
   --cat-label:   clamp(20px, calc(12.96px + 1.88vw), 40px);
-  /* 609 / 1440. Floored so the bands do not collapse to a dot on a phone,
-     where the field is most of what is on screen. */
-  --cat-r:       max(42.3vw, 320px);
-  /* The field's live centre and radius. The deck's ticker overwrites these
-     every frame; the values here are the still fallback, which is what a
-     reduced-motion visitor and the server's first paint both get. */
-  --cat-cx:      50%;
-  --cat-cy:      50%;
-  --cat-rr:      var(--cat-r);
-}
-
-/* ─── Intro / about-me panel ──────────────────────────────────────────
-   Figma 231:16735 puts 124 above the content frame and 124 between the
-   drawing and the sentence (row at 0 is 434 tall, the paragraph starts at
-   558). Both hold literally at 1440 and ease down to 56 on a phone. */
-:root {
-  --intro-pad-y: clamp(56px, calc(32.06px + 6.385vw), 124px);
-  --intro-gap:   clamp(56px, calc(32.06px + 6.385vw), 124px);
 }
 
 /* ─── Light panels ────────────────────────────────────────────────────
@@ -389,12 +345,13 @@
 /* ── The titled bands ────────────────────────────────────────────────────
    Two sections open the same way — the home page's "Learn more" and a
    category's "All projects" — so they share their rhythm rather than each
-   carrying its own numbers. George: *"in this section template — home learn
-   more and this section — give a 124px top padding in desktop and 48 in
-   responsive, and the gap between the title and images should be 56px in
-   desktop and 24 in responsive."* Both on the rule of 8. */
+   carrying its own numbers. George: *"the gap between the title and images
+   should be 56px in desktop and 24 in responsive."* On the rule of 8.
+
+   The top padding that used to live here went when both sections stopped
+   being the top of their own panel — the panel sets that distance now, with
+   `--content-pad-top`. */
 :root {
-  --titled-pad-top: 124px;
   --titled-gap: 80px;
   /* The distance between every section INSIDE the content panel. George:
      *"let's add more distance between the sections of the panel"* and, of the
@@ -488,7 +445,6 @@
 
 @media (max-width: 899px) {
   :root {
-    --titled-pad-top: 48px;
     --titled-gap: 56px;
     --panel-gap: 124px;
     --cat-mark-w: 88px;
@@ -537,38 +493,12 @@
    between the row and its rule and 72 between rows, in a band padded 60
    all round — 60 + 561 + 60 = Figma's 681. */
 :root {
-  /* the category deck */
-  /* the reference's centre card measures 34.4% of the viewport */
-  --cd-card:  clamp(200px, 34vw, 560px);
-  /* their centre card measures 465 x 495 — a touch taller than wide */
-  --cd-card-h: calc(var(--cd-card) * 1.064);
-  --cd-name:  clamp(16px, calc(10.4px + 1.5vw), 32px);
-  --cd-count: clamp(12px, calc(9.2px + 0.75vw), 20px);
-  --cd-inset: clamp(16px, calc(10.4px + 1.5vw), 32px);
-  /* the pill that straddles the front card's bottom edge */
-  --cd-pill-h: clamp(44px, calc(33.5px + 2.8vw), 64px);
-  --cd-pill-x: clamp(20px, calc(13.0px + 1.9vw), 32px);
-  --cd-gap:    clamp(12px, calc(8.5px + 0.94vw), 20px);
-  --cd-pad-y: clamp(88px, calc(56.6px + 8.4vw), 152px);
-  --cat-index: clamp(12px, calc(10.59px + 0.3756vw), 16px);
   /* the line that leads into the projects — Figma 210:5708 */
   /* 96 at 1440, down to 22 on a phone. The old floor of 32 overflowed: at
      390 the longer line — "WHERE EVERY PROJECT IS" — needs about 400px of
      measure and has 350, so it ran off both edges of the screen. */
   --pgal-head: clamp(22px, calc(-4.06px + 6.95vw), 96px);
-  --cat-name: clamp(32px, calc(17.92px + 3.756vw), 72px);
-  --cat-count: clamp(12px, calc(7.775px + 1.127vw), 24px);
-  --cat-name-gap: clamp(24px, calc(1.465px + 6.009vw), 88px);
-  --cat-rule-gap: clamp(24px, calc(1.465px + 6.009vw), 88px);
-  --cat-row-gap: clamp(32px, calc(17.92px + 3.756vw), 72px);
-  /* the cursor-tracking preview, sized after the GSAP demo's 350 */
-  --cat-preview: clamp(200px, calc(147.2px + 14.08vw), 350px);
-  --cat-pad-y: clamp(40px, calc(32.96px + 1.878vw), 60px);
 }
-
-/* The `--cat-*` set is fluid on `:root` — it used to step from the phone
-   value straight to the desktop one at 900, which left a 768 tablet showing
-   32px category names across a 704 measure. */
 
 /* ── Display type on small screens ───────────────────────────────────────
    The display type steps down. Held at its Figma size on a phone the
@@ -749,140 +679,5 @@
     --ribbon-a-y: 18%;
     --ribbon-b-x: calc(100% + 66px);
     --ribbon-b-y: 86%;
-  }
-}
-
-/* ── Hero subtitle braces ────────────────────────────────────────────────
-   Figma draws them 64 × 16, flanking a 336px paragraph — a comfortable
-   ratio at 1440. Below 900 the hero stacks and the paragraph is the widest
-   thing in the band, so a 64px brace either side stops reading as
-   punctuation around the line and starts competing with it. They step down
-   as a pair, keeping the asset's own 4:1 so the curve never distorts.
-
-   Only the size moves. `BRACE_TRAVEL` in HeroSection is derived from the
-   paragraph's width and the flex gap, not from the brace, so how far they
-   part is untouched. */
-:root {
-}
-
-
-/* ── Contact ─────────────────────────────────────────────────────────────
-   Figma 147:11421. The headline is drawn at 205.288/205.288 — not a round
-   number because it is not a chosen size: it is whatever makes "LET'S GET
-   IN" span the 1320 container at 1440. So it is not pinned at all: the size
-   is DERIVED from the measure, and the line fills it at every width.
-
-   "LET'S GET IN" is 1319 wide at 205.344, so it runs 6.423 font-sizes long.
-   Dividing the container by that constant makes it fill exactly — 1320/6.423
-   = 205.5 at desktop, 350/6.423 = 54.5 on a 390 phone.
-
-   In `cqw`, not `vw`: the band is a query container, so 100cqw is its
-   content box — already inside the gutter, and blind to the scrollbar. `vw`
-   counts both, and at 15vw the line came out 376 wide in a 350 container and
-   bled off the left edge.
-
-   `--contact-lead` is Figma's 65.692 gap, used both between the two lines
-   and between the video and TOUCH, so the block reads as one grid.
-
-   Below 900 the second line stops being a row: TOUCH beside a flex-1 video
-   would leave the video about 118px wide on a 375 screen, which is too small
-   to show anything happening in it. It stacks and goes full width instead,
-   and the form's two columns become one. */
-:root {
-  /* The title band, read off Figma 147:13474 (1440 x 897.69):
-     124 down to the back link, 88 to the headline, 88 to the intro, 80
-     under it. They were one token before, which made the last two 124. */
-  --contact-top: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
-  --contact-bottom: clamp(32px, calc(15.1px + 4.507vw), 80px);
-  --contact-back-gap: clamp(40px, calc(23.1px + 4.507vw), 88px);
-  --contact-intro-gap: clamp(56px, calc(44.73px + 3.005vw), 88px);
-  /* how many font-sizes long the longest line is — see above */
-  --contact-fit: 6.423;
-  --contact-rect-flex: 1 1 0%;
-  /* the display size, named once so the gap and the video can be derived
-     from the TYPE rather than from the viewport */
-  --contact-display: calc(100cqw / var(--contact-fit));
-  /* Figma's 65.692 gap is 0.32 of the 205.288 type, not a viewport figure */
-  --contact-lead: calc(var(--contact-display) * 0.32);
-  /* desktop: the video is a flex item stretched to the row, so its height is
-     the cap band of TOUCH — never a number of its own. Only the stacked
-     phone layout needs one. */
-  --contact-rect-h: auto;
-  /* DETAILS and the intro paragraph are the same size at desktop and
-     different on a phone (32 vs 24), so they are two tokens. DETAILS is a
-     single line and cap-trims in `em`; the intro keeps its leading and
-     needs the multi-line trim below. */
-  --contact-details-size: clamp(32px, calc(26.37px + 1.502vw), 48px);
-  --contact-heading: clamp(24px, calc(15.55px + 2.254vw), 48px);
-  --contact-heading-lh: clamp(32px, calc(23.55px + 2.254vw), 56px);
-  /* the cap trim for a MULTI-line block, which the em version in
-     ContactForm can't express because it depends on the leading as well as
-     the size. Derived from the same measured Montserrat metrics:
-       top    = L/2 - 0.3415F      bottom = L/2 - 0.3585F
-     Written against the tokens, so it stays right at every breakpoint. */
-  --contact-heading-trim-t: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3415);
-  --contact-heading-trim-b: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3585);
-  /* Two row tokens, not one. The HEADLINE can be a row as soon as there is
-     room for the video beside the word (600); the FORM needs DETAILS in a
-     column beside a two-up grid and only earns that at 900. */
-  --contact-head-row: row;
-  --contact-form-row: row;
-  --contact-cols: 1fr 1fr;
-  --contact-fields-indent: 150px;
-  /* Figma 147:12901: pt-80 / pb-124 on the band, gap-80 down to the button,
-     gap-40 from DETAILS to the fields, gap-48 between field rows. All four
-     were hard-coded in the component; they are tokens so the phone can have
-     smaller ones. */
-  /* The field's value type — Figma 203:5577 sets 20/24. The row height and
-     the textarea's cap trim are both derived from it, so a breakpoint only
-     has to change this one number. */
-  --contact-value-size: 20px;
-  --contact-value-lh: 24px;
-  /* py-8 either side of the line trimmed to its cap (0.7 of the size) */
-  --contact-value-h: calc(var(--contact-value-size) * 0.7 + 16px);
-  /* a textarea can't be cap-trimmed by height, so it gets the multi-line
-     margin form: top = L/2 − 0.3415F, bottom = L/2 − 0.3585F */
-  --contact-ta-trim-t: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3415);
-  --contact-ta-trim-b: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3585);
-
-  --contact-form-top: clamp(32px, calc(15.1px + 4.507vw), 80px);
-  --contact-form-bottom: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
-  --contact-cta-gap: clamp(56px, calc(47.55px + 2.254vw), 80px);
-  --contact-details-gap: 40px;
-  --contact-fields-gap: clamp(24px, calc(15.55px + 2.254vw), 48px);
-}
-
-/* ── Contact below the desktop rung ─────────────────────────────────────
-   Figma draws this page twice: 210:5709 at 375 and 147:11421 at 1440. The
-   sizes between those two are FLUID — see the `clamp()`s on `:root` above —
-   because pinning them to the phone value all the way up to 899 left a
-   768 tablet wearing a 375 layout: a 14.7:1 letterbox video under a 110px
-   headline, and DETAILS at 32 beside it.
-
-   What stays in a media query is only what cannot be interpolated: which
-   way a row runs, and how many columns it has. */
-
-/* 600–899: the headline earns its row back — the video is the remainder
-   beside the word, exactly as on desktop — and the form goes two-up. The
-   FORM's own row (DETAILS beside the grid) still waits for 900, because
-   DETAILS + its 150 indent does not fit beside a 704 grid. */
-@media (max-width: 899px) {
-  :root {
-    --contact-form-row: column;
-    --contact-fields-indent: 0px;
-  }
-}
-
-/* Under 600 there is no room for anything beside the display type, so the
-   headline stacks and the video becomes a band of its own. Its height is
-   the one number that has to be interpolated by hand: 48 is the design's
-   at 375, and 88 is the cap band of the display type at the 900 switch, so
-   it arrives at the desktop behaviour without a step. */
-@media (max-width: 599px) {
-  :root {
-    --contact-head-row: column;
-    --contact-cols: 1fr;
-    --contact-rect-flex: 0 0 auto;
-    --contact-rect-h: clamp(48px, calc(19.43px + 7.619vw), 88px);
   }
 }

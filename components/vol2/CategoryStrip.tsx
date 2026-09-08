@@ -338,9 +338,10 @@ export default function CategoryStrip() {
            in it — centring in a full viewport is what put a screen's worth of
            empty above a single line. `justify-start` above is the other half
            of it. */
-        /* and no vertical padding: `--titled-pad-top` measured this section
-           from the top of a panel, which it is no longer at, and the bottom
-           padding was half of an uneven gap. */
+        /* and no vertical padding: the old `--titled-pad-top` measured this
+           section from the top of a panel, which it is no longer at, and the
+           bottom padding was half of an uneven gap. The token is gone; the
+           panel's own `--content-pad-top` sets the distance now. */
         background: 'var(--bg-page)',
         /* shared with the category listing's title — see `--titled-gap` */
         gap: 'var(--titled-gap)',
