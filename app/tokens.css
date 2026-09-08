@@ -143,7 +143,6 @@
   --type-24-24-l: 300 24px/24px var(--font-sans);
   --type-24-24-b: 700 24px/24px var(--font-sans);
   --type-24-24-m: 500 24px/24px var(--font-sans);   /* the green project count */
-  --type-20-24-r: 400 20px/24px var(--font-sans);   /* the base screen's ticker */
   /* The base screen's line under the wordmark — 32/40 at 1440 (255:7046),
      stepping down to the old 16/24 on a phone, where 32 would take four
      lines and crowd the drawing off the screen. */
@@ -405,11 +404,17 @@
      and the strip came out cream-on-cream. 255:8423 draws it dark against
      the cream, which is the whole reason it reads as a separate object, so
      it names the ramp directly rather than the role. */
-  /* 16 + 24 + 16. The node is 22/28.5/24, a step larger — George: *"we can
-     make the ribbon a bit smaller."* Named because the base screen has to
-     subtract it to work out how much height is left for everything else. */
-  --ticker-h: 56px;
-  --ticker-bg: var(--neutral-800);
+  /* 16 + 11.2 + 16, the node's own 43: 255:8423 sets 16px Montserrat and
+     trims to the cap and the baseline, so the type occupies 11.2 rather than
+     a 24 line box. Named because the base screen has to subtract it to work
+     out how much height is left for everything else. */
+  --ticker-h: 43px;
+  /* `--bg-page`'s ramp, named directly. The strip sits inside a
+     `data-tone="light"` panel, which re-maps every semantic token — so
+     `var(--bg-page)` there is the cream and the ribbon came out cream on
+     cream. 255:8423 draws it as the page's black against that cream, which
+     is the whole reason it reads as a separate object. */
+  --ticker-bg: var(--neutral-950);
   --ticker-fg: var(--neutral-50);
 
   /* The base screen's own breathing room: 124 at the node's own 1440 x 1080,
