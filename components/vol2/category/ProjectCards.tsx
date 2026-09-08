@@ -70,7 +70,7 @@ function Card({ project, large }: { project: CardProject; large: boolean }) {
       data-card
       href={`/vol2/projects/${project.slug}`}
       className="group flex min-w-0 flex-col items-start"
-      style={{ gap: large ? 24 : 20 }}
+      style={{ gap: large ? 'var(--card-gap-large)' : 'var(--card-gap)' }}
     >
       <span
         className="relative block w-full overflow-hidden"

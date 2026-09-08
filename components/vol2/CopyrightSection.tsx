@@ -41,7 +41,7 @@ export default function CopyrightSection() {
     <section
       ref={root}
       className="relative flex w-full flex-col items-center justify-center px-[var(--gutter)] py-8"
-      style={{ minHeight: '60vh' }}
+      style={{ minHeight: '60svh' }}
     >
       <RollingText
         lines={LINES}

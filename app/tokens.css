@@ -443,8 +443,20 @@
      same distance between them."* They are equal there. */
   --cards-gap: 40px;
   --cards-row-gap: 80px;
+  /* Inside a card: image to title. 24 on a featured one, 20 on a medium
+     one — the design's own pair. They live here rather than inline so a
+     breakpoint can reach them; below `lg` every card is full width and the
+     variants stop meaning much. */
+  --card-gap: 20px;
+  --card-gap-large: 24px;
 
-  --ticker-h: 43px;
+  /* DERIVED, not measured. The trimmed cap box is 11 at 16px (see the trim
+     in `Ticker`), so the bar is that plus the padding either side. Written
+     out because `--ticker-h` is what `[data-base-figure]` subtracts from
+     the screen — a hand-typed 43 goes stale the moment the padding moves. */
+  --ticker-pad: 16px;
+  --ticker-cap: 11px;
+  --ticker-h: calc(var(--ticker-cap) + 2 * var(--ticker-pad));
   /* `--bg-page`'s ramp, named directly. The strip sits inside a
      `data-tone="light"` panel, which re-maps every semantic token — so
      `var(--bg-page)` there is the cream and the ribbon came out cream on

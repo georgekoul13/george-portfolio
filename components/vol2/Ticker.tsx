@@ -121,7 +121,7 @@ export default function Ticker() {
       ref={root}
       aria-hidden="true"
       className="w-full overflow-hidden"
-      style={{ background: 'var(--ticker-bg)', paddingBlock: 16 }}
+      style={{ background: 'var(--ticker-bg)', paddingBlock: 'var(--ticker-pad)' }}
     >
       {/* No side padding on the TRACK: it would sit inside the repeat and
           push the copies out of step. The strip runs edge to edge, which is
