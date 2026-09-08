@@ -82,7 +82,11 @@ export default function Vol2Page() {
                  panel to sit still first. */
               tailRun: 0,
               content: (
-                <div data-panel-content style={{ paddingTop: 'var(--content-pad-top)' }}>
+                <div
+                  data-panel-content
+                  className="flex flex-col"
+                  style={{ paddingTop: 'var(--content-pad-top)', gap: 'var(--panel-gap)' }}
+                >
                   <SellingPointSection />
                   <CategoryStrip />
                   <ProjectsBand />

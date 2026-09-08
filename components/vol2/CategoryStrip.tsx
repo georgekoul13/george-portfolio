@@ -330,15 +330,20 @@ export default function CategoryStrip() {
            to run — its content is the screen. The SHOULDER is the panel's now,
            not this section's: it is a `[data-panel]` in its own right, and
            `PanelStack` draws the rounded top for anything with `shoulder`. */
-        minHeight: '100lvh',
+        /* No `min-height` any more. It was a screen tall when it was a PANEL
+           in its own right; inside the content panel that just parks the
+           title at the top of a viewport-tall box and leaves ~400px of dead
+           space under the cards, which is where the phone's 576px "gap" came
+           from. The panel's own `--panel-gap` sets the distance now. */
         /* George: *"the learn more, all projects gap from the text to the top
            of its panel is still too much, make it around 56px."* So the
            headline is measured from the top of the panel rather than centred
            in it — centring in a full viewport is what put a screen's worth of
            empty above a single line. `justify-start` above is the other half
            of it. */
-        paddingTop: 'var(--titled-pad-top)',
-        paddingBottom: 'var(--section-pad-y)',
+        /* and no vertical padding: `--titled-pad-top` measured this section
+           from the top of a panel, which it is no longer at, and the bottom
+           padding was half of an uneven gap. */
         background: 'var(--bg-page)',
         /* shared with the category listing's title — see `--titled-gap` */
         gap: 'var(--titled-gap)',
@@ -346,7 +351,9 @@ export default function CategoryStrip() {
     >
       <h2
         data-head
-        className="text-center"
+        /* George: *"make the learn more capitalized."* Uppercase, like every
+           other heading on this page. */
+        className="text-center uppercase"
         style={{
           ...CAP_TRIM,
           font: 'var(--type-72-80-r)',

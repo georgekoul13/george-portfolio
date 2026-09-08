@@ -244,9 +244,12 @@ html[data-nav-open] [data-header-rule] {
 }
 
 /* The panel that arrives over the base screen sets its own opening distance
-   — `--content-pad-top`, 200/56 — so whatever lands first inside it must not
-   add its own on top. Only the top: everything below keeps its rhythm. */
-[data-panel-content] > :first-child {
+   — `--content-pad-top` — and its own rhythm between the sections inside it,
+   `--panel-gap`. So nothing in there pays for the space above itself: the
+   first child would double the opening, and any other would make the gap it
+   sits under bigger than its neighbours'. Only the top; every section keeps
+   whatever it puts below itself. */
+[data-panel-content] > * {
   padding-top: 0 !important;
 }
 

@@ -24,6 +24,10 @@ export default function FooterSection() {
       className="w-full px-[var(--gutter)]"
       /* was a flat 124/64 — now on the shared section rhythm, so it opens up
          with everything else rather than staying tight against the band */
+      /* The category page still spaces this itself. Inside the home page's
+         content panel the distance above is `--panel-gap`, and paying for it
+         twice was part of what made those gaps uneven — so the top padding
+         comes off THERE, in globals.css, rather than everywhere. */
       style={{ paddingTop: 'var(--section-pad-y)', paddingBottom: 'var(--section-pad-y)' }}
     >
       {/* `pinned`, because the footer is inside the home page's last panel

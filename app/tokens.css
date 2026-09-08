@@ -393,7 +393,17 @@
    desktop and 24 in responsive."* Both on the rule of 8. */
 :root {
   --titled-pad-top: 124px;
-  --titled-gap: 56px;
+  --titled-gap: 80px;
+  /* The distance between every section INSIDE the content panel. George:
+     *"let's add more distance between the sections of the panel"* and, of the
+     phone, *"the gaps between sections need to be the same."* They were not
+     even close — measured at 390 they came out -113, 576, 136 and 374,
+     because nothing was setting them: each section is a viewport-tall box
+     with its content anchored somewhere inside it, so the "gap" was whatever
+     empty space happened to be left over. This is a real gap on the panel's
+     own column, and the sections' inter-section padding comes off so that
+     this is the only thing between them. */
+  --panel-gap: 200px;
   /* From the top edge of the panel that arrives over the base screen down to
      its first section — George: *"the top padding of this panel on top will
      have 200px and 56 in the responsive."* */
@@ -432,7 +442,8 @@
 @media (max-width: 899px) {
   :root {
     --titled-pad-top: 48px;
-    --titled-gap: 24px;
+    --titled-gap: 56px;
+    --panel-gap: 96px;
     --content-pad-top: 56px;
   }
 }
@@ -655,24 +666,6 @@
   }
 }
 
-/* And a step quieter again on a phone. George sent a photo of this screen
-   captioned only *"in the responsive this is the view of the ribbons in my
-   phone"* — no target, so this is a judgement: at 0.8 the two slices are as
-   heavy as the chips they are supposed to be framing, and the lower one
-   comes far enough in to crowd the last chip. 0.62 turns each corner back
-   into a suggestion of an arc. The centres move a little further out with
-   it, because a smaller copy placed at the same point shows a thinner
-   slice at the edge — these keep roughly the ink the 899 tuning had. */
-@media (max-width: 640px) {
-  :root {
-    --ribbon-scale: 0.62;
-    --ribbon-a-x: -96px;
-    --ribbon-a-y: 26%;
-    --ribbon-b-x: calc(100% + 44px);
-    --ribbon-b-y: 72%;
-  }
-}
-
 /* The left copy is rotated, so its bounding box is 795 wide where the right
    one is 566 — it needs the bigger push of the two.
    Tuned against the INK, not the boxes: the bounding box of a rotated
@@ -680,13 +673,28 @@
    on screen carrying only 35px of ribbon, which reads as nothing at all.
    −155 puts 65px of actual ribbon at the edge, matching the right copy's
    slice, and still leaves 14px before the widest chip. */
+/* George: *"the ribbon gets cut in responsive."* And it was — not clipped,
+   ENDED: at 0.62 the arc's own blunt terminus sat inside the frame at the
+   bottom right, which reads as a band that stops rather than one passing
+   through.
+
+   Scaling it DOWN cannot fix that, and scaling it up alone does not either:
+   the scale transforms the drawing inside a box that does not move, so a
+   bigger arc reaches further past the edges but its tail still lands where
+   the box puts it. What hides the ends is moving the boxes out past the
+   corners — A up and left, B down and right — with just enough scale that
+   the visible slice is still a piece of arc rather than a sliver.
+
+   (A previous attempt at this went into a `max-width: 640px` block, which
+   never applied on a phone because this one overrides it. That block is
+   gone.) */
 @media (max-width: 599px) {
   :root {
-    --ribbon-scale: 0.62;
-    --ribbon-a-x: -85px;
-    --ribbon-a-y: 0%;
-    --ribbon-b-x: calc(100% + 45px);
-    --ribbon-b-y: 92%;
+    --ribbon-scale: 0.95;
+    --ribbon-a-x: -140px;
+    --ribbon-a-y: -18%;
+    --ribbon-b-x: calc(100% + 130px);
+    --ribbon-b-y: 118%;
   }
 }
 

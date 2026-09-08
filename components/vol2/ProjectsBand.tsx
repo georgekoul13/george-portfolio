@@ -703,11 +703,16 @@ export default function PerspectiveGallery({
              and unmounting it makes React look for the node under a parent
              that no longer owns it — `removeChild` throws and the page dies. */
           height: 'auto',
-          paddingTop: 'var(--section-pad-y)',
+          /* the panel's `--panel-gap` is the distance to what came before */
+          paddingTop: 0,
         }}
       >
         <h2
-          className="px-[var(--gutter)] text-center uppercase"
+          /* Left, not centred — George picked this one out on the phone.
+             Only the phone's: the wide branch's line is a display-sized
+             headline the rank sweeps past, and centring is what keeps it
+             clear of the cards. */
+          className="px-[var(--gutter)] uppercase"
           style={{ ...CAP_TRIM, font: 'var(--type-24-24-l)', color: 'var(--text-primary)' }}
         >
           {HEADLINE.join(' ')}
