@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
-import Header from '@/components/vol2/Header';
-import Divider from '@/components/vol2/Divider';
+import NoiseField from '@/components/vol2/NoiseField';
+import MenuBar from '@/components/vol2/MenuBar';
+import PanelStack from '@/components/vol2/PanelStack';
 import FooterSection from '@/components/vol2/FooterSection';
 import CopyrightSection from '@/components/vol2/CopyrightSection';
 import RevealText from '@/components/vol2/RevealText';
@@ -11,16 +12,30 @@ import ProjectGalleryRow from '@/components/vol2/project/ProjectGalleryRow';
 import { getVol2Project, allVol2ProjectSlugs } from '@/components/vol2/project/projects';
 
 /**
- * Project template — Figma node 145:3043.
+ * Project template — Figma 262:9599 (the hero) and 262:9989 (the panel over
+ * it).
  *
- * Band order and spacing are the design's: the title, a full-width still, the
- * summary and facts, a second still, a statement, the closing trio, then the
- * footer and copyright. Everything inside `HeadlineArea` is 80 apart — that
- * is `--band-gap`, which steps down on a phone where 80 is a fifth of the
- * screen repeated seven times.
+ * The last of the templates to move onto the site's two-part structure, and
+ * the one that changes least in doing so: the bands themselves were already
+ * built to this design's predecessor, so the typography, the metadata grid
+ * and the rule between its rows are untouched. What changed is where the
+ * page divides.
  *
- * Figma puts a rule before the copyright but not before the footer here —
- * unlike the category page, which has both. Followed as drawn.
+ *   base   262:9599   the title, the first still, and the facts — 80 apart
+ *   panel  262:9989   the second still, the statement, the closing trio
+ *
+ * ── it is dark on dark ────────────────────────────────────────────────
+ * Unlike the home and category heroes, both halves here are `--bg-page`:
+ * 262:9599 sets its title in cream, so the hero is the page's own black
+ * rather than the cream the other two open on. The join is therefore drawn
+ * entirely by the arriving panel's rounded shoulder, which is the one thing
+ * that has to survive — see `shoulder` in `PanelStack`.
+ *
+ * ── the 80s ───────────────────────────────────────────────────────────
+ * Both nodes space their blocks 80 apart, which is `--band-gap`. The
+ * statement carries another 80 inside its own box (the node's `py-[80px]`),
+ * so it sits 160 clear of the stills either side of it — the one band on the
+ * page that is given room to be read rather than looked at.
  */
 
 export function generateStaticParams() {
@@ -33,32 +48,73 @@ export default function Vol2ProjectPage({ params }: { params: { slug: string } }
 
   return (
     <div data-vol2>
-      <Header />
-      <main style={{ background: 'var(--bg-page)' }} className="pt-[var(--header-h)]">
-        <ProjectIntro title={project.title} />
+      <NoiseField />
+      <MenuBar />
 
-        <div
-          className="flex w-full flex-col"
-          style={{ gap: 'var(--band-gap)', paddingTop: 'var(--band-gap)', paddingBottom: 'var(--band-gap)' }}
-        >
-          <ProjectImage src={project.heroes[0]} alt={project.title} />
+      <main style={{ background: 'var(--bg-page)' }}>
+        <PanelStack
+          panels={[
+            {
+              key: 'base',
+              revealRun: 200,
+              tailRun: 300,
+              content: (
+                <div
+                  className="flex w-full flex-col"
+                  style={{
+                    gap: 'var(--band-gap)',
+                    paddingBlock: 'var(--base-pad-y)',
+                    /* `ProjectIntro` reads this to clear the old fixed
+                       header, which this page no longer has — the panel's
+                       own padding is the distance now. */
+                    ['--project-intro-top' as string]: '0px',
+                  }}
+                >
+                  <ProjectIntro title={project.title} />
+                  <ProjectImage src={project.heroes[0]} alt={project.title} />
+                  <ProjectMeta project={project} />
+                </div>
+              ),
+              style: { background: 'var(--bg-page)' },
+            },
+            {
+              /* NOT `data-panel-content`: that attribute carries the home and
+                 category rhythm, and part of it is zeroing every child's
+                 top padding — which would take the statement's 80 off one
+                 side and leave it sitting crooked between the two stills. */
+              key: 'content',
+              shoulder: true,
+              revealRun: 200,
+              tailRun: 0,
+              content: (
+                <div
+                  className="flex w-full flex-col"
+                  style={{ paddingTop: 'var(--content-pad-top)', gap: 'var(--band-gap)' }}
+                >
+                  <ProjectImage src={project.heroes[1]} alt={project.title} />
 
-          <ProjectMeta project={project} />
+                  {/* `play="pinned"`: this is inside a pinned panel, where a
+                      ScrollTrigger keyed to the paragraph's position in the
+                      document never advances — see `scrubToPosition`. */}
+                  <div
+                    className="w-full px-[var(--gutter)]"
+                    style={{ paddingBlock: 'var(--band-gap)' }}
+                  >
+                    <RevealText play="pinned" className="w-full">
+                      {project.statement}
+                    </RevealText>
+                  </div>
 
-          <ProjectImage src={project.heroes[1]} alt={project.title} />
+                  <ProjectGalleryRow images={project.gallery} />
 
-          {/* the statement gets the site's word-by-word reveal, scrubbed as
-              it is everywhere except the category intro */}
-          <div className="w-full px-[var(--gutter)]" style={{ paddingBlock: 'var(--band-gap)' }}>
-            <RevealText className="w-full">{project.statement}</RevealText>
-          </div>
-
-          <ProjectGalleryRow images={project.gallery} />
-        </div>
-
-        <FooterSection />
-        <Divider />
-        <CopyrightSection />
+                  <FooterSection />
+                  <CopyrightSection />
+                </div>
+              ),
+              style: { background: 'var(--bg-page)' },
+            },
+          ]}
+        />
       </main>
     </div>
   );

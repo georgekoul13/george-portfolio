@@ -21,7 +21,7 @@ gsap.registerPlugin(ScrollTrigger);
  * 375 phone made each shot 85 × 130 — a contact sheet, not a gallery. One
  * across gives it the full 335, and the middle band gets two.
  */
-const ASPECT = '1240 / 1260'; // 413.33 × 420
+const ASPECT = '1240 / 1422'; // 413.33 × 474, per 262:12152
 
 export default function ProjectGalleryRow({
   images,
