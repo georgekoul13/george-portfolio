@@ -22,7 +22,7 @@ import { STILLS } from './stills';
 export interface Vol2Project {
   slug: string;
   title: string;
-  /** the big set-up line under the hero */
+  /** the big set-up line under the hero — see `SUMMARIES` */
   summary: string;
   /** the paragraph beneath it */
   body: string;
@@ -34,6 +34,22 @@ export interface Vol2Project {
   /** the closing three, each with its caption */
   gallery: { src: string; caption: string }[];
 }
+
+/* ── Summaries ───────────────────────────────────────────────────────────
+   The big set-up line under the hero.
+
+   It used to be `listed.subtitle` — the same string the card already shows
+   on the category page — so a reader arriving from a card was met with the
+   line they had just clicked, set larger. George's call: give it its own
+   line.
+
+   EMPTY ON PURPOSE. Every entry here is George's to write; until one lands
+   the page falls back to the subtitle, which is what it showed before, so
+   nothing regresses while the file fills up. Do not invent these — the
+   subtitle says what the project IS, and this line is meant to say why it
+   mattered, which is not something to guess on someone's behalf. */
+const SUMMARIES: Record<string, string> = {
+};
 
 /* ── Years ───────────────────────────────────────────────────────────────
    Derived from George's employment dates rather than guessed: Holy
@@ -116,7 +132,7 @@ export function getVol2Project(slug: string): Vol2Project | null {
   return {
     slug,
     title: listed.title,
-    summary: listed.subtitle,
+    summary: SUMMARIES[slug] || listed.subtitle,
     body: full?.description ?? listed.subtitle,
     meta: {
       client: full?.metadata.employer ?? '—',
