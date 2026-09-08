@@ -24,12 +24,12 @@ import { getVol2Project, allVol2ProjectSlugs } from '@/components/vol2/project/p
  *   base   262:9599   the title, the first still, and the facts — 80 apart
  *   panel  262:9989   the second still, the statement, the closing trio
  *
- * ── it is dark on dark ────────────────────────────────────────────────
- * Unlike the home and category heroes, both halves here are `--bg-page`:
- * 262:9599 sets its title in cream, so the hero is the page's own black
- * rather than the cream the other two open on. The join is therefore drawn
- * entirely by the arriving panel's rounded shoulder, which is the one thing
- * that has to survive — see `shoulder` in `PanelStack`.
+ * ── it is dark on darker ──────────────────────────────────────────────
+ * Both halves are dark here, unlike the home and category pages: 262:9599
+ * sets its title in cream, so the hero is the page's own black rather than
+ * the cream the other two open on. The panel is `--bg-surface`, one step off
+ * it — without that the shoulder was drawing a rounded corner between two
+ * identical blacks and the join could not be read at all.
  *
  * ── the 80s ───────────────────────────────────────────────────────────
  * Both nodes space their blocks 80 apart, which is `--band-gap`. The
@@ -111,7 +111,13 @@ export default function Vol2ProjectPage({ params }: { params: { slug: string } }
                   <CopyrightSection />
                 </div>
               ),
-              style: { background: 'var(--bg-page)' },
+              /* `--bg-surface`, not the page's black — George: *"the
+                 background of the panel is bg/surface, it's different from
+                 the hero section."* A step off the hero is the only thing
+                 marking the join on this template, since unlike the home and
+                 category pages both halves are dark; the shoulder alone was
+                 drawing a rounded corner between two identical blacks. */
+              style: { background: 'var(--bg-surface)' },
             },
           ]}
         />
