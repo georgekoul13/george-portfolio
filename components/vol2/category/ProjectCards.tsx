@@ -125,18 +125,15 @@ export default function ProjectCards({ projects }: { projects: CardProject[] }) 
   const featured = projects.slice(0, 2);
   const rest = projects.slice(2);
 
-  /* Rows of three, so a remainder doesn't stretch across the full width.
-     A remainder of exactly one is the bad case — a single medium card
-     stranded on the left of an empty row — so the last two rows are
-     rebalanced into 2 + 2 instead. Product's nine projects hit this: seven in
-     the tail would run 3 / 3 / 1, and now run 3 / 2 / 2. */
-  const rows: CardProject[][] = [];
-  for (let i = 0; i < rest.length; i += 3) rows.push(rest.slice(i, i + 3));
-  if (rows.length > 1 && rows[rows.length - 1].length === 1) {
-    const orphan = rows.pop()!;
-    const prev = rows.pop()!;
-    rows.push(prev.slice(0, 2), [prev[2], ...orphan]);
-  }
+  /* The tail is ONE grid that flows, not a list of hand-cut rows.
+     
+     It used to be chunked into threes, and a remainder of exactly one was
+     rebalanced into 2 + 2 to avoid stranding a single card — Product's seven
+     ran 3 / 2 / 2 rather than 3 / 3 / 1. That trades one ragged row for two:
+     George, looking at it, *"let's have rows of 3 instead of having all these
+     big gaps in the right."* Letting the grid flow puts every row at three
+     and leaves the remainder where a grid always leaves it, in the last row
+     only. */
 
   useGSAP(
     () => {
@@ -169,17 +166,20 @@ export default function ProjectCards({ projects }: { projects: CardProject[] }) 
           </div>
         )}
 
-        {rows.map((row, i) => (
+        {rest.length > 0 && (
           <div
-            key={i}
             className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
-            style={{ gap: 'var(--cards-gap)' }}
+            /* Across, the cards are `--cards-gap` apart; DOWN, they keep the
+               `--cards-row-gap` the hand-cut rows had between them, so the
+               rhythm is unchanged and only the ragged edges are gone. Below
+               `lg` the two are equal anyway — see the token. */
+            style={{ columnGap: 'var(--cards-gap)', rowGap: 'var(--cards-row-gap)' }}
           >
-            {row.map((p) => (
+            {rest.map((p) => (
               <Card key={p.slug} project={p} large={false} />
             ))}
           </div>
-        ))}
+        )}
       </div>
     </section>
   );
