@@ -53,11 +53,11 @@ const NAV = [
   { label: 'Product',  href: '/product' },
   { label: 'Graphic',  href: '/graphic' },
   { label: 'Creative', href: '/creative' },
-  /* The design ends on ABOUT and there is still no About route, so this
-     lands on Contact — the page that does exist. The label follows the
-     design; the destination is the one thing that cannot yet. One line to
-     correct the day About ships. */
-  { label: 'About',    href: '/contact' },
+  /* No ABOUT, and no CONTACT either. George dropped both: neither page
+     existed as anything but a promise — About never had a design, and
+     Contact's form does not submit anywhere, it composes a `mailto:` that
+     the footer's own EMAIL card opens in one click from every page. The
+     routes are still on disk, just unlinked. */
 ];
 
 /** the design's 2px between every tile, in one place — the collapse below

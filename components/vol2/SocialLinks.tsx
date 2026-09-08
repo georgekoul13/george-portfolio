@@ -26,12 +26,28 @@ const INSET = (BOX - GLYPH) / 2;
  * strings and not constants.
  */
 
+/**
+ * EMAIL first, and named for what it does rather than who hosts it — George.
+ * It carries more weight than it did: with the Contact page dropped, this
+ * card IS the contact route, so it leads rather than trailing three profiles.
+ * The rest run by how likely they are to be the reason someone came.
+ */
 const SOCIALS = [
+  { label: 'Email',     href: 'mailto:georgekoul13@gmail.com' },
+  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/george-koulouris/' },
   { label: 'Instagram', href: 'https://www.instagram.com/' },
   { label: 'Behance',   href: 'https://www.behance.net/' },
-  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/george-koulouris/' },
-  { label: 'Gmail',     href: 'mailto:georgekoul13@gmail.com' },
 ];
+
+/**
+ * The card's edge, as a variable rather than a fixed token.
+ *
+ * `--border-subtle` is one step off `--bg-page`, which is exactly right on
+ * the black it was drawn on and invisible on the project template's panel,
+ * which is `--bg-surface` — a step lighter, so the border and the background
+ * land on the same value. That page raises this to `--border-default`; see
+ * its panel style.
+ */
 
 /** the shared easing for both arrows, so they travel as one gesture */
 const GLIDE = 'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]';
@@ -77,7 +93,7 @@ export default function SocialLinks() {
           rel={s.href.startsWith('http') ? 'noreferrer' : undefined}
           className={
             'group relative flex h-[240px] min-w-[250px] flex-1 flex-col items-end justify-between ' +
-            'border border-[color:var(--border-subtle)] p-8 transition-colors duration-300 ' +
+            'border border-[color:var(--social-border)] p-8 transition-colors duration-300 ' +
             'hover:border-[color:var(--border-focus)] focus-visible:border-[color:var(--border-focus)] ' +
             'focus-visible:outline-none'
           }

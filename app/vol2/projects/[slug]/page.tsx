@@ -117,7 +117,14 @@ export default function Vol2ProjectPage({ params }: { params: { slug: string } }
                  marking the join on this template, since unlike the home and
                  category pages both halves are dark; the shoulder alone was
                  drawing a rounded corner between two identical blacks. */
-              style: { background: 'var(--bg-surface)' },
+              style: {
+                background: 'var(--bg-surface)',
+                /* `--border-subtle` is one step off `--bg-page` and vanishes
+                   on this panel, which is `--bg-surface` — the border and the
+                   background were landing on the same value, so the social
+                   cards had no visible edge at all. */
+                ['--social-border' as string]: 'var(--border-default)',
+              },
             },
           ]}
         />

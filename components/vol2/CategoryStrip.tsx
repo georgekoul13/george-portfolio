@@ -64,14 +64,8 @@ const CATEGORIES = [
     href: '/creative',
     img: '/images/projects/creatives/creative-01.png',
   },
-  /* No About route exists yet, so this lands on Contact — the same
-     substitution `MenuBar` makes, and for the same reason. Repoint it the day
-     About has a design. */
-  {
-    name: 'About me',
-    href: '/contact',
-    img: '/images/vol2/id/george-portrait.png',
-  },
+  /* The ABOUT ME card is gone with the About page — see the note in
+     `MenuBar`. Three categories, which is what the strip is for. */
 ];
 
 const CAP_TRIM = {
@@ -253,7 +247,10 @@ export default function CategoryStrip() {
     <Link
       key={`${c.href}-${copy ? 'b' : 'a'}`}
       data-card
-      href={c.href}
+      /* Prefixed, like the menu's links: a bare `/product` is the LIVE
+         page, and following one from the vol2 build drops you out of it
+         without it being obvious why. */
+      href={`/vol2${c.href}`}
       aria-hidden={copy || undefined}
       tabIndex={copy ? -1 : undefined}
       aria-label={`${c.name} projects`}

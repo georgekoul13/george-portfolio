@@ -92,6 +92,8 @@
   /* Figma has blue-700 here (2.8:1 on --bg-page, fails the 3:1 minimum
      for a focus indicator). Using blue-500 = 5.1:1. */
   --border-focus:   var(--green-500);
+  /* the social cards' edge — see `SocialLinks` for why it is a variable */
+  --social-border:  var(--border-subtle);
 
   /* ─── Semantic · feedback ──────────────────────────────────────── */
   /* Figma currently has error→yellow and warning→red, which is swapped.
