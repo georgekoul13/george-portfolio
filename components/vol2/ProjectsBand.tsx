@@ -713,7 +713,12 @@ export default function PerspectiveGallery({
              headline the rank sweeps past, and centring is what keeps it
              clear of the cards. */
           className="px-[var(--gutter)] uppercase"
-          style={{ ...CAP_TRIM, font: 'var(--type-24-24-l)', color: 'var(--text-primary)' }}
+          /* The same size as "Learn more" — George: *"in the responsive the
+             learn more and the where every… should have the same text
+             size."* They are peer section headings, and this one was the odd
+             one out at 24 against the other's 38. Same token, so they cannot
+             drift apart again. */
+          style={{ ...CAP_TRIM, font: 'var(--type-72-80-r)', color: 'var(--text-primary)' }}
         >
           {HEADLINE.join(' ')}
         </h2>
