@@ -355,7 +355,10 @@ html[data-nav-open] [data-header-rule] {
     max-width: none !important;
   }
 }
-[data-base-copy] { grid-area: copy; }
+[data-base-copy] {
+  grid-area: copy;
+  gap: 48px;
+}
 [data-base-figure] { grid-area: figure; }
 
 /* The mark takes no part in the wide layout: 255:9087 puts it in the corner
@@ -387,7 +390,7 @@ html[data-nav-open] [data-header-rule] {
 
   /* WITH a mark the order is different — 262:5841 puts the mark first, the
      drawing second and the title and lead TOGETHER under it, 56 apart with
-     24 inside. So the copy stays a column here rather than dissolving. */
+     16 inside. So the copy stays a column here rather than dissolving. */
   [data-base-body][data-has-mark] {
     grid-template-areas:
       'mark'
@@ -397,7 +400,8 @@ html[data-nav-open] [data-header-rule] {
   }
   [data-base-body][data-has-mark] [data-base-copy] {
     display: flex;
-    gap: 24px;
+    /* 16, the node's — it came down from 24 with the type */
+    gap: 16px;
   }
   [data-base-mark] {
     position: static;

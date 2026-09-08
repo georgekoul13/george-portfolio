@@ -86,7 +86,10 @@ export default async function BaseScreen({
             column of their own with the 48 inside it, and narrow this
             wrapper becomes `display: contents` and hands them back to the
             grid, where the drawing can sit between them. */}
-        <div data-base-copy className="flex min-w-0 flex-col" style={{ gap: 48 }}>
+        {/* The 48 between the title and the line lives in CSS, not here: an
+            inline gap beats a stylesheet rule, and the phone's composition
+            needs to bring it down to 16. */}
+        <div data-base-copy className="flex min-w-0 flex-col">
           <div data-base-title className="min-w-0">
             {title}
           </div>
