@@ -4,6 +4,7 @@ import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
 import BaseScreen from '@/components/vol2/BaseScreen';
 import Monogram from '@/components/vol2/Monogram';
+import BaseText from '@/components/vol2/BaseText';
 import FooterSection from '@/components/vol2/FooterSection';
 import CopyrightSection from '@/components/vol2/CopyrightSection';
 import CategoryTitle from '@/components/vol2/category/CategoryTitle';
@@ -76,16 +77,33 @@ export default function CategoryPage({ params }: { params: { category: string } 
               content: (
                 <BaseScreen
                   mark={<Monogram />}
+                  /* Both lines write themselves as the page lands — George:
+                     *"when the user lands in the hero of this page template,
+                     let's reveal the title and the subtitle."* The same
+                     character reveal the featured band's headline has.
+
+                     `startAt` is on the global timeline's clock, which the
+                     Loader pauses — so 0.15 means a beat after the curtain
+                     lifts, not a beat after the JavaScript ran. The home
+                     page's default waits for its wordmark's letters to land;
+                     there is no wordmark here to wait for.
+
+                     The lead starts at 0.75, while the title still has a
+                     third of its run left: they overlap, which reads as one
+                     movement rather than two things taking turns. */
                   title={
-                    <h1
+                    <BaseText
+                      as="h1"
                       className="uppercase"
+                      startAt={0.15}
                       style={{ font: 'var(--cat-title)', color: 'var(--text-primary)' }}
                     >
                       {category.intro}
-                    </h1>
+                    </BaseText>
                   }
                   text={category.lead}
                   textFont="var(--cat-lead)"
+                  textStartAt={0.75}
                 />
               ),
               style: { background: 'var(--bg-page)', color: 'var(--text-primary)' },

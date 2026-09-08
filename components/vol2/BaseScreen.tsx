@@ -38,6 +38,7 @@ export default async function BaseScreen({
   title,
   text,
   textFont = 'var(--type-32-40-r)',
+  textStartAt,
 }: {
   /**
    * A small wordmark above the title, on the pages whose title is words
@@ -52,6 +53,8 @@ export default async function BaseScreen({
   text?: ReactNode;
   /** the category hero's lead is a step larger narrow — see `--cat-lead` */
   textFont?: string;
+  /** when the lead starts writing itself, on the global timeline's clock */
+  textStartAt?: number;
 }) {
   const svg = await readFile(
     path.join(process.cwd(), 'public/images/vol2/avatar/george.svg'),
@@ -95,7 +98,12 @@ export default async function BaseScreen({
           </div>
 
           {text ? (
-            <BaseText style={{ font: textFont, color: 'var(--text-primary)' }}>{text}</BaseText>
+            <BaseText
+              startAt={textStartAt}
+              style={{ font: textFont, color: 'var(--text-primary)' }}
+            >
+              {text}
+            </BaseText>
           ) : null}
         </div>
 

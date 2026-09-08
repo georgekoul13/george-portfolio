@@ -40,9 +40,34 @@ const RUN = 1.1;
 export default function BaseText({
   children,
   style,
+  className,
+  as: Tag = 'p',
+  startAt = ENTRANCE_END + 0.15,
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
+  /**
+   * The element to render. A category hero's TITLE gets this same reveal —
+   * George: *"let's add a revealing animation to the title as well"* — and a
+   * title has to be an `h1`, not a paragraph.
+   */
+  as?: 'p' | 'h1';
+  /**
+   * When to start, in seconds on `gsap.globalTimeline`.
+   *
+   * Absolute rather than a delay, and on THAT clock rather than the wall
+   * clock, because the Loader pauses the global timeline while its panel is
+   * up: a wall-clock delay would burn itself down behind the curtain and the
+   * reveal would already be over by the time anyone saw it. Reading the same
+   * clock means "this long after the page is actually visible", however long
+   * the loader held.
+   *
+   * The default is the home page's: after the wordmark's letters have
+   * finished arriving. A category hero has no wordmark entrance to wait for,
+   * so it passes its own, much earlier.
+   */
+  startAt?: number;
 }) {
   const line = useRef<HTMLParagraphElement>(null);
 
@@ -75,7 +100,7 @@ export default function BaseText({
            wordmark that had not started arriving yet. Reading the same clock
            the entrance is on keeps the two in step however long the loader
            holds, and `max(0, …)` covers a late `fonts.ready`. */
-        const at = ENTRANCE_END + 0.15;
+        const at = startAt;
         const n = Math.max(1, chars.length - 1);
         gsap.to(chars, {
           yPercent: 0,
@@ -91,12 +116,17 @@ export default function BaseText({
          on every resize — the same trap `RevealText` fell into. */
       return () => split?.revert();
     },
-    { scope: line },
+    { scope: line, dependencies: [startAt] },
   );
 
   return (
-    <p ref={line} data-base-text style={{ visibility: 'hidden', ...style }}>
+    <Tag
+      ref={line as React.RefObject<HTMLParagraphElement & HTMLHeadingElement>}
+      data-base-text={Tag === 'p' ? true : undefined}
+      className={className}
+      style={{ visibility: 'hidden', ...style }}
+    >
       {children}
-    </p>
+    </Tag>
   );
 }
