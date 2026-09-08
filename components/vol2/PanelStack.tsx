@@ -553,13 +553,21 @@ export default function PanelStack({
       let refreshing = false;
       const builtWith = holdSignature();
 
+      /**
+       * A changed hold cannot be refreshed away — it is a duration in a
+       * timeline that already exists — so this asks for a rebuild instead.
+       * Returns whether it did, so callers can stop.
+       */
+      let rebuilding = false;
+      const syncHolds = () => {
+        if (rebuilding || holdSignature() === builtWith) return false;
+        rebuilding = true;
+        setRev((n) => n + 1);
+        return true;
+      };
+
       const recompute = () => {
-        /* A changed hold cannot be refreshed away — it is a duration in a
-           timeline that already exists — so this rebuilds instead. */
-        if (holdSignature() !== builtWith) {
-          setRev((n) => n + 1);
-          return;
-        }
+        if (syncHolds()) return;
         refreshing = true;
         setGaps();
         ScrollTrigger.refresh();
@@ -569,6 +577,17 @@ export default function PanelStack({
       };
 
       const ro = new ResizeObserver(() => {
+        /* BEFORE the guards, not after. The first callback is otherwise
+           swallowed as noise — and on this page the first callback is the
+           one that matters: `ProjectsBand` reads its breakpoint in an
+           effect, so the panel is built while the server's wide branch is
+           still mounted, and the swap to the phone's list lands in the very
+           same frame the observer starts in. The stack was left holding a
+           4400px hold that no longer existed anywhere in the DOM, its pin
+           ran 4400px past the end of the document, and the page simply
+           stopped scrolling at the featured projects. */
+        if (syncHolds()) return;
+
         /* Two guards, and both are load-bearing. The first callback only
            reports the size just measured, so it is noise. And a refresh
            REVERTS every pin and re-applies it, which resizes the very
@@ -586,7 +605,13 @@ export default function PanelStack({
       /* `setTimeout`, NOT `gsap.delayedCall`: a delayed call lives on
          `gsap.globalTimeline`, and the Loader PAUSES that while its panel is
          up, so one scheduled that way simply never fires. */
-      const late = window.setTimeout(() => ScrollTrigger.refresh(), 400);
+      /* …and once more on the next frame, for the case where the swap
+         changes which holds exist WITHOUT changing any observed height. */
+      const check = requestAnimationFrame(() => syncHolds());
+
+      const late = window.setTimeout(() => {
+        if (!syncHolds()) ScrollTrigger.refresh();
+      }, 400);
 
       return () => {
         /* A rebuild re-runs every trigger from scratch, and `onLeave` only
@@ -597,6 +622,7 @@ export default function PanelStack({
         );
         ro.disconnect();
         cancelAnimationFrame(queued);
+        cancelAnimationFrame(check);
         window.clearTimeout(late);
         ScrollTrigger.removeEventListener('refreshInit', setGaps);
       };
