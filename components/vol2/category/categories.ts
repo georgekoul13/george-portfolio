@@ -1,4 +1,5 @@
 import projects from '@/data/projects.json';
+import { STILLS } from '../project/stills';
 
 /**
  * The three category pages — Figma "Category template", node 147:9780.
@@ -169,11 +170,33 @@ const TAGS: Record<string, string> = {
 /**
  * Two slugs don't match their artwork's filename — the images were exported
  * before the slugs settled. Everything else is `{slug}-1.png`.
+ *
+ * This is the FALLBACK now, not the rule — see `cardImage`.
  */
 const IMAGE_OVERRIDES: Record<string, string> = {
   'piraeus-insurance': 'piraeus-1',
   'insurance-product-flows': 'insurance-product-1',
 };
+
+/**
+ * The card shows the project's OWN first still — the same picture that opens
+ * its page. George: *"the thumbnail card image … is the same image as the
+ * base section."*
+ *
+ * It used to read `/images/projects/orbit/{slug}-1.png`, and those are around
+ * 270 x 200: a thumbnail stretched across a card drawn at 1240 wide, which is
+ * why every card looked soft. `STILLS[slug][0]` is the real artwork at full
+ * size, and `object-cover` handles the crop — the card is landscape 5:4 where
+ * the hero is 33:16, so the same file serves both.
+ *
+ * Projects whose artwork has not been re-exported yet still have no `STILLS`
+ * entry, so they fall back to the orbit thumbnail rather than to nothing.
+ */
+function cardImage(slug: string): string {
+  const real = STILLS[slug]?.[0];
+  if (real) return real;
+  return orbit(IMAGE_OVERRIDES[slug] ?? `${slug}-1`);
+}
 
 /**
  * Cards for an arbitrary list of slugs, in the order given. Missing slugs are
@@ -194,7 +217,7 @@ export function cardsForSlugs(slugs: string[], fallbackTag = 'PROJECT'): CardPro
       slug: p.slug,
       title: p.title,
       subtitle: p.subtitle,
-      image: orbit(IMAGE_OVERRIDES[p.slug] ?? `${p.slug}-1`),
+      image: cardImage(p.slug),
       tag: TAGS[p.slug] ?? fallbackTag,
     }];
   });

@@ -11,6 +11,19 @@ import Image from 'next/image';
 gsap.registerPlugin(ScrollTrigger);
 
 /**
+ * A slot takes a still or a looping video, decided by the file extension, so
+ * a project can swap one for the other without a code change. George, on the
+ * experimental posters: *"the panel big image is the video"* — and, on how it
+ * should behave: *"i dont want to have the scroll playing interaction."*
+ *
+ * So it is a moving poster, not a player: no chrome, no play button, nothing
+ * for the reader to operate. `muted` and `playsInline` are not style choices
+ * — without both, iOS refuses to autoplay at all, and without `playsInline`
+ * it hijacks into fullscreen.
+ */
+const VIDEO = /\.(mp4|webm|mov)$/i;
+
+/**
  * The full-width stills — Figma "Hero Image Frame", 1320 × 640 inside the
  * page's 60px gutters. Given an aspect rather than its fixed height so the
  * picture keeps its proportions at any width, and that aspect is a token:
@@ -21,8 +34,43 @@ gsap.registerPlugin(ScrollTrigger);
  * own frame, which is the closest thing in this template to the wipe the
  * headlines use — nothing slides in from outside the layout.
  */
-export default function ProjectImage({ src, alt }: { src: string; alt: string }) {
+export default function ProjectImage({
+  src,
+  alt,
+  poster,
+}: {
+  src: string;
+  alt: string;
+  /** first frame of a video slot — what shows before it loads, and the only
+      thing that shows when autoplay is refused. */
+  poster?: string;
+}) {
   const root = useRef<HTMLDivElement>(null);
+  const isVideo = VIDEO.test(src);
+
+  /* Play only while it is on screen. Without this every visitor downloads the
+     clip whether or not they scroll this far, and it keeps decoding off the
+     battery once it has passed. Reduced motion never starts it at all — the
+     poster is the whole experience there, which is why one is required. */
+  useGSAP(
+    () => {
+      if (!isVideo) return;
+      const v = root.current?.querySelector('video');
+      if (!v) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const io = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        },
+        { rootMargin: '200px 0px' },
+      );
+      io.observe(v);
+      return () => io.disconnect();
+    },
+    { scope: root, dependencies: [isVideo, src] },
+  );
 
   useGSAP(
     () => {
@@ -50,14 +98,28 @@ export default function ProjectImage({ src, alt }: { src: string; alt: string })
             candidate anyway. GSAP animates this element's `scale`, which is
             a transform and so does not fight the inline `position` that
             `fill` sets. */}
-        <Image
-          data-inner
-          src={src}
-          alt={alt}
-          fill
-          sizes="100vw"
-          className="object-cover"
-        />
+        {isVideo ? (
+          <video
+            data-inner
+            src={src}
+            poster={poster}
+            aria-label={alt}
+            muted
+            loop
+            playsInline
+            preload="none"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <Image
+            data-inner
+            src={src}
+            alt={alt}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
       </div>
     </div>
   );
