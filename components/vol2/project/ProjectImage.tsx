@@ -101,7 +101,6 @@ export default function ProjectImage({
         {isVideo ? (
           <video
             data-inner
-            src={src}
             poster={poster}
             aria-label={alt}
             muted
@@ -109,7 +108,14 @@ export default function ProjectImage({
             playsInline
             preload="none"
             className="absolute inset-0 h-full w-full object-cover"
-          />
+          >
+            {/* WebM first — VP9 holds this content at a third of H.264's
+                size. A browser that cannot play it falls straight through to
+                the mp4, and a missing file is the same non-event, so the
+                sibling does not have to exist. */}
+            <source src={src.replace(/\.mp4$/i, '.webm')} type="video/webm" />
+            <source src={src} type="video/mp4" />
+          </video>
         ) : (
           <Image
             data-inner
