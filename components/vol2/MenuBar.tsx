@@ -230,10 +230,29 @@ export default function MenuBar() {
          `width: 0` still renders its 14px either side — 28px of tile that
          looks like nothing but still sits in the row, turning the 2px gap
          beside the close button into 32. Every gap in the row is 2 now. */
+      /* MEASURE IT WITH THE PADDING IT WILL HAVE, not the padding it has.
+         `scrollWidth` on the collapsed tile reports the text alone — 46 for
+         HOME — and `box-sizing: border-box` then spends 28 of those 46 on
+         the 14+14 being restored alongside it, leaving 18px for a 46px word.
+         So every close brought the label back clipped: HOM, PRODUC. The
+         longer the label the worse it read, which is why a category page
+         showed it most.
+
+         Same trick the rail uses above: let it size itself, read it, then
+         put it back where the tween starts. George, on a phone: *"if i open
+         the menu and just click on the x … the home is cut."* */
+      gsap.set(menuEl, { width: 'auto', paddingLeft: 14, paddingRight: 14 });
+      const tileW = menuEl.offsetWidth;
+      gsap.set(
+        menuEl,
+        open
+          ? { width: tileW, paddingLeft: 14, paddingRight: 14, marginRight: 0 }
+          : { width: 0, paddingLeft: 0, paddingRight: 0, marginRight: -GAP },
+      );
       set(
         menuEl,
         {
-          width: open ? 0 : menuEl.scrollWidth,
+          width: open ? 0 : tileW,
           paddingLeft: open ? 0 : 14,
           paddingRight: open ? 0 : 14,
           /* A zero-width element still sits BETWEEN two gaps — the one after
