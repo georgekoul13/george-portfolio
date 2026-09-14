@@ -108,6 +108,12 @@ const SLEEVE_NEAR = 24 / 36;
 const SLEEVE_FAR = 46 / 36;
 /** brow height goes 7.85 → 14.14 at both vertical extremes — it arches */
 const BROW_ARCH = 14.143 / 7.853;
+/* The LOVE frame raises the brows off the eye — 7.853 tall against the
+   sleeping frame's 14.143, the same pair `BROW_ARCH` is derived from. In this
+   drawing's units that reads as a small lift rather than a redraw. */
+const LOVE_BROW = 4 * K;
+/** how long a still page waits before he nods off */
+const DOZE = 15;
 /** the ears grow about this much when he tips his head */
 const EAR_SWELL = 1.1;
 
@@ -181,9 +187,25 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
          panel except the moment you crossed the picture itself. */
       const host = stage.closest('section') ?? stage;
 
+      /* ── moods ────────────────────────────────────────────────────────
+         Three faces share one rig. `awake` is the drawing as it ships;
+         `love` swaps each eye's circle for a heart; `asleep` closes them and
+         floats three Zs off the ear. The alternates live in `george.svg`
+         at zero opacity — see the comment beside them there. */
+      type Mood = 'awake' | 'love' | 'asleep';
+      let mood: Mood = 'awake';
+      /** the last place he was told to look, so a mood change can re-aim */
+      let lu = 0;
+      let lv = 0;
+
       /** Where he is looking, as two numbers in −1…1. The cursor is one way
           of arriving at them; a phone's gyroscope, below, is the other. */
       const aim = (u: number, v: number) => {
+        lu = u;
+        lv = v;
+        /* Asleep he is not watching anything. Letting the cursor keep
+           driving the rig would slide a closed eye around the face. */
+        if (mood === 'asleep') return;
         const y = vert(v);
         eyeX(u * X);
         eyeY(y);
@@ -193,7 +215,7 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
            BOTH extremes, which is the "warp" in the frames rather than a
            second drawing. */
         browX(u * X);
-        browY(y * 0.5);
+        browY(y * 0.5 - (mood === 'love' ? LOVE_BROW : 0));
         browS(1 + (BROW_ARCH - 1) * Math.abs(v));
 
         /* The uneven pair. Looking right, the right cheek barely moves while
@@ -231,6 +253,138 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
         hairY(0); earS(1);
         btnX(0); hLS(1); hRS(1);
       };
+
+
+      /* ── the three faces ──────────────────────────────────────────────
+         George: hearts *"whenever the user hovers over the menu"*, and sleep
+         *"if the user does not do anything for like 10 - 15 secs and the
+         character is visible."* */
+      const faces = (name: string) =>
+        gsap.utils.toArray<SVGGElement>(`[data-face="${name}"]`, stage);
+      const eyesOpen = faces('open');
+      const eyesHeart = faces('heart');
+      const eyesShut = faces('shut');
+      const zzz = at('zzz');
+
+      /* The Zs rise and fade in turn rather than all together — one leaves as
+         the next arrives, which is what reads as a stream rather than a
+         blink. They are drawn already climbing and growing, so the tween only
+         has to carry them the last part of the way. */
+      const zLoop = gsap.timeline({ repeat: -1, paused: true });
+      if (zzz) {
+        /* The PATH, not the group around it. Each group carries the
+           `translate(x y)` that steps the Zs up and to the right, and GSAP
+           treats `y` as the absolute translate rather than an offset — so
+           tweening it on the group overwrote that step and landed all three
+           on the same line. The path has no transform of its own, so the
+           drift is free to be a drift. */
+        const zEls = gsap.utils.toArray<SVGPathElement>('[data-z] path', zzz);
+        zLoop
+          .fromTo(
+            zEls,
+            { autoAlpha: 0, y: 8 },
+            { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.3, ease: 'power2.out' },
+          )
+          .to(zEls, { autoAlpha: 0, y: -10, duration: 0.6, stagger: 0.3, ease: 'power2.in' }, 1.1);
+      }
+
+      const setMood = (next: Mood) => {
+        if (next === mood) return;
+        const was = mood;
+        mood = next;
+        const F = 0.32;
+        gsap.to(eyesOpen, { autoAlpha: next === 'awake' ? 1 : 0, duration: F });
+        gsap.to(eyesHeart, { autoAlpha: next === 'love' ? 1 : 0, duration: F });
+        gsap.to(eyesShut, { autoAlpha: next === 'asleep' ? 1 : 0, duration: F });
+        if (zzz) gsap.to(zzz, { autoAlpha: next === 'asleep' ? 1 : 0, duration: F });
+
+        if (next === 'asleep') {
+          /* Settle the face straight ahead before the lids come down, or he
+             falls asleep still looking at wherever the cursor last was. */
+          leave();
+          zLoop.play(0);
+        } else {
+          zLoop.pause();
+          /* Coming back from asleep, `aim` has been returning early — so put
+             him back where he was rather than waiting for the next move. */
+          if (was === 'asleep') aim(lu, lv);
+          else aim(lu, lv);
+        }
+      };
+
+      /* ── hearts ───────────────────────────────────────────────────────
+         `MenuBar` says when: hover on a mouse, open on a touch screen, since
+         there is no hovering there. */
+      const onAffection = (e: Event) => {
+        if (mood === 'asleep') return;
+        setMood((e as CustomEvent<boolean>).detail ? 'love' : 'awake');
+      };
+      window.addEventListener('vol2:affection', onAffection);
+
+      /* ── sleep ────────────────────────────────────────────────────────
+         Only while he is on screen: a timer that runs in a scrolled-past
+         panel would have him asleep the moment you came back to him. */
+      let seen = false;
+      let timer = 0;
+      const clear = () => { window.clearTimeout(timer); timer = 0; };
+      const doze = () => {
+        clear();
+        if (!seen || coarse) return;
+        timer = window.setTimeout(() => setMood('asleep'), DOZE * 1000);
+      };
+      const stir = () => {
+        if (mood === 'asleep') setMood('awake');
+        doze();
+      };
+
+      const io = new IntersectionObserver(
+        ([e]) => {
+          seen = e.isIntersecting;
+          if (!seen) { clear(); zLoop.pause(); }
+          else { if (mood === 'asleep') zLoop.play(0); doze(); }
+        },
+        { threshold: 0.25 },
+      );
+      io.observe(stage);
+
+      if (fine) {
+        /* Window-level, not the panel: reading the page counts as being
+           awake even when the pointer never crosses him. */
+        window.addEventListener('pointermove', stir, { passive: true });
+        window.addEventListener('pointerdown', stir, { passive: true });
+        window.addEventListener('keydown', stir);
+        window.addEventListener('scroll', stir, { passive: true });
+      }
+
+      /* ── asleep until the first tap, on a phone ───────────────────────
+         George: *"we could have the sleeping version until this first tap —
+         like as an indicator."* It is: on iOS the gyroscope needs a gesture
+         before it will report at all, so a sleeping face is both the resting
+         state and the thing that asks for the tap.
+
+         ANDROID HAS NO SUCH GATE — it starts reporting immediately — so the
+         wake is keyed to the first reading OR the first touch, whichever
+         lands first. A phone with no gyroscope, or one where the permission
+         is refused, still wakes on the tap rather than sleeping for ever. */
+      if (coarse) {
+        mood = 'asleep';
+        /* Written to the element, NOT through `gsap.set`. The Loader parks
+           `gsap.globalTimeline` for the whole of the home page's entrance, and
+           a paused clock renders no tweens — a zero-duration one included. So
+           every `set` here was being swallowed and he woke up on a phone with
+           his eyes already open. This is a resting state rather than an
+           animation, so it has no business on that clock anyway. */
+        const hard = (els: Element[], on: boolean) =>
+          els.forEach((e) => {
+            (e as SVGElement).style.opacity = on ? '1' : '0';
+            (e as SVGElement).style.visibility = on ? 'visible' : 'hidden';
+          });
+        hard(eyesOpen, false);
+        hard(eyesShut, true);
+        if (zzz) hard([zzz], true);
+        zLoop.play(0);
+        window.addEventListener('touchend', stir);
+      }
 
       /* so he is already watching you before you reach him */
       if (fine) {
@@ -320,6 +474,15 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
       }
 
       return () => {
+        io.disconnect();
+        clear();
+        zLoop.kill();
+        window.removeEventListener('vol2:affection', onAffection);
+        window.removeEventListener('pointermove', stir);
+        window.removeEventListener('pointerdown', stir);
+        window.removeEventListener('keydown', stir);
+        window.removeEventListener('scroll', stir);
+        window.removeEventListener('touchend', stir);
         host.removeEventListener('pointermove', move);
         host.removeEventListener('pointerleave', leave);
         window.removeEventListener('touchend', ask);

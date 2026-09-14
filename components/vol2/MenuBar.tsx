@@ -126,6 +126,28 @@ export default function MenuBar() {
      navigation, because this component does. */
   useEffect(() => setOpen(false), [pathname]);
 
+  /* ── the avatar's hearts ───────────────────────────────────────────────
+     George: heart eyes *"whenever the user hovers over the menu"*, and on a
+     phone *"let's have the hearts on open menu"* — there is no hover to read
+     there, and an open menu is the same intent expressed by the only means
+     available.
+
+     An event rather than shared state: `Avatar` is a different branch of the
+     tree entirely, and a context just to carry one boolean would make every
+     page that renders a menu re-render every time a pointer crossed it. */
+  const affection = (on: boolean) => {
+    window.dispatchEvent(new CustomEvent('vol2:affection', { detail: on }));
+  };
+
+  /* The open menu keeps them on a touch screen; a mouse leaving the bar
+     takes them off again even if it is still open, because there the hover
+     is the signal and the menu merely happens to be beneath it. */
+  useEffect(() => {
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    affection(open);
+    return () => { affection(false); };
+  }, [open]);
+
   /**
    * Back — Figma 238:6401, the menu as it appears on a category page: an
    * outlined tile carrying a left arrow, ahead of the burger.
@@ -349,6 +371,8 @@ export default function MenuBar() {
   return (
     <div
       ref={root}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') affection(true); }}
+      onPointerLeave={(e) => { if (e.pointerType === 'mouse') affection(false); }}
       className="fixed left-1/2 z-[56] flex -translate-x-1/2 flex-col-reverse items-center gap-[2px] sm:flex-row sm:items-center"
       style={{ bottom: 'var(--menu-bottom)' }}
     >
