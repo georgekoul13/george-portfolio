@@ -9,7 +9,7 @@ import { useGSAP } from '@gsap/react';
 import '../scrollDefaults';
 import Chip from '../Chip';
 import ProjectImage from './ProjectImage';
-import type { Block, Row } from './blocks';
+import type { Block, Cell } from './blocks';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,16 +25,63 @@ gsap.registerPlugin(ScrollTrigger);
  * Every chip carries `data-chip` so `ProjectHeader` can read out the section
  * you are in without either component knowing about the other's markup.
  *
- * ── the grid is not a grid ────────────────────────────────────────────
- * Each row in a `split` is one or two stills, and the design mixes them
- * freely — two 400s, then one 840 across, then two more. A CSS grid with a
- * fixed column count cannot express "this row is one wide", so the rows are
- * flex and each still takes an equal share of whatever row it is in. One
- * still fills 840; two sit at 400 with the 40 gap between them. The numbers
- * fall out rather than being asserted.
+ * ── the stills WRAP; they are not rows ────────────────────────────────
+ * Figma lays the 840 column out as a wrap: every slot is either 400 wide or
+ * 840, they run left to right, and a row ends when the next one will not
+ * fit. Two 400s make a row with the 40 gap between them; an 840 takes a row
+ * to itself; and a 400 with nothing after it STAYS 400 and sits at the left
+ * of its own row.
+ *
+ * That last case is the one this got wrong. The old code took a list of rows
+ * and derived the aspect from the count — one in the row meant 840x400 — so
+ * Gaspar's eleventh brand still, a phone screenshot, was stretched into a
+ * letterbox. George: *"in the case of one image here on the row it should be
+ * like this"*, pointing at Figma 352:5061, which is 400x400 and alone.
+ *
+ * Flex wrap reproduces the whole rule with no counting: each cell asks for
+ * its own share and the browser breaks the lines. Nothing here knows how
+ * many rows there are, which is exactly why it cannot get them wrong.
  */
 
-function Stills({ rows, alt }: { rows: Row[]; alt: string }) {
+/** one slot — a still or a loop, at the proportion the design drew it */
+function Slot({ cell, alt }: { cell: Cell; alt: string }) {
+  return (
+    <div
+      data-still
+      className="relative min-w-0 overflow-hidden"
+      /* `--still-cell` is 100% on a phone and half-the-column-minus-the-gap
+         above it, so the wrap goes to one-up where a 400 would be too small
+         to read. A span-2 slot is the whole column at every width. */
+      style={{ width: cell.span === 2 ? '100%' : 'var(--still-cell)', aspectRatio: cell.aspect }}
+    >
+      {cell.kind === 'video' ? (
+        <video
+          poster={cell.poster}
+          aria-label={cell.alt ?? alt}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="none"
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={cell.src.replace(/\.mp4$/i, '.webm')} type="video/webm" />
+          <source src={cell.src} type="video/mp4" />
+        </video>
+      ) : (
+        <Image
+          src={cell.src}
+          alt={cell.alt ?? alt}
+          fill
+          sizes="(min-width: 1200px) 40vw, (min-width: 600px) 45vw, 100vw"
+          className="object-cover"
+        />
+      )}
+    </div>
+  );
+}
+
+function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -53,31 +100,61 @@ function Stills({ rows, alt }: { rows: Row[]; alt: string }) {
   );
 
   return (
-    <div ref={root} className="flex w-full flex-col" style={{ gap: 'var(--project-row-gap)' }}>
-      {rows.map((row, i) => (
-        <div key={i} className="flex w-full" style={{ gap: 'var(--project-row-gap)' }}>
-          {row.map((shot, j) => (
-            <div
-              data-still
-              key={shot.src + j}
-              className="relative min-w-0 flex-1 overflow-hidden"
-              /* 1:1 for a pair, 21:10 for one across — the design's 400x400
-                 and 840x400. Taken from how many are in the row rather than
-                 stored, so a row cannot disagree with itself. */
-              style={{ aspectRatio: row.length > 1 ? '1 / 1' : '840 / 400' }}
-            >
-              <Image
-                src={shot.src}
-                alt={shot.alt ?? alt}
-                fill
-                sizes="(min-width: 900px) 40vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
+    <div
+      ref={root}
+      className="flex w-full flex-wrap content-start"
+      style={{ gap: 'var(--project-row-gap)' }}
+    >
+      {cells.map((c, i) => (
+        <Slot key={c.src + i} cell={c} alt={alt} />
       ))}
     </div>
+  );
+}
+
+/**
+ * The arrow that leads each line of a section's list — Figma
+ * `icon/arrow-down-right`, drawn rather than fetched so it takes the tone's
+ * ink like the words next to it instead of shipping a second colour.
+ */
+function ArrowDownRight() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      aria-hidden="true"
+      className="mt-[3px] shrink-0"
+    >
+      <path
+        d="M5.25 5.25L12.75 12.75M12.75 5.25V12.75H5.25"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** the paragraph, and under it the arrow-led lines some sections carry */
+function Words({ text, bullets }: { text: string; bullets?: string[] }) {
+  return (
+    <>
+      <p style={{ font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }}>
+        {text}
+      </p>
+      {bullets?.length ? (
+        <ul className="flex flex-col" style={{ gap: 8, color: 'var(--text-primary)' }}>
+          {bullets.map((b, i) => (
+            <li key={i} className="flex items-start" style={{ gap: 8 }}>
+              <ArrowDownRight />
+              <span style={{ font: 'var(--type-16-24-r)' }}>{b}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </>
   );
 }
 
@@ -101,9 +178,9 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
                   <Chip label={b.chip} />
                 </span>
               )}
-              <p style={{ font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }}>
-                {b.text}
-              </p>
+              <div className="flex w-full flex-col" style={{ gap: 24 }}>
+                <Words text={b.text} bullets={b.bullets} />
+              </div>
             </section>
           );
         }
@@ -131,14 +208,14 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
               className="flex w-full flex-col xl:flex-row xl:items-start"
               style={{ gap: 'var(--project-split-gap)' }}
             >
-              <p
-                className="min-w-0 xl:w-[432px] xl:shrink-0"
-                style={{ font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }}
+              <div
+                className="flex min-w-0 flex-col xl:w-[432px] xl:shrink-0"
+                style={{ gap: 24 }}
               >
-                {b.text}
-              </p>
+                <Words text={b.text} bullets={b.bullets} />
+              </div>
               <div className="w-full min-w-0 xl:flex-1">
-                <Stills rows={b.rows} alt={alt} />
+                <Stills cells={b.cells} alt={alt} />
               </div>
             </div>
           </section>

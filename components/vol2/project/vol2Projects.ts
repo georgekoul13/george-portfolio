@@ -1,5 +1,6 @@
-import { ASSETS } from './assets';
-import type { Block, Row, Vol2Project } from './blocks';
+import { ASSETS, type Shot } from './assets';
+import { LAYOUT, type LayoutCell } from './layout';
+import type { Block, Cell, Vol2Project } from './blocks';
 
 /**
  * The nineteen project pages, on the template of Figma 366:11793.
@@ -7,13 +8,37 @@ import type { Block, Row, Vol2Project } from './blocks';
  * ── EVERY WORD BELOW IS A PLACEHOLDER ─────────────────────────────────
  * George: *"ALL THE TEXTS EVERYWHERE ARE PLACEHOLDERS we are going to do
  * them page by page."* The titles and the section chips are his and are
- * real; the subtitle, the section paragraphs and all four facts are not.
- * They are marked rather than invented so that a page reads as unfinished
- * instead of reading as finished and wrong — the same arrangement as
- * `SUMMARIES`, and for the same reason.
+ * real; the subtitle, the section paragraphs, the arrow-led lines and all
+ * four facts are not. They are marked rather than invented so that a page
+ * reads as unfinished instead of reading as finished and wrong.
  *
  * Do not "improve" a line here. We write them together, one project at a
  * time.
+ *
+ * ── the PICTURES are not placeholders ─────────────────────────────────
+ * They used to be arranged by this file: chips from a table here, stills
+ * dealt out evenly between them, two to a row. That put the right pictures
+ * in the wrong sections — Gaspar's eleven brand stills spread across six
+ * sections, one of them stretched to twice its width because it happened to
+ * land alone. The arrangement now comes from `layout.ts`, which was read off
+ * George's canvas, and this file only says which FILE goes in which slot.
+ *
+ * ── how a file finds its slot ─────────────────────────────────────────
+ * By shape, in order. The design names a slot's size; the export knows its
+ * own pixels; a 400 slot takes the next square and an 840 slot takes the
+ * next wide one. That matters because `image N` is both shapes — Istorima's
+ * `image 3` is 1680x800 and sits across the column while `image 2` and
+ * `image 4` are 800x800 cells either side of it. Reading the shape puts it
+ * back exactly where the canvas has it; counting names does not.
+ *
+ * ── the two tables below, and why they have to exist ──────────────────
+ * `NOT_EXPORTED` and `REPEATS` are the only places where this file departs
+ * from filling slots in order, and both are facts about the EXPORT rather
+ * than about the design. Neither can be worked out from the files: a slot
+ * with no picture and a slot whose picture is also used elsewhere both look
+ * like "one more 840" from here. They are checked against the chip they
+ * belong to, so if `layout.ts` is re-read and a section moves, the
+ * exception stops applying instead of landing on the wrong section.
  *
  * ── the slugs are PROVISIONAL ─────────────────────────────────────────
  * Sixteen reuse the slug the project already had, so no URL moves and no
@@ -42,6 +67,9 @@ const LOREM_LONG =
   ' Class aptent taciti sociosqu ad litora torquent per conubia nostra, per ' +
   'inceptos himenaeos.';
 
+/** one arrow-led line. The design says how many; the words are still ours. */
+const LOREM_LINE = 'Forem ipsum dolor sit';
+
 /* The four facts are NOT prose, so lorem would be wrong for them — and a
    real-looking value would be worse, because "DEERISLD" under Gaspar AI is
    a false statement rather than a blank. They read as the shape of the
@@ -52,30 +80,6 @@ const FACT = {
   role: 'Role',
   designTime: 'N days',
   deliverables: 'What was delivered',
-};
-
-const CHIPS: Record<string, string[]> = {
-  /* George's own section labels, read off the Figma canvas. The order is
-     the order they appear down the page. */
-  deerislnd: ['Brief', 'The challenge', 'The design process', 'The Directions', 'The Final'],
-  'cancellation-wallet': ['Brief', 'The challenge', 'The design process', 'The solution', 'The complexity'],
-  cybersential: ['Brief', 'The challenge', 'The design process', 'Sales flow', 'Wallet', 'The complexity'],
-  'piraeus-insurance': ['Brief', 'The design process', 'Various insurance products', 'The challenge', 'Phone insurance', 'The complexity'],
-  bancasure360: ['Brief', 'The design process', 'The complexity', 'Various insurance products'],
-  'gaspar-ai': ['Brief', 'The challenge', 'The brand', 'The design process', 'The Website vol2', 'Conversational Design'],
-  mood: ['Brief', 'The brand'],
-  istorima: ['Brief', 'The design process', 'The challenge'],
-  benefit: ['Brief', 'The design process', 'The challenge'],
-  'book-cover': ['Brief', 'The challenge', 'The Directions'],
-  'olga-posonidou': ['Brief', 'The Directions'],
-  'vasiliki-vozora': ['Brief', 'The Directions'],
-  'danai-michali': ['Brief', 'The Directions'],
-  arcana: ['Brief', 'The Directions'],
-  cabaret: ['Brief', 'The Directions'],
-  'czech-folk': ['Brief', 'The Directions'],
-  'in-pixels-we-see': ['Brief', 'The Directions'],
-  'typeface-a': ['Brief', 'The Directions'],
-  'typeface-b': ['Brief', 'The Directions'],
 };
 
 /** slug -> the export folder it draws from, and the title George gave it */
@@ -101,47 +105,133 @@ const SOURCES: { slug: string; folder: string; title: string }[] = [
   { slug: 'typeface-b', folder: 'Typeface b', title: 'Typeface B' },
 ];
 
+const VIDEO = /\.(mp4|webm|mov)$/i;
+
 /**
- * Deal the stills out across the sections that want pictures.
+ * Slots the design draws that the export does not have.
  *
- * The design gives each section a handful and mixes pair-rows with
- * row-width ones. Until each page is laid out for real, the stills are
- * spread evenly and dealt two to a row, with a project's row-width stills
- * (the wireframes) taking a row of their own — which is what they are
- * exported at.
+ * Each one is a real picture on George's canvas with no file in the folder,
+ * so the section renders as its chip and its words and the slot is not
+ * filled from the queue — which matters more than it sounds. Benefit's two
+ * sections are both `The Design proccess` and both want an 840; if the
+ * first one silently took the next wide file, the SECOND would be short and
+ * the screens would shift a place. Marking the empty one keeps everything
+ * after it in the right slot.
+ *
+ *   gaspar-ai   `The Design proccess` is the whole-canvas overview, and
+ *               `Conversational Design` is two dialogue flow diagrams. The
+ *               folder has eleven squares and three loops and no wides.
+ *   benefit     the FIRST `The Design proccess` is the canvas overview. The
+ *               second one's nine slots match the nine exported files cell
+ *               for cell.
+ *   book-cover  the full-width slot under `Brief` still holds a DEERISLD
+ *               poster — the frame was duplicated from that project and the
+ *               picture has not been swapped yet. Nothing to export.
+ *
+ * Nothing is substituted. A picture used twice would read as a choice
+ * rather than as a gap.
  */
-function rowsFrom(stills: string[], wides: string[]): Row[] {
-  const rows: Row[] = [];
-  for (let i = 0; i < stills.length; i += 2) {
-    rows.push(stills.slice(i, i + 2).map((src) => ({ src })));
-  }
-  for (const src of wides) rows.push([{ src }]);
-  return rows;
-}
+const NOT_EXPORTED: Record<string, { at: number; chip: string | null }[]> = {
+  'gaspar-ai': [
+    { at: 4, chip: 'The Design proccess' },
+    { at: 7, chip: 'Conversational Design' },
+  ],
+  benefit: [{ at: 1, chip: 'The Design proccess' }],
+  /* a media block has no chip of its own */
+  'book-cover': [{ at: 1, chip: null }],
+};
+
+/**
+ * Sections that show pictures the page shows again further down.
+ *
+ * Deerislnd opens `The Design proccess` with the first two posters and then
+ * gives all seven of them to `The Directions`. Seven files, nine slots, and
+ * the two are deliberate — the section is about how the direction was
+ * arrived at, so it holds the two it arrived at. They are read by index
+ * instead of taken off the queue, which leaves `The Directions` its seven.
+ */
+const REPEATS: Record<string, Record<string, number[]>> = {
+  deerislnd: { 'The Design proccess': [0, 1] },
+};
+
+/** a square export is a 400 cell; anything wider than it is tall is an 840 */
+const isSquare = (s: Shot) => s.w > 0 && s.w === s.h;
 
 function buildBlocks(slug: string, folder: string): Block[] {
   const a = ASSETS[folder];
-  if (!a) return [];
-  const chips = CHIPS[slug] ?? ['Brief'];
+  const plan = LAYOUT[slug];
+  if (!a || !plan) return [];
+
+  /* Four queues, each in export order. A slot takes the next file of its own
+     shape, so the sequence survives a project whose squares and wides are
+     interleaved in one `image N` run. */
+  const allSquares = a.stills.filter(isSquare).map((s) => s.src);
+  const squares = [...allSquares];
+  const wides = a.stills.filter((s) => !isSquare(s)).map((s) => s.src);
+  const highlights = a.highlights.map((s) => s.src);
+  const videos = [...a.videos];
+
+  const empty = NOT_EXPORTED[slug] ?? [];
+  const repeats = REPEATS[slug] ?? {};
+
+  /** the file for one slot, or nothing when the export does not have it */
+  const fill = (c: LayoutCell): string | undefined => {
+    if (c.k !== 'image') return videos.shift();
+    if (c.w >= 800) return wides.shift();
+    return squares.shift();
+  };
+
+  const toCell = (c: LayoutCell, src = fill(c)): Cell | null => {
+    if (!src) return null;
+    return {
+      src,
+      span: c.w >= 800 ? 2 : 1,
+      aspect: `${c.w} / ${c.h}`,
+      kind: VIDEO.test(src) ? 'video' : 'image',
+    };
+  };
+
   const blocks: Block[] = [];
+  plan.blocks.forEach((b, at) => {
+    if (b.kind === 'text') {
+      blocks.push({ kind: 'text', chip: b.chip, text: LOREM });
+      return;
+    }
 
-  /* The opening is a chip and a paragraph across the measure — no pictures
-     beside it — then the feature slot under it. */
-  blocks.push({ kind: 'text', chip: chips[0], text: LOREM });
+    /* the slot is drawn but has no file — see `NOT_EXPORTED` */
+    const blank = empty.some((e) => e.at === at && e.chip === (b.kind === 'split' ? b.chip : null));
 
-  const feature = a.videos[0] ?? a.highlights[0] ?? a.hero;
-  if (feature) blocks.push({ kind: 'media', src: feature, poster: a.highlights[0] ?? a.hero ?? undefined });
+    if (b.kind === 'media') {
+      if (blank) return;
+      /* The full-width slot is a still on some pages and one of George's
+         Figma timelines on others; `anim` means the timeline, which arrives
+         as a video file. A still first, so a project with both keeps them
+         in the order the design has them. */
+      const src = b.cell.k === 'image' ? highlights.shift() ?? videos.shift() : videos.shift();
+      if (src) blocks.push({ kind: 'media', src });
+      return;
+    }
 
-  /* Everything after the first chip is a split, and the stills are shared
-     out between them. */
-  const rest = chips.slice(1);
-  if (!rest.length) return blocks;
+    const bullets = b.bullets ? Array.from({ length: b.bullets }, () => LOREM_LINE) : undefined;
 
-  const per = Math.ceil(a.stills.length / rest.length);
-  rest.forEach((chip, i) => {
-    const mine = a.stills.slice(i * per, (i + 1) * per);
-    const wides = i === rest.length - 1 ? a.wides : [];
-    blocks.push({ kind: 'split', chip, text: LOREM_LONG, rows: rowsFrom(mine, wides) });
+    /* A section that shows pictures the page shows again reads them by
+       index rather than taking them off the queue — see `REPEATS`. */
+    const again = repeats[b.chip];
+    const cells = blank
+      ? []
+      : again
+        ? b.cells
+            .map((c, i) => toCell(c, allSquares[again[i]]))
+            .filter((c): c is Cell => !!c)
+        : b.cells.map((c) => toCell(c)).filter((c): c is Cell => !!c);
+
+    /* A split whose pictures are all missing is still a section George
+       wrote — it keeps its chip and its words and stops being a split. */
+    if (!cells.length) {
+      blocks.push({ kind: 'text', chip: b.chip, text: LOREM, bullets });
+      return;
+    }
+    blocks.push({ kind: 'split', chip: b.chip, text: LOREM_LONG, bullets, cells });
   });
 
   return blocks;

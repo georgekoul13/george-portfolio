@@ -571,6 +571,20 @@
   --project-title-gap: 32px;    /* title to its subtitle */
   --project-meta-gap: 40px;     /* between the four facts */
   --project-more-gap: 64px;     /* "More projects" to its cards */
+
+  /* One cell of the stills column. The column wraps, so this is all that
+     decides how many land in a row: half of it minus half the gap puts two
+     across, 100% puts one. It is a width rather than a column count because
+     the design mixes 400 slots and 840 ones in the same run — a 840 asks for
+     100% and a 400 asks for this, and the wrap does the rest.
+
+     One-up below 600. Two 400s inside a 375 phone are 150px each with the
+     gap taken out, which is smaller than the phone screenshots most of them
+     contain. */
+  --still-cell: 100%;
+}
+@media (min-width: 600px) {
+  :root { --still-cell: calc(50% - var(--project-row-gap) / 2); }
 }
 @media (max-width: 899px) {
   :root {

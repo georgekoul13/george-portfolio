@@ -55,6 +55,7 @@ export default function ProjectHeader({
   const inner = useRef<HTMLDivElement>(null);
   const fill = useRef<HTMLSpanElement>(null);
   const label = useRef<HTMLSpanElement>(null);
+  const pct = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -62,12 +63,14 @@ export default function ProjectHeader({
       const slide = inner.current;
       const bar = fill.current;
       const out = label.current;
+      const num = pct.current;
       const end = document.querySelector<HTMLElement>('[data-project-end]');
-      if (!outer || !slide || !bar || !out || !end) return;
+      if (!outer || !slide || !bar || !out || !num || !end) return;
 
       const setY = gsap.quickSetter(slide, 'y', 'px');
       const setX = gsap.quickSetter(bar, 'scaleX');
       let last = '';
+      let lastPct = '';
 
       const tick = () => {
         /* The outer box is never transformed, so its top is the honest
@@ -83,7 +86,17 @@ export default function ProjectHeader({
         setY(Math.min(past, room));
 
         const run = eTop - hTop;
-        setX(run > 0 ? gsap.utils.clamp(0, 1, past / run) : past > 0 ? 1 : 0);
+        const done = run > 0 ? gsap.utils.clamp(0, 1, past / run) : past > 0 ? 1 : 0;
+        setX(done);
+
+        /* The same number the bar is drawing, in words, for the narrow
+           header — see the markup. Rounded before the compare so it is
+           written once per whole percent rather than once per frame. */
+        const shown = Math.round(done * 100) + '%';
+        if (shown !== lastPct) {
+          lastPct = shown;
+          num.textContent = shown;
+        }
 
         /* Whichever chip last crossed under the header. Walked backwards so
            the answer is the deepest one reached, not the first one matched. */
@@ -133,10 +146,26 @@ export default function ProjectHeader({
           <p className="min-w-0 flex-1" style={{ fontWeight: 700 }}>
             {title}
           </p>
-          {/* Written by the ticker rather than held in React state: it changes
-              on every frame of a scroll, and re-rendering the panel that often
-              to swap one word would be the most expensive thing on the page. */}
-          <span ref={label} data-section-label className="shrink-0 text-right" />
+          {/* Written by the ticker rather than held in React state: they
+              change on every frame of a scroll, and re-rendering the panel
+              that often to swap one word would be the most expensive thing
+              on the page.
+
+              ── two readouts, one at a time ───────────────────────────
+              George: *"In the responsive remove the category on the header
+              and put a % of the page."* A section name is the widest thing
+              in this row — "Various insurance products" is 23 characters
+              against a title that is already there — and on a phone the two
+              collide or the name wraps under itself. A percentage is never
+              more than four characters and says the same thing the bar
+              underneath is saying, which is the part that still fits.
+
+              Both are in the markup and CSS picks: the name from `lg` up,
+              the number below it. Swapping them in JS would mean a resize
+              listener and a re-render for something the cascade already
+              knows. */}
+          <span ref={label} data-section-label className="hidden shrink-0 text-right lg:block" />
+          <span ref={pct} data-progress-pct className="shrink-0 text-right lg:hidden" />
         </div>
 
         <div
