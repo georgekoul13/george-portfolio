@@ -97,7 +97,7 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
               style={{ gap: 'var(--project-chip-gap)' }}
             >
               {b.chip && (
-                <span data-chip={b.chip}>
+                <span data-chip={b.chip} className="inline-flex self-start">
                   <Chip label={b.chip} />
                 </span>
               )}
@@ -114,7 +114,7 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
             className="flex w-full flex-col px-[var(--gutter)]"
             style={{ gap: 'var(--project-chip-gap)' }}
           >
-            <span data-chip={b.chip}>
+            <span data-chip={b.chip} className="inline-flex self-start">
               <Chip label={b.chip} />
             </span>
             {/* Side by side only from `xl`. The design splits 1320 into 432

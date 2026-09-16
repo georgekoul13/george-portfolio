@@ -63,8 +63,12 @@ export default function ProjectBase({
   hero: string;
 }) {
   return (
+    /* NO gutter on this box. `ProjectImage` carries its own, so padding
+       here too put the picture inside two of them — 120px of cream either
+       side at desktop, which is why it read as floating in the page rather
+       than filling it. The words below take the gutter individually. */
     <div
-      className="flex w-full flex-col px-[var(--gutter)]"
+      className="flex w-full flex-col"
       style={{ paddingBlock: 'var(--base-pad-y)', gap: 'var(--project-base-gap)' }}
     >
       {/* `ProjectImage` already owns the aspect token and the uncover-from-
@@ -72,7 +76,7 @@ export default function ProjectBase({
           whose opening frame moves needs no different component here. */}
       <ProjectImage src={hero} alt={title} />
 
-      <div className="flex w-full flex-col" style={{ gap: 'var(--project-title-gap)' }}>
+      <div className="flex w-full flex-col px-[var(--gutter)]" style={{ gap: 'var(--project-title-gap)' }}>
         <h1
           className="uppercase"
           style={{
@@ -91,7 +95,7 @@ export default function ProjectBase({
       {/* One row at desktop. Below `lg` four cells across a phone would be
           19px wide, so they wrap to two and then to one. */}
       <div
-        className="grid w-full grid-cols-1 sm:grid-cols-2 lg:flex"
+        className="grid w-full grid-cols-1 px-[var(--gutter)] sm:grid-cols-2 lg:flex"
         style={{ gap: 'var(--project-meta-gap)' }}
       >
         <div className="flex min-w-0 flex-1 flex-col gap-[var(--project-meta-gap)] sm:flex-row">

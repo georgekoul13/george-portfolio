@@ -22,8 +22,37 @@ import type { Block, Row, Vol2Project } from './blocks';
  * them is a one-line edit here plus the same word in `categories.ts`.
  */
 
-/** placeholder, and it says so — never let one of these ship */
-const TBD = '[to write]';
+/* ── the placeholder copy ─────────────────────────────────────────────
+   George's own frames carry "Forem ipsum", so the same text is here: it
+   sets at the length the design was drawn to, which `[to write]` did not —
+   a two-word paragraph in a 432 column tells you nothing about whether the
+   column works.
+
+   It stays obviously fake on purpose. Lorem cannot be mistaken for finished
+   copy and cannot say anything wrong about the work, which invented English
+   would do on both counts. Replace a whole entry when we write it; never
+   edit one of these into something that reads as real. */
+const LOREM =
+  'Forem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate ' +
+  'libero et velit interdum, ac aliquet odio mattis.';
+
+/** the longer one, for a section that carries a 432 column beside its stills */
+const LOREM_LONG =
+  LOREM +
+  ' Class aptent taciti sociosqu ad litora torquent per conubia nostra, per ' +
+  'inceptos himenaeos.';
+
+/* The four facts are NOT prose, so lorem would be wrong for them — and a
+   real-looking value would be worse, because "DEERISLD" under Gaspar AI is
+   a false statement rather than a blank. They read as the shape of the
+   answer instead: obviously unfilled, but showing what belongs there. Only
+   George has these. */
+const FACT = {
+  client: 'Client name',
+  role: 'Role',
+  designTime: 'N days',
+  deliverables: 'What was delivered',
+};
 
 const CHIPS: Record<string, string[]> = {
   /* George's own section labels, read off the Figma canvas. The order is
@@ -98,7 +127,7 @@ function buildBlocks(slug: string, folder: string): Block[] {
 
   /* The opening is a chip and a paragraph across the measure — no pictures
      beside it — then the feature slot under it. */
-  blocks.push({ kind: 'text', chip: chips[0], text: TBD });
+  blocks.push({ kind: 'text', chip: chips[0], text: LOREM });
 
   const feature = a.videos[0] ?? a.highlights[0] ?? a.hero;
   if (feature) blocks.push({ kind: 'media', src: feature, poster: a.highlights[0] ?? a.hero ?? undefined });
@@ -112,7 +141,7 @@ function buildBlocks(slug: string, folder: string): Block[] {
   rest.forEach((chip, i) => {
     const mine = a.stills.slice(i * per, (i + 1) * per);
     const wides = i === rest.length - 1 ? a.wides : [];
-    blocks.push({ kind: 'split', chip, text: TBD, rows: rowsFrom(mine, wides) });
+    blocks.push({ kind: 'split', chip, text: LOREM_LONG, rows: rowsFrom(mine, wides) });
   });
 
   return blocks;
@@ -124,8 +153,8 @@ const BY_SLUG = new Map<string, Vol2Project>(
     {
       slug,
       title,
-      subtitle: TBD,
-      meta: { client: TBD, role: TBD, designTime: TBD, deliverables: TBD },
+      subtitle: LOREM,
+      meta: { ...FACT },
       hero: ASSETS[folder]?.hero ?? '',
       blocks: buildBlocks(slug, folder),
     },

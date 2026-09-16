@@ -39,7 +39,7 @@ gsap.registerPlugin(ScrollTrigger);
 const LARGE_ASPECT = '640 / 480';
 const MEDIUM_ASPECT = '1240 / 960'; // 413.33 × 320
 
-function Card({ project, large }: { project: CardProject; large: boolean }) {
+export function Card({ project, large }: { project: CardProject; large: boolean }) {
   return (
     <Link
       data-card
