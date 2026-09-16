@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import type { CardProject } from './categories';
+import Chip from '../Chip';
 
 import '../scrollDefaults';
 import Image from 'next/image';
@@ -38,32 +39,6 @@ gsap.registerPlugin(ScrollTrigger);
 const LARGE_ASPECT = '640 / 480';
 const MEDIUM_ASPECT = '1240 / 960'; // 413.33 × 320
 
-/**
- * The blurred pill on the artwork — Figma 147:9507.
- *
- * Figma fills it with the category, but on a category page that is the one
- * thing already known, so it carries the project's sector instead — see
- * `TAGS` in `categories.ts`. Same pill, different word.
- */
-function CategoryChip({ label }: { label: string }) {
-  return (
-    <span
-      className="relative shrink-0 self-start uppercase"
-      style={{
-        font: 'var(--type-12-16-r)',
-        color: 'var(--text-primary)',
-        background: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderRadius: 16,
-        padding: '8px 12px',
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
 function Card({ project, large }: { project: CardProject; large: boolean }) {
   return (
     <Link
@@ -91,7 +66,7 @@ function Card({ project, large }: { project: CardProject; large: boolean }) {
           className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
         <span className="relative flex h-full flex-col items-start p-4">
-          <CategoryChip label={project.tag} />
+          <Chip label={project.tag} />
         </span>
       </span>
 
