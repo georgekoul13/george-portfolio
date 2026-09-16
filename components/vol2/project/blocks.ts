@@ -37,9 +37,25 @@
  * where the shapes come from and `ProjectBlocks` for the wrap.
  */
 
+/**
+ * A loop, in every format it exists in — and only the ones it exists in.
+ *
+ * Both entries are optional because the markup has to offer exactly what is
+ * on disk. The old code derived the sibling by swapping the extension, so a
+ * `.webm` slot emitted that file twice: once as `video/webm` and once as
+ * `video/mp4`. A browser without VP9 followed the second source, fetched a
+ * VP9 file and failed — the fallback was a fallback in name only.
+ */
+export interface Sources {
+  webm?: string;
+  mp4?: string;
+}
+
 /** one picture slot beside a `split` */
 export interface Cell {
-  src: string;
+  /** a still; for a loop this is empty and `sources` carries it */
+  src?: string;
+  sources?: Sources;
   alt?: string;
   /** 1 = half the stills column, 2 = the whole of it */
   span: 1 | 2;
@@ -52,7 +68,7 @@ export interface Cell {
 
 export type Block =
   | { kind: 'text'; chip?: string; text: string; bullets?: string[] }
-  | { kind: 'media'; src: string; poster?: string; alt?: string }
+  | { kind: 'media'; src?: string; sources?: Sources; poster?: string; alt?: string }
   | { kind: 'split'; chip: string; text: string; bullets?: string[]; cells: Cell[] };
 
 export interface ProjectMetaFields {

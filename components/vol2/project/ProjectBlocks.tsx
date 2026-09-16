@@ -9,6 +9,7 @@ import { useGSAP } from '@gsap/react';
 import '../scrollDefaults';
 import Chip from '../Chip';
 import ProjectImage from './ProjectImage';
+import VideoSources from './VideoSources';
 import type { Block, Cell } from './blocks';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -65,12 +66,11 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
           preload="none"
           className="absolute inset-0 h-full w-full object-cover"
         >
-          <source src={cell.src.replace(/\.mp4$/i, '.webm')} type="video/webm" />
-          <source src={cell.src} type="video/mp4" />
+          <VideoSources src={cell.src} sources={cell.sources} />
         </video>
       ) : (
         <Image
-          src={cell.src}
+          src={cell.src!}
           alt={cell.alt ?? alt}
           fill
           sizes="(min-width: 1200px) 40vw, (min-width: 600px) 45vw, 100vw"
@@ -106,7 +106,7 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
       style={{ gap: 'var(--project-row-gap)' }}
     >
       {cells.map((c, i) => (
-        <Slot key={c.src + i} cell={c} alt={alt} />
+        <Slot key={(c.src ?? c.sources?.webm ?? c.sources?.mp4 ?? '') + i} cell={c} alt={alt} />
       ))}
     </div>
   );
@@ -163,7 +163,15 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
     <div className="flex w-full flex-col" style={{ gap: 'var(--project-block-gap)' }}>
       {blocks.map((b, i) => {
         if (b.kind === 'media') {
-          return <ProjectImage key={i} src={b.src} poster={b.poster} alt={b.alt ?? alt} />;
+          return (
+            <ProjectImage
+              key={i}
+              src={b.src}
+              sources={b.sources}
+              poster={b.poster}
+              alt={b.alt ?? alt}
+            />
+          );
         }
 
         if (b.kind === 'text') {

@@ -170,10 +170,9 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     figma: '358:40360',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
-      { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "The Directions", bullets: 2,
         cells: [{ w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'text', chip: "The challenge" },
     ],
   },
   "olga-posonidou": {

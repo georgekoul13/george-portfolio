@@ -1,4 +1,4 @@
-import { ASSETS, type Shot } from './assets';
+import { ASSETS, type Loop, type Shot } from './assets';
 import { LAYOUT, type LayoutCell } from './layout';
 import type { Block, Cell, Vol2Project } from './blocks';
 
@@ -110,36 +110,22 @@ const VIDEO = /\.(mp4|webm|mov)$/i;
 /**
  * Slots the design draws that the export does not have.
  *
- * Each one is a real picture on George's canvas with no file in the folder,
- * so the section renders as its chip and its words and the slot is not
- * filled from the queue — which matters more than it sounds. Benefit's two
- * sections are both `The Design proccess` and both want an 840; if the
- * first one silently took the next wide file, the SECOND would be short and
- * the screens would shift a place. Marking the empty one keeps everything
- * after it in the right slot.
+ * EMPTY as of 2026-09-17, and kept because the shape of the problem will
+ * come back. Every slot in every project now has a file. The three that did
+ * not were Gaspar's `The Design proccess` and `Conversational Design` (the
+ * canvas overview and two dialogue flow diagrams, `wide 01`–`wide 03`) and
+ * Benefit's first `The Design proccess` (`wireframe.png`); George exported
+ * all four. To Nixteri Book's stray full-width slot was a Deerislnd poster
+ * left behind by duplicating the frame, and he removed it in Figma instead
+ * — `layout.ts` no longer has the block at all.
  *
- *   gaspar-ai   `The Design proccess` is the whole-canvas overview, and
- *               `Conversational Design` is two dialogue flow diagrams. The
- *               folder has eleven squares and three loops and no wides.
- *   benefit     the FIRST `The Design proccess` is the canvas overview. The
- *               second one's nine slots match the nine exported files cell
- *               for cell.
- *   book-cover  the full-width slot under `Brief` still holds a DEERISLD
- *               poster — the frame was duplicated from that project and the
- *               picture has not been swapped yet. Nothing to export.
- *
- * Nothing is substituted. A picture used twice would read as a choice
- * rather than as a gap.
+ * What this is FOR, when the next one turns up: an unfillable slot has to be
+ * named rather than skipped, because the queue is positional. Benefit has
+ * two sections both chipped `The Design proccess`, both wanting an 840. If
+ * the first silently took the next wide file, the second would come up short
+ * and every screen after it would shift a place.
  */
-const NOT_EXPORTED: Record<string, { at: number; chip: string | null }[]> = {
-  'gaspar-ai': [
-    { at: 4, chip: 'The Design proccess' },
-    { at: 7, chip: 'Conversational Design' },
-  ],
-  benefit: [{ at: 1, chip: 'The Design proccess' }],
-  /* a media block has no chip of its own */
-  'book-cover': [{ at: 1, chip: null }],
-};
+const NOT_EXPORTED: Record<string, { at: number; chip: string | null }[]> = {};
 
 /**
  * Sections that show pictures the page shows again further down.
@@ -174,21 +160,27 @@ function buildBlocks(slug: string, folder: string): Block[] {
   const empty = NOT_EXPORTED[slug] ?? [];
   const repeats = REPEATS[slug] ?? {};
 
-  /** the file for one slot, or nothing when the export does not have it */
-  const fill = (c: LayoutCell): string | undefined => {
-    if (c.k !== 'image') return videos.shift();
-    if (c.w >= 800) return wides.shift();
-    return squares.shift();
-  };
+  /** the still for one slot, or nothing when the export does not have it */
+  const fill = (c: LayoutCell): string | undefined =>
+    c.w >= 800 ? wides.shift() : squares.shift();
 
-  const toCell = (c: LayoutCell, src = fill(c)): Cell | null => {
+  const shape = (c: LayoutCell) => ({
+    span: (c.w >= 800 ? 2 : 1) as 1 | 2,
+    aspect: `${c.w} / ${c.h}`,
+  });
+
+  const toCell = (c: LayoutCell, still?: string): Cell | null => {
+    /* A loop is a PAIR of files, not one — the WebM and its H.264 fallback.
+       It carries both so the markup can offer only what exists; see
+       `VideoSources` for what deriving the sibling from the name cost. */
+    if (c.k !== 'image') {
+      const loop: Loop | undefined = videos.shift();
+      if (!loop) return null;
+      return { sources: loop, kind: 'video', ...shape(c) };
+    }
+    const src = still ?? fill(c);
     if (!src) return null;
-    return {
-      src,
-      span: c.w >= 800 ? 2 : 1,
-      aspect: `${c.w} / ${c.h}`,
-      kind: VIDEO.test(src) ? 'video' : 'image',
-    };
+    return { src, kind: 'image', ...shape(c) };
   };
 
   const blocks: Block[] = [];
@@ -207,8 +199,13 @@ function buildBlocks(slug: string, folder: string): Block[] {
          Figma timelines on others; `anim` means the timeline, which arrives
          as a video file. A still first, so a project with both keeps them
          in the order the design has them. */
-      const src = b.cell.k === 'image' ? highlights.shift() ?? videos.shift() : videos.shift();
-      if (src) blocks.push({ kind: 'media', src });
+      if (b.cell.k === 'image') {
+        const src = highlights.shift();
+        if (src) blocks.push({ kind: 'media', src });
+        return;
+      }
+      const loop = videos.shift();
+      if (loop) blocks.push({ kind: 'media', sources: loop });
       return;
     }
 

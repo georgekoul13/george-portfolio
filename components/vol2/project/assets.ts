@@ -8,20 +8,36 @@ export interface Shot {
   h: number;
 }
 
+/** one loop, in the formats it was encoded to */
+export interface Loop {
+  webm?: string;
+  mp4?: string;
+}
+
 export interface ProjectAssets {
   hero: string | null;
-  /** `image N` then `wireframe N`, in export order, square and wide mixed */
+  /** `wireframe N`, `image N`, `wide N` — the design's order, shapes mixed */
   stills: Shot[];
   /** full-width feature stills */
   highlights: Shot[];
-  /** full-width feature loops — WebM first where both exist */
-  videos: string[];
+  /** the feature loops, one entry per loop rather than one per file */
+  videos: Loop[];
 }
 
 export const ASSETS: Record<string, ProjectAssets> = {
   "BancaSure360": {
     "hero": "/images/vol2/projects/BancaSure360/hero.png",
     "stills": [
+      {
+        "src": "/images/vol2/projects/BancaSure360/wireframe%201.png",
+        "w": 1680,
+        "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/BancaSure360/wireframe%202.png",
+        "w": 1680,
+        "h": 800
+      },
       {
         "src": "/images/vol2/projects/BancaSure360/image%2001.png",
         "w": 800,
@@ -66,16 +82,6 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "src": "/images/vol2/projects/BancaSure360/image%209.png",
         "w": 800,
         "h": 800
-      },
-      {
-        "src": "/images/vol2/projects/BancaSure360/wireframe%201.png",
-        "w": 1680,
-        "h": 800
-      },
-      {
-        "src": "/images/vol2/projects/BancaSure360/wireframe%202.png",
-        "w": 1680,
-        "h": 800
       }
     ],
     "highlights": [],
@@ -84,6 +90,11 @@ export const ASSETS: Record<string, ProjectAssets> = {
   "Benefit Apps": {
     "hero": "/images/vol2/projects/Benefit%20Apps/hero.png",
     "stills": [
+      {
+        "src": "/images/vol2/projects/Benefit%20Apps/wireframe.png",
+        "w": 1680,
+        "h": 800
+      },
       {
         "src": "/images/vol2/projects/Benefit%20Apps/image%2001.png",
         "w": 800,
@@ -160,6 +171,11 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "hero": "/images/vol2/projects/Cancellation%20Insurance/hero.png",
     "stills": [
       {
+        "src": "/images/vol2/projects/Cancellation%20Insurance/wireframe.png",
+        "w": 1680,
+        "h": 800
+      },
+      {
         "src": "/images/vol2/projects/Cancellation%20Insurance/image%201.png",
         "w": 800,
         "h": 800
@@ -208,21 +224,24 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "src": "/images/vol2/projects/Cancellation%20Insurance/image%2010.png",
         "w": 800,
         "h": 800
-      },
-      {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/wireframe.png",
-        "w": 1680,
-        "h": 800
       }
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Cancellation%20Insurance/Cancellation%20Wallet_highlight%201.webm"
+      {
+        "mp4": "/images/vol2/projects/Cancellation%20Insurance/Cancellation%20Wallet_highlight%201.mp4",
+        "webm": "/images/vol2/projects/Cancellation%20Insurance/Cancellation%20Wallet_highlight%201.webm"
+      }
     ]
   },
   "Cybersential": {
     "hero": "/images/vol2/projects/Cybersential/hero.png",
     "stills": [
+      {
+        "src": "/images/vol2/projects/Cybersential/wireframe.png",
+        "w": 1680,
+        "h": 800
+      },
       {
         "src": "/images/vol2/projects/Cybersential/image%201.png",
         "w": 800,
@@ -272,11 +291,6 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "src": "/images/vol2/projects/Cybersential/image%2010.png",
         "w": 800,
         "h": 800
-      },
-      {
-        "src": "/images/vol2/projects/Cybersential/wireframe.png",
-        "w": 1680,
-        "h": 800
       }
     ],
     "highlights": [],
@@ -303,7 +317,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Czech/Czech_highlight.webm"
+      {
+        "webm": "/images/vol2/projects/Czech/Czech_highlight.webm",
+        "mp4": "/images/vol2/projects/Czech/Czech_highlight.mp4"
+      }
     ]
   },
   "Danai Michali": {
@@ -415,8 +432,14 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Deerislnd/highlight%201.webm",
-      "/images/vol2/projects/Deerislnd/highlight%202.webm"
+      {
+        "mp4": "/images/vol2/projects/Deerislnd/highlight%201.mp4",
+        "webm": "/images/vol2/projects/Deerislnd/highlight%201.webm"
+      },
+      {
+        "mp4": "/images/vol2/projects/Deerislnd/highlight%202.mp4",
+        "webm": "/images/vol2/projects/Deerislnd/highlight%202.webm"
+      }
     ]
   },
   "Gaspar AI": {
@@ -476,13 +499,37 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "src": "/images/vol2/projects/Gaspar%20AI/image%2011.png",
         "w": 800,
         "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2001.png",
+        "w": 1680,
+        "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2002.png",
+        "w": 1680,
+        "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2003.png",
+        "w": 1680,
+        "h": 800
       }
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Gaspar%20AI/Gaspar%20AI_highlight.webm",
-      "/images/vol2/projects/Gaspar%20AI/gaspar-video-1.mp4",
-      "/images/vol2/projects/Gaspar%20AI/gaspar-ai-video2.mp4"
+      {
+        "webm": "/images/vol2/projects/Gaspar%20AI/Gaspar%20AI_highlight.webm",
+        "mp4": "/images/vol2/projects/Gaspar%20AI/Gaspar%20AI_highlight.mp4"
+      },
+      {
+        "mp4": "/images/vol2/projects/Gaspar%20AI/gaspar-video-1.mp4",
+        "webm": "/images/vol2/projects/Gaspar%20AI/gaspar-video-1.webm"
+      },
+      {
+        "mp4": "/images/vol2/projects/Gaspar%20AI/gaspar-ai-video2.mp4",
+        "webm": "/images/vol2/projects/Gaspar%20AI/gaspar-ai-video2.webm"
+      }
     ]
   },
   "Mood": {
@@ -675,6 +722,11 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "hero": "/images/vol2/projects/Piraeus%20Insurance/hero.png",
     "stills": [
       {
+        "src": "/images/vol2/projects/Piraeus%20Insurance/wireframe.png",
+        "w": 1680,
+        "h": 800
+      },
+      {
         "src": "/images/vol2/projects/Piraeus%20Insurance/image%2001.png",
         "w": 800,
         "h": 800
@@ -737,11 +789,6 @@ export const ASSETS: Record<string, ProjectAssets> = {
       {
         "src": "/images/vol2/projects/Piraeus%20Insurance/image%2013.png",
         "w": 800,
-        "h": 800
-      },
-      {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/wireframe.png",
-        "w": 1680,
         "h": 800
       }
     ],
@@ -812,7 +859,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Typeface%20A/Typeface%20A_highlight%202.webm"
+      {
+        "mp4": "/images/vol2/projects/Typeface%20A/Typeface%20A_highlight%202.mp4",
+        "webm": "/images/vol2/projects/Typeface%20A/Typeface%20A_highlight%202.webm"
+      }
     ]
   },
   "Typeface b": {
@@ -843,7 +893,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/Vasiliki%20Vozora/vozora-03-preview.mp4"
+      {
+        "mp4": "/images/vol2/projects/Vasiliki%20Vozora/vozora-03-preview.mp4",
+        "webm": "/images/vol2/projects/Vasiliki%20Vozora/vozora-03-preview.webm"
+      }
     ]
   },
   "istorima": {
@@ -919,7 +972,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ],
     "highlights": [],
     "videos": [
-      "/images/vol2/projects/pixel/pixel_highlight.webm"
+      {
+        "webm": "/images/vol2/projects/pixel/pixel_highlight.webm",
+        "mp4": "/images/vol2/projects/pixel/pixel_highlight.mp4"
+      }
     ]
   }
 };

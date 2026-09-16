@@ -8,7 +8,16 @@
  *   hero.png        the base picture, and the card's
  *   image N.png     a still — 800x800 for a grid cell, 1680x800 for a row
  *   highlight N.*   the full-width slot, still or loop
- *   wireframe N.png a row-width still
+ *   wireframe N.png a row-width still, the design-process slot
+ *   wide N.png      a row-width still that is not a wireframe
+ *
+ * ── the order of `stills` is the order the design uses them ───────────
+ * Wireframes first, then `image N`, then `wide N`. A wireframe is always a
+ * design-process slot and that section comes before the screens it produced
+ * — Benefit has two sections chipped "The Design proccess", and its
+ * `wireframe.png` belongs to the first, ahead of `image 3` and `image 9`
+ * which are the wides inside the second. Appending wireframes at the end
+ * put the wrong picture in the first one.
  *
  * ── the shape is measured, not inferred from the name ─────────────────
  * `image N` is BOTH shapes. Istorima's `image 3` is 1680x800 and sits
@@ -54,19 +63,29 @@ for (const dir of readdirSync(ROOT).sort()) {
   const hero = files.find((f) => /^hero\./i.test(f));
   const stills = files.filter((f) => /^image/i.test(f)).sort((a, b) => num(a) - num(b));
   const wires = files.filter((f) => /^wireframe/i.test(f)).sort((a, b) => num(a) - num(b));
+  const wide = files.filter((f) => /^wide/i.test(f)).sort((a, b) => num(a) - num(b));
   const highlights = files
     .filter((f) => /highlight/i.test(f) && !/\.(webm|mp4)$/i.test(f))
     .sort((a, b) => num(a) - num(b));
-  const videos = files.filter((f) => /\.(webm|mp4)$/i.test(f)).sort((a, b) => num(a) - num(b));
+  /* A loop ships as a WebM and an H.264 mp4 of the same name, and the two
+     are ONE slot, not two. Grouping them by stem is what lets the markup
+     offer a real fallback: it used to derive the sibling by swapping the
+     extension, which meant a `.webm` primary was offered twice — once
+     correctly and once labelled `video/mp4`, pointing at the same VP9 file
+     that a browser reaching for the fallback cannot play. */
+  const loops = new Map();
+  for (const f of files.filter((f) => /\.(webm|mp4)$/i.test(f)).sort((a, b) => num(a) - num(b))) {
+    const stem = f.replace(/\.(webm|mp4)$/i, '');
+    const slot = loops.get(stem) ?? {};
+    slot[/\.webm$/i.test(f) ? 'webm' : 'mp4'] = url(f);
+    loops.set(stem, slot);
+  }
 
   out[dir] = {
     hero: hero ? url(hero) : null,
-    /* `image N` first, then the wireframes — which is the order the design
-       uses them in, because a wireframe is always the design-process slot
-       and that comes before the screens it produced. */
-    stills: [...stills, ...wires].map(shot),
+    stills: [...wires, ...stills, ...wide].map(shot),
     highlights: highlights.map(shot),
-    videos: videos.map(url),
+    videos: [...loops.values()],
   };
 }
 
@@ -80,14 +99,20 @@ export interface Shot {
   h: number;
 }
 
+/** one loop, in the formats it was encoded to */
+export interface Loop {
+  webm?: string;
+  mp4?: string;
+}
+
 export interface ProjectAssets {
   hero: string | null;
-  /** \`image N\` then \`wireframe N\`, in export order, square and wide mixed */
+  /** \`wireframe N\`, \`image N\`, \`wide N\` — the design's order, shapes mixed */
   stills: Shot[];
   /** full-width feature stills */
   highlights: Shot[];
-  /** full-width feature loops — WebM first where both exist */
-  videos: string[];
+  /** the feature loops, one entry per loop rather than one per file */
+  videos: Loop[];
 }
 
 export const ASSETS: Record<string, ProjectAssets> = ${JSON.stringify(out, null, 2)};

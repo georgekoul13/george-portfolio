@@ -7,6 +7,8 @@ import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
 import Image from 'next/image';
+import VideoSources from './VideoSources';
+import type { Sources } from './blocks';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,17 +38,21 @@ const VIDEO = /\.(mp4|webm|mov)$/i;
  */
 export default function ProjectImage({
   src,
+  sources,
   alt,
   poster,
 }: {
-  src: string;
+  /** a still */
+  src?: string;
+  /** a loop, in the formats it exists in — see `Sources` */
+  sources?: Sources;
   alt: string;
   /** first frame of a video slot — what shows before it loads, and the only
       thing that shows when autoplay is refused. */
   poster?: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  const isVideo = VIDEO.test(src);
+  const isVideo = !!sources || (!!src && VIDEO.test(src));
 
   /* Play only while it is on screen. Without this every visitor downloads the
      clip whether or not they scroll this far, and it keeps decoding off the
@@ -109,17 +115,17 @@ export default function ProjectImage({
             preload="none"
             className="absolute inset-0 h-full w-full object-cover"
           >
-            {/* WebM first — VP9 holds this content at a third of H.264's
-                size. A browser that cannot play it falls straight through to
-                the mp4, and a missing file is the same non-event, so the
-                sibling does not have to exist. */}
-            <source src={src.replace(/\.mp4$/i, '.webm')} type="video/webm" />
-            <source src={src} type="video/mp4" />
+            {/* WebM first — VP9 holds this content at a fraction of H.264's
+                size — and then the mp4 for anything that cannot take VP9.
+                Only what is actually on disk is offered: an unplayable file
+                behind a `video/mp4` label is worse than no fallback, because
+                the browser stops at it. */}
+            <VideoSources src={src} sources={sources} />
           </video>
         ) : (
           <Image
             data-inner
-            src={src}
+            src={src!}
             alt={alt}
             fill
             sizes="100vw"
