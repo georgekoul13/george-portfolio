@@ -142,6 +142,10 @@
   --type-16-16-r: 400 16px/16px var(--font-sans);
   --type-16-20-r: 400 16px/20px var(--font-sans);
   --type-15-20-m: 500 15px/20px var(--font-sans);   /* project meta value */
+  /* the project template's own three — 366:11793 */
+  --type-64-64-b: 700 clamp(32px, calc(18.6px + 3.57vw), 64px)/clamp(36px, calc(21.3px + 3.93vw), 64px) var(--font-sans);
+  --type-24-32-m: 500 clamp(18px, calc(15.3px + 0.72vw), 24px)/clamp(26px, calc(22.6px + 0.9vw), 32px) var(--font-sans);
+  --type-20-20-r: 400 clamp(14px, calc(11.3px + 0.72vw), 20px)/clamp(16px, calc(13.3px + 0.72vw), 20px) var(--font-sans);
   --type-16-20-b: 700 16px/20px var(--font-sans);   /* medium card title */
   --type-16-24-r: 400 16px/24px var(--font-sans);   /* large card description */
   --type-20-20-r: 400 20px/20px var(--font-sans);
@@ -548,6 +552,38 @@
 
 /* The cue between the folders and the gallery. Its 24px is a quiet aside on
    a 1440 frame and a headline on a phone. */
+
+/* ── Project template, 2026-09-16 ────────────────────────────────────────
+   Figma 366:11793. The page is a list of blocks now rather than four fixed
+   slots, so these are the rhythm between them rather than the size of any
+   one thing.
+
+   124 between blocks is the design's; it is the distance that lets a chip
+   read as opening something rather than labelling the paragraph above it.
+   On a phone the same gap swallows a screen, so every one of these eases
+   down — see the breakpoint below. */
+:root {
+  --project-block-gap: 124px;   /* between one block and the next */
+  --project-chip-gap: 40px;     /* chip to the words under it */
+  --project-split-gap: 48px;    /* the 432 column to the 840 of stills */
+  --project-row-gap: 40px;      /* between stills, across and down */
+  --project-base-gap: 64px;     /* picture to title to facts */
+  --project-title-gap: 32px;    /* title to its subtitle */
+  --project-meta-gap: 40px;     /* between the four facts */
+  --project-more-gap: 64px;     /* "More projects" to its cards */
+}
+@media (max-width: 899px) {
+  :root {
+    --project-block-gap: 80px;
+    --project-chip-gap: 24px;
+    --project-split-gap: 32px;
+    --project-row-gap: 20px;
+    --project-base-gap: 40px;
+    --project-title-gap: 20px;
+    --project-meta-gap: 24px;
+    --project-more-gap: 40px;
+  }
+}
 
 /* ── Project template ────────────────────────────────────────────────────
    Figma draws the template against the same 1440 frame as everything else,

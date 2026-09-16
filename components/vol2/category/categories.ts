@@ -1,5 +1,6 @@
 import projects from '@/data/projects.json';
 import { STILLS } from '../project/stills';
+import { HERO_BY_SLUG } from '../project/vol2Projects';
 
 /**
  * The three category pages — Figma "Category template", node 147:9780.
@@ -193,6 +194,13 @@ const IMAGE_OVERRIDES: Record<string, string> = {
  * entry, so they fall back to the orbit thumbnail rather than to nothing.
  */
 function cardImage(slug: string): string {
+  /* The 2026-09 export first: those folders are the current artwork, and
+     their `hero.png` is the same file the project page opens on — which is
+     the whole rule George set for this card. `STILLS` is the previous
+     export, still the source for anything not re-shot yet, and the orbit
+     thumbnail is the floor under both. */
+  const fresh = HERO_BY_SLUG[slug];
+  if (fresh) return fresh;
   const real = STILLS[slug]?.[0];
   if (real) return real;
   return orbit(IMAGE_OVERRIDES[slug] ?? `${slug}-1`);
