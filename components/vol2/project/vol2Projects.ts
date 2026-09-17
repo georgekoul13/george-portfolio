@@ -100,7 +100,7 @@ const SOURCES: { slug: string; folder: string; title: string }[] = [
   { slug: 'olga-posonidou', folder: 'Olga Posonidou', title: 'Olga Posonidou' },
   { slug: 'vasiliki-vozora', folder: 'Vasiliki Vozora', title: 'Vasiliki Vozora' },
   { slug: 'danai-michali', folder: 'Danai Michali', title: 'Danai Michali' },
-  { slug: 'arcana', folder: 'Tarrot Cards', title: 'Tarrot Cards' },
+  { slug: 'arcana', folder: 'Tarrot Cards', title: 'Tarot Cards' },
   { slug: 'cabaret', folder: 'Cabaret', title: 'Cabaret Movie Poster' },
   { slug: 'czech-folk', folder: 'Czech', title: 'Czech Folk' },
   { slug: 'in-pixels-we-see', folder: 'pixel', title: 'pixels' },

@@ -129,6 +129,48 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Tarot Cards — written 2026-09-17 ───────────────────────────────
+     Personal work. A full Major Arcana, 22 cards, of which eight are on the
+     page and all 22 are in the full-deck shot.
+
+     THE TITLE said "Tarrot", with two Rs, in the h1. Not a word, and the
+     same class of error as DEERISLD. The export folder still carries the
+     misspelling; the title does not.
+
+     What it is, in his words: *"a personal project about queerness, the
+     male body, patterns, nature."* */
+  arcana: {
+    subtitle:
+      'A personal Major Arcana: twenty-two cards about queerness, the male ' +
+      'body, pattern and nature.',
+    meta: {
+      client: 'Personal project',
+      role: 'Illustrator',
+      deliverables: '22 cards',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'A tarot deck I drew for myself. Queerness, the male body, pattern ' +
+          'and nature, twenty-two cards deep.',
+      },
+      null, // the full deck, full width
+      {
+        /* The eight stills are cards, not directions — and naming the chip
+           "Major Arcana" tells a reader both what they are looking at and
+           that there are twenty-two of them. No arrows: the paragraph lists
+           four things, not two. */
+        chip: 'Major Arcana',
+        text:
+          'The Fool, the Magician, the High Priestess, the Lovers, Strength. ' +
+          'Every card keeps its meaning and finds a body for it — a panther, a ' +
+          'flamingo, sunflowers over a scar, a harness, somebody asleep.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Danai Michali — written 2026-09-17 ─────────────────────────────
      Freelance, and ONGOING — he still makes her posts.
 
