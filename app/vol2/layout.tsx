@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import NavMemory from '@/components/vol2/NavMemory';
+import Diagnostics from '@/components/vol2/Diagnostics';
 
 /**
  * Exists only to hold the navigation memory that "Back" reads — see
@@ -11,6 +13,9 @@ export default function Vol2Layout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <NavMemory />
+      <Suspense fallback={null}>
+        <Diagnostics />
+      </Suspense>
       {children}
     </>
   );

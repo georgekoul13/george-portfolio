@@ -26,6 +26,24 @@ gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.defaults({ toggleActions: 'play none none reverse' });
 
 /**
+ * IGNORE THE MOBILE URL BAR.
+ *
+ * On a phone, scrolling collapses and expands the browser's own chrome, and
+ * every one of those fires a `resize`. ScrollTrigger refreshes on resize, so
+ * it was re-measuring the whole page in the middle of the very scroll the
+ * measurements are for — repeatedly, and hardest at exactly the moment a
+ * reader starts moving, which is when the first reveals are meant to run.
+ *
+ * `ignoreMobileResize` tells it to ignore a resize whose WIDTH did not
+ * change, which is precisely the URL-bar case and nothing else: a real
+ * rotation or a window resize still refreshes.
+ *
+ * This is the single most common reason a scroll animation behaves on a
+ * desktop and not on a phone, and it costs nothing to rule out.
+ */
+ScrollTrigger.config({ ignoreMobileResize: true });
+
+/**
  * Re-measure once the page has actually stopped moving.
  *
  * A trigger computes its start and end from where its element is when the
@@ -62,6 +80,18 @@ if (typeof window !== 'undefined') {
  * would. It costs an afternoon to work out from the symptoms; it costs one
  * query parameter to avoid.
  */
+/* `?st=1` and `?diag=1` hand ScrollTrigger to the page. Outside development
+   too, deliberately: the one machine where the scroll behaviour goes wrong is
+   George's phone against a deployed build, and there is no other way to read
+   what a trigger actually measured from in there. It costs a property on
+   `window` and only when the url asks for it. */
+if (typeof window !== 'undefined') {
+  const q0 = new URLSearchParams(window.location.search);
+  if (q0.get('st') || q0.get('diag')) {
+    (window as unknown as { __ST?: unknown }).__ST = ScrollTrigger;
+  }
+}
+
 if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
   const q = new URLSearchParams(window.location.search);
   if (q.get('nolag')) gsap.ticker.lagSmoothing(0);

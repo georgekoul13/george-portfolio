@@ -36,7 +36,9 @@ gsap.registerPlugin(ScrollTrigger);
  */
 
 /* the numbers themselves live in `--cards-gap` / `--cards-row-gap` */
-const LARGE_ASPECT = '640 / 480';
+/* The medium shape is the ONLY one below `md` — the large card's 640/480
+   lives in `--card-aspect`, which `tokens.css` defines from that breakpoint
+   up. See the note on `Card`. */
 const MEDIUM_ASPECT = '1240 / 960'; // 413.33 × 320
 
 /**
