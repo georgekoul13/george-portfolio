@@ -23,7 +23,17 @@
  * *"in the case of one image here on the row it should be like this"* —
  * Figma 352:5061, a 400x400 frame alone in an 840 column.
  *
- * `bullets` is how many arrow-led lines the 432 text column carries in that
+ * ── a split has GROUPS ────────────────────────────────────────────────
+ * Most sections are one chip, one paragraph, one run of pictures — a single
+ * group. Mood is one chip over FOUR paragraph-and-picture pairs, and the
+ * first read of this file flattened it into twenty stills under one
+ * paragraph, which lost the structure George had drawn. Checked since across
+ * all nineteen: Mood is the only one, but the model carries groups
+ * everywhere so the next one cannot be flattened by accident. Its four are
+ * onboarding, exploration, profile and cinema, at 6/6/3/5 cells, read off
+ * frames 352:6129, 353:9573, 353:9585 and 353:9597.
+ *
+ * `bullets` is how many arrow-led lines the text column carries in that
  * section. The words are still to be written; the count is the design's.
  *
  * Nothing here is edited or tidied. Two projects genuinely carry the same
@@ -42,10 +52,16 @@ export interface LayoutCell {
   k: CellKind;
 }
 
+/** one paragraph and the pictures beside it */
+export interface LayoutGroup {
+  cells: LayoutCell[];
+  bullets?: number;
+}
+
 export type LayoutBlock =
   | { kind: 'text'; chip: string }
   | { kind: 'media'; cell: LayoutCell }
-  | { kind: 'split'; chip: string; cells: LayoutCell[]; bullets?: number };
+  | { kind: 'split'; chip: string; groups: LayoutGroup[] };
 
 export interface ProjectLayout {
   /** the Figma node id of the content column this was read from */
@@ -61,11 +77,17 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
       { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
       { kind: 'split', chip: "The Final",
-        cells: [{ w: 840, h: 640, k: 'anim' }] },
+        groups: [
+          { cells: [{ w: 840, h: 640, k: 'anim' }] },
+        ] },
     ],
   },
   "cancellation-wallet": {
@@ -75,9 +97,13 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
       { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "The solution",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The complexity" },
     ],
   },
@@ -87,11 +113,17 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'text', chip: "Brief" },
       { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "Sales flow",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "Wallet",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The complexity" },
     ],
   },
@@ -100,12 +132,18 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "Various insurance products",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "Phone insurance",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The complexity" },
     ],
   },
@@ -114,10 +152,14 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The complexity" },
       { kind: 'split', chip: "Various insurance products",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
     ],
   },
   "gaspar-ai": {
@@ -127,15 +169,25 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
       { kind: 'text', chip: "The challenge" },
       { kind: 'split', chip: "The brand",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }] },
-      { kind: 'split', chip: "The Website vol2", bullets: 2,
-        cells: [{ w: 840, h: 538, k: 'video' }] },
-      { kind: 'split', chip: "The Website vol2", bullets: 2,
-        cells: [{ w: 840, h: 538, k: 'video' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }] },
+        ] },
+      { kind: 'split', chip: "The Website vol2",
+        groups: [
+          { cells: [{ w: 840, h: 538, k: 'video' }], bullets: 2 },
+        ] },
+      { kind: 'split', chip: "The Website vol2",
+        groups: [
+          { cells: [{ w: 840, h: 538, k: 'video' }], bullets: 2 },
+        ] },
       { kind: 'split', chip: "Conversational Design",
-        cells: [{ w: 840, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        ] },
     ],
   },
   "mood": {
@@ -143,7 +195,12 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'split', chip: "The brand",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
     ],
   },
   "istorima": {
@@ -151,7 +208,9 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The challenge" },
     ],
   },
@@ -160,9 +219,13 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'split', chip: "The Design proccess",
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 840, h: 400, k: 'image' }] },
+        ] },
       { kind: 'text', chip: "The challenge" },
     ],
   },
@@ -170,8 +233,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     figma: '358:40360',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
       { kind: 'text', chip: "The challenge" },
     ],
   },
@@ -179,18 +244,24 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     figma: '358:99235',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "vasiliki-vozora": {
     figma: '364:101487',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 840, h: 470, k: 'video' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 840, h: 470, k: 'video' }], bullets: 2 },
+        ] },
     ],
   },
   "danai-michali": {
@@ -199,8 +270,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'media', cell: { w: 1320, h: 640, k: 'image' } },
       { kind: 'text', chip: "Brief" },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'image' } },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "arcana": {
@@ -208,8 +281,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'image' } },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "cabaret": {
@@ -217,8 +292,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'image' } },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "czech-folk": {
@@ -226,8 +303,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "in-pixels-we-see": {
@@ -235,16 +314,20 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     blocks: [
       { kind: 'text', chip: "Brief" },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }, { w: 400, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
   "typeface-a": {
     figma: '366:77551',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }], bullets: 2 },
+        ] },
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
     ],
   },
@@ -252,8 +335,10 @@ export const LAYOUT: Record<string, ProjectLayout> = {
     figma: '366:104016',
     blocks: [
       { kind: 'text', chip: "Brief" },
-      { kind: 'split', chip: "The Directions", bullets: 2,
-        cells: [{ w: 840, h: 400, k: 'image' }] },
+      { kind: 'split', chip: "The Directions",
+        groups: [
+          { cells: [{ w: 840, h: 400, k: 'image' }], bullets: 2 },
+        ] },
     ],
   },
 };

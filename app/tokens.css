@@ -161,6 +161,13 @@
   --type-48-48-b: 700 clamp(30px, calc(23.66px + 1.69vw), 48px)/clamp(30px, calc(23.66px + 1.69vw), 48px) var(--font-sans);   /* the "Categories" chip */
   --type-56-64-m: 500 clamp(34px, calc(26.25px + 2.066vw), 56px)/clamp(40px, calc(31.55px + 2.254vw), 64px) var(--font-sans);   /* letter-spacing: 5px */
   --type-72-80-r: 400 clamp(38px, calc(26.03px + 3.192vw), 72px)/clamp(44px, calc(31.32px + 3.38vw), 80px) var(--font-sans);
+
+  /* The statement size, 2026-09-17. George set the hierarchy: *"overview 72
+     and the rest 56, keep 24/32 near images."* His file did not have it —
+     every full-width section was 72, Overview and Challenge alike — so this
+     token is the distinction being introduced rather than one being matched.
+     56/64 keeps the rule of 8, and 32/40 at the small end does too. */
+  --type-56-64-r: 400 clamp(32px, calc(23.55px + 2.254vw), 56px)/clamp(40px, calc(31.55px + 2.254vw), 64px) var(--font-sans);
   /* One step down from the display size, for the intro sentence — George
      asked for 64 rather than 72 there. Both ends land on the rule of 8:
      64/72 at 1440 falling to 32/40 at 375, on a single slope so there is no

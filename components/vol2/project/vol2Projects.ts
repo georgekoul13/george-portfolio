@@ -1,7 +1,7 @@
 import { ASSETS, type Loop, type Shot } from './assets';
 import { COPY, CHIP_RENAMES, dropArticle, type SectionCopy } from './copy';
 import { LAYOUT, type LayoutCell } from './layout';
-import type { Block, Cell, Vol2Project } from './blocks';
+import type { Block, Cell, SplitGroup, Vol2Project } from './blocks';
 
 /**
  * The nineteen project pages, on the template of Figma 366:11793.
@@ -168,6 +168,12 @@ function buildBlocks(slug: string, folder: string): Block[] {
   const written = COPY[slug]?.sections;
   const says = (at: number): SectionCopy | undefined => written?.[at] ?? undefined;
 
+  /* A section's words. `text` is a string for the usual single-group
+     section and an ARRAY where a chip covers several — Mood's one chip over
+     onboarding, exploring, profile and cinema. */
+  const textOf = (w: SectionCopy | undefined, group: number): string | undefined =>
+    Array.isArray(w?.text) ? w.text[group] : group === 0 ? w?.text : undefined;
+
   /* The chip a section actually shows: what `copy.ts` says for this one, or
      a rename that applies everywhere, or the working label off the canvas. */
   const label = (w: SectionCopy | undefined, chip: string) =>
@@ -200,7 +206,18 @@ function buildBlocks(slug: string, folder: string): Block[] {
   plan.blocks.forEach((b, at) => {
     if (b.kind === 'text') {
       const w = says(at);
-      blocks.push({ kind: 'text', chip: label(w, b.chip), text: w?.text ?? LOREM, bullets: w?.bullets });
+      /* The FIRST text block on a page is the Overview and gets 72/80; the
+         rest are 56/64. George set that hierarchy — his canvas has every
+         full-width box at 72. Keyed on position rather than on the chip
+         reading "Overview", so a project that renames it still works. */
+      const display = !blocks.some((x) => x.kind === 'text');
+      blocks.push({
+        kind: 'text',
+        chip: label(w, b.chip),
+        text: textOf(w, 0) ?? LOREM,
+        bullets: w?.bullets,
+        display,
+      });
       return;
     }
 
@@ -224,28 +241,35 @@ function buildBlocks(slug: string, folder: string): Block[] {
     }
 
     const w = says(at);
-    const bullets =
-      w?.bullets ?? (b.bullets ? Array.from({ length: b.bullets }, () => LOREM_LINE) : undefined);
     const chip = label(w, b.chip);
 
     /* A section that shows pictures the page shows again reads them by
        index rather than taking them off the queue — see `REPEATS`. */
     const again = repeats[b.chip];
-    const cells = blank
-      ? []
-      : again
-        ? b.cells
-            .map((c, i) => toCell(c, allSquares[again[i]]))
-            .filter((c): c is Cell => !!c)
-        : b.cells.map((c) => toCell(c)).filter((c): c is Cell => !!c);
+    let taken = 0;
+
+    const groups: SplitGroup[] = b.groups.map((g, gi) => {
+      const cells = blank
+        ? []
+        : g.cells
+            .map((c) => toCell(c, again ? allSquares[again[taken++]] : undefined))
+            .filter((c): c is Cell => !!c);
+      return {
+        text: textOf(w, gi) ?? LOREM_LONG,
+        bullets:
+          w?.bullets ??
+          (g.bullets ? Array.from({ length: g.bullets }, () => LOREM_LINE) : undefined),
+        cells,
+      };
+    });
 
     /* A split whose pictures are all missing is still a section George
        wrote — it keeps its chip and its words and stops being a split. */
-    if (!cells.length) {
-      blocks.push({ kind: 'text', chip, text: w?.text ?? LOREM, bullets });
+    if (!groups.some((g) => g.cells.length)) {
+      blocks.push({ kind: 'text', chip, text: groups[0]?.text ?? LOREM, bullets: groups[0]?.bullets });
       return;
     }
-    blocks.push({ kind: 'split', chip, text: w?.text ?? LOREM_LONG, bullets, cells });
+    blocks.push({ kind: 'split', chip, groups });
   });
 
   return blocks;

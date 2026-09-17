@@ -66,10 +66,23 @@ export interface Cell {
   poster?: string;
 }
 
+/**
+ * One paragraph and the pictures beside it.
+ *
+ * A section usually has exactly one. Mood has four under a single chip —
+ * onboarding, exploring, profile, cinema — and reading the file as one
+ * group of twenty stills lost that. See `layout.ts`.
+ */
+export interface SplitGroup {
+  text: string;
+  bullets?: string[];
+  cells: Cell[];
+}
+
 export type Block =
-  | { kind: 'text'; chip?: string; text: string; bullets?: string[] }
+  | { kind: 'text'; chip?: string; text: string; bullets?: string[]; display?: boolean }
   | { kind: 'media'; src?: string; sources?: Sources; poster?: string; alt?: string }
-  | { kind: 'split'; chip: string; text: string; bullets?: string[]; cells: Cell[] };
+  | { kind: 'split'; chip: string; groups: SplitGroup[] };
 
 /**
  * The facts row on the base.

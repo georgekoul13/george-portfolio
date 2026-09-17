@@ -140,27 +140,39 @@ function ArrowDownRight() {
 /**
  * The paragraph, and under it the arrow-led lines some sections carry.
  *
- * TWO SIZES, and they are not decoration — Figma sets them from how much
- * room the words have. A section with no pictures gets the whole 1320 and
- * sets at **72/80 Regular**: a statement, three or four lines, read at a
- * glance. A section beside the stills gets the 432 column and sets at
- * **24/32 Medium with 5% tracking** (1.2px at that size), which is body
- * copy.
+ * THREE SIZES, and they are a hierarchy George set rather than one the file
+ * already had:
  *
- * This was the typography bug George caught — both were rendering at 24/32,
- * so the opening statement of every project came out the size of a caption
- * and the page lost its top note entirely.
+ *   display    **72/80** — the Overview, and only the Overview
+ *   statement  **56/64** — every other full-width section
+ *   body       **24/32 Medium**, 5% tracking — beside the pictures
+ *
+ * *"overview 72 and the rest 56, keep 24/32 near images."* His canvas sets
+ * every full-width box at 72, Overview and Challenge alike, so the middle
+ * step is new. Without it the page opens at full volume and never comes
+ * down, and the Overview stops being the thing you read first.
+ *
+ * An earlier bug had all three at 24/32, which made the opening statement of
+ * every project the size of a caption.
  */
-function Words({ text, bullets, display }: { text: string; bullets?: string[]; display?: boolean }) {
+function Words({
+  text,
+  bullets,
+  size = 'body',
+}: {
+  text: string;
+  bullets?: string[];
+  size?: 'display' | 'statement' | 'body';
+}) {
+  const font =
+    size === 'display'
+      ? { font: 'var(--type-72-80-r)' }
+      : size === 'statement'
+        ? { font: 'var(--type-56-64-r)' }
+        : { font: 'var(--type-24-32-m)', letterSpacing: '1.2px' };
   return (
     <>
-      <p
-        style={
-          display
-            ? { font: 'var(--type-72-80-r)', color: 'var(--text-primary)' }
-            : { font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }
-        }
-      >
+      <p style={{ ...font, color: 'var(--text-primary)' }}>
         {text}
       </p>
       {bullets?.length ? (
@@ -206,7 +218,7 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
                 </span>
               )}
               <div className="flex w-full flex-col" style={{ gap: 24 }}>
-                <Words text={b.text} bullets={b.bullets} display />
+                <Words text={b.text} bullets={b.bullets} size={b.display ? 'display' : 'statement'} />
               </div>
             </section>
           );
@@ -231,20 +243,28 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
                 design's width they would overflow every screen between the
                 breakpoint and 1440. The words keep their 432 because a
                 measure is a measure; the pictures give. */}
-            <div
-              className="flex w-full flex-col xl:flex-row xl:items-start"
-              style={{ gap: 'var(--project-split-gap)' }}
-            >
+            {/* ONE chip, then a paragraph-and-pictures pair for each group.
+                Almost every section has a single group and looks exactly as
+                it did; Mood has four, and the 40 between them is the design's
+                own — tight enough that they read as one section rather than
+                four, which is why they share a chip. */}
+            {b.groups.map((g, gi) => (
               <div
-                className="flex min-w-0 flex-col xl:w-[432px] xl:shrink-0"
-                style={{ gap: 24 }}
+                key={gi}
+                className="flex w-full flex-col xl:flex-row xl:items-start"
+                style={{ gap: 'var(--project-split-gap)' }}
               >
-                <Words text={b.text} bullets={b.bullets} />
+                <div
+                  className="flex min-w-0 flex-col xl:w-[432px] xl:shrink-0"
+                  style={{ gap: 24 }}
+                >
+                  <Words text={g.text} bullets={g.bullets} />
+                </div>
+                <div className="w-full min-w-0 xl:flex-1">
+                  <Stills cells={g.cells} alt={alt} />
+                </div>
               </div>
-              <div className="w-full min-w-0 xl:flex-1">
-                <Stills cells={b.cells} alt={alt} />
-              </div>
-            </div>
+            ))}
           </section>
         );
       })}

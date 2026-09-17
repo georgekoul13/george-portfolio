@@ -97,7 +97,12 @@ export const dropArticle = (chip: string) => {
 export interface SectionCopy {
   /** replaces the working label in `layout.ts` */
   chip?: string;
-  text: string;
+  /**
+   * The paragraph — or ONE PER GROUP where a single chip covers several.
+   * Mood is the only one so far: "The brand" runs over onboarding,
+   * exploring, profile and cinema, four paragraphs under one label.
+   */
+  text: string | string[];
   /**
    * The arrow-led lines, where a section has a list to give.
    *
