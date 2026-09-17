@@ -129,6 +129,64 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Mood: Music of our desire — written 2026-09-17 ──────────────────
+     Oct 2025 - May 2026, and it has ENDED: *"the collaboration with mood
+     ended on june 1."* His CV says May 2026; either way it is past tense.
+     He was the only designer there.
+
+     The old record calls it "Greece's biggest underground music event
+     platform"; the screens also show Amsterdam, so the superlative is left
+     out. `data/projects.json` still says "Emotional wellbeing tracking app
+     concept", which an early session invented.
+
+     THE PAGE HAS FOUR GROUPS under one chip — onboarding, exploring,
+     profile, cinema — which is why `text` is an array here. See
+     `layout.ts`. */
+  mood: {
+    subtitle:
+      'An underground music events platform. I redesigned the whole app and ' +
+      'took it beyond music into theatre and cinema.',
+    meta: {
+      client: 'Mood: Music of Our Desire',
+      role: 'Lead Product Designer',
+      /* his own CV wording: "From UX flows to UI, marketing materials, and
+         external collaborations" */
+      deliverables: 'App redesign, UX flows and UI, marketing materials, festival posters',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Mood is where you find out what is on tonight: the parties, the ' +
+          'venues, the people going.',
+      },
+      {
+        /* Was "The brand", which undersold it — George: *"the 20 screens are
+           the app redesign where i revisited both colors and typography."*
+
+           Four paragraphs, one per group. The first carries the principle he
+           gave for the whole redesign: *"the visual focus and the main
+           colorfull aspect of the app should be the content, posters and
+           visuals of the events, not the ui."* */
+        chip: 'App redesign',
+        text: [
+          'The interface had to get out of the way. Every event comes with a ' +
+            'poster, and the posters are loud, so I took the colour out of the ' +
+            'UI and let the artwork carry it. That starts at the first screen.',
+          'Exploring is the heart of it: what is on, where, and who is ' +
+            'playing. I rebuilt the browsing so a poster is the thing you see ' +
+            'first, and the text only tells you what you still need to know.',
+          'Your profile holds what you are going to and what you have saved. ' +
+            'It is the one part of the app that is about you rather than about ' +
+            'the city.',
+          'When I arrived Mood only did music. By the time I left it did ' +
+            'theatre and cinema too, which meant the same screens had to hold a ' +
+            'film listing as comfortably as a club night.',
+        ],
+      },
+    ],
+  },
+
   /* ── Cybersential — written 2026-09-17 ──────────────────────────────
      Wallbid, 2024-25. Live at hotelbeds.wallbid.io/cybersential.
 
