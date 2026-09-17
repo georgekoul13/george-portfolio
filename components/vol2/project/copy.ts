@@ -129,6 +129,37 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Rounded Typeface — written 2026-09-17 ──────────────────────────
+     Personal work, and the pair to the angular one. Same invented-name
+     story applies: the live vol1 file calls this "Loukoumi" and explains
+     the name. It has none.
+
+     What he was after: *"soft and friendly"* — the opposite of the other
+     one, which he wanted aggressive and unstable. Two sentences, one each,
+     and the specimens do the rest. */
+  'rounded-typeface': {
+    subtitle: 'A display face with no straight edges left in it. Personal work.',
+    meta: {
+      client: 'Personal project',
+      role: 'Visual Designer',
+      deliverables: '1 typeface',
+    },
+    sections: [
+      {
+        // Overview
+        text: 'I wanted something soft and friendly.',
+      },
+      {
+        chip: 'Letters',
+        text:
+          'Fat, rounded and closed up, with the counters squeezed almost shut. ' +
+          'Set solid it reads as one soft mass rather than a row of letters, ' +
+          'which is the point of it.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Angular Typeface — written 2026-09-17 ──────────────────────────
      Personal work.
 
