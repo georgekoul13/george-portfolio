@@ -18,8 +18,19 @@ import type { Metadata } from 'next';
  */
 export const SITE = 'https://www.georgekoulouris.com';
 
-/** the sub-path Vol 2 currently lives under — '' once it takes the site */
-export const PREFIX = '/vol2';
+/**
+ * The sub-path Vol 2 is served under.
+ *
+ * Empty once it IS the site. Read from the same environment variable that
+ * `next.config.mjs` uses to rewrite `/` onto Vol 2, so the urls a crawler is
+ * told about and the urls the server actually answers on cannot disagree —
+ * which is the failure mode that quietly de-indexes a site after a migration.
+ *
+ * `NEXT_PUBLIC_` is required: this runs in the browser as well as on the
+ * server, and an undefined prefix on the client would emit canonicals that
+ * point at the wrong place.
+ */
+export const PREFIX = process.env.NEXT_PUBLIC_VOL2_AS_ROOT === '1' ? '' : '/vol2';
 
 export const canonical = (path = '') => `${SITE}${PREFIX}${path}`;
 
