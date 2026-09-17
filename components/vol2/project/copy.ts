@@ -1099,10 +1099,17 @@ export const COPY: Record<string, ProjectCopy> = {
            and cyber are all in the section above. George: *"yes rename it to
            Focus on You."* */
         chip: 'Focus on You',
+        /* The first draft of this described the PRODUCT — no medical history
+           check, no waiting — which are the insurer's selling points lifted
+           off the bank's own page, not George's work. The screens show what
+           the work actually was: the same purchase in the app and in
+           e-banking, one a continuous flow and one a stepped form. He
+           confirmed it: *"yes, the same flow in the app and the web."* */
         text:
-          'Focus on You is health cover, and the one product here that is ' +
-          'already live. You can buy it inside the Piraeus app or e-banking in ' +
-          'a few steps, with no medical history check and no waiting.',
+          'Focus on You is the one product here that is already live, and it ' +
+          'is the same purchase built twice: one continuous flow in the app, a ' +
+          'stepped form on e-banking. Same product, same legal wording, two ' +
+          'different shapes.',
       },
       {
         // Complexity = the daily work
