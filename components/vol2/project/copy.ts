@@ -168,13 +168,17 @@ export const COPY: Record<string, ProjectCopy> = {
           'thing in a phone, for people whose work does not happen at a desk.',
       },
       {
-        /* The suite — a team effort, and the chip says contribution rather
-           than ownership on purpose. His list: *"the messaging system, some
-           dashboards, components etc."* */
+        /* The suite — a team effort, and it LEADS with that. George asked
+           twice: *"we need to tell that it was a team effort"* on Istorima,
+           then *"let's make sure that the suit was team project"* here,
+           because the first draft put it mid-sentence as "I worked as part of
+           the team", which reads as a turn of phrase rather than a fact. The
+           chip says contribution rather than ownership for the same reason.
+           His list: *"the messaging system, some dashboards, components."* */
         chip: 'Across the suite',
         text:
-          'On the main product I worked as part of the team: the messaging ' +
-          'system, some of the dashboards, and components other people built ' +
+          'The suite was a team project. My part was the messaging system, ' +
+          'some of the dashboards, and components that other people then built ' +
           'with.',
       },
       {
