@@ -129,6 +129,60 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Danai Michali — written 2026-09-17 ─────────────────────────────
+     Freelance, and ONGOING — he still makes her posts.
+
+     THE LOGO IS NOT A MONOGRAM. I read the fine line on the card as an
+     interlocked ΔΜ and George corrected it: *"where is the monogram? the
+     logo is like a window to the therapy, an arch with the name and inside
+     it a very simplified abstract floral, earthy element that looked like
+     rorschach test."* The fine line I misread is a CHAIR, on the info side
+     of the card. Rorschach inside something earthy is a better idea than
+     the one I invented for it.
+
+     The social work: *"more than 30 posts... carousels where the first
+     image is an illustration in the same look and feel and then typography
+     cards that explain that post's topic."* The ten stills here are the
+     opening illustrations. */
+  'danai-michali': {
+    subtitle:
+      'Logo, cards and an ongoing run of social posts for a systemic ' +
+      'counsellor.',
+    meta: {
+      client: 'Danai Michali',
+      role: 'Brand Designer',
+      deliverables: 'Logo, cards and social media',
+    },
+    sections: [
+      /* The array is positional against LAYOUT.blocks, and this page OPENS
+         with a picture — media, Overview, media, posts. Without the nulls the
+         words slid up two places and the social paragraph landed on the
+         Overview at 72/80. */
+      null, // the card, full width
+      {
+        // Overview — it sits between the two shots of the card
+        text:
+          'Danai is a systemic counsellor. Her mark is an arch with a floral ' +
+          'shape inside it — a window into the therapy.',
+      },
+      null, // the card again, full width
+      {
+        /* The ten stills are social posts, not directions — the sixth canvas
+           chip in thirteen pages that did not match its contents. And the
+           arrows have a real job here for once: the carousel IS a two-part
+           structure, so the paragraph sets up a list and the arrows deliver
+           it. */
+        chip: 'Social media',
+        text:
+          'The shape inside is simplified far enough to read as a Rorschach ' +
+          'blot, which is deliberate. The posts carry the same look — over ' +
+          'thirty of them now, one topic at a time, each opening with its own ' +
+          'illustration.',
+        bullets: ['An illustration to open', 'Typography cards that explain it'],
+      },
+    ],
+  },
+
   /* ── Vasiliki Vozora — written 2026-09-17 ───────────────────────────
      Freelance. Βασιλική Βοζώρα, Σύμβουλος Ψυχικής Υγείας, specialising in
      systemic and family counselling for individuals, couples, families and
