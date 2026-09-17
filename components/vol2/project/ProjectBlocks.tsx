@@ -11,6 +11,8 @@ import Picture from './Picture';
 import RevealText from '../RevealText';
 import Rise from './Rise';
 import { useGateReady } from './ProjectGate';
+import { revealTiming } from './revealTiming';
+import { onEnterView } from './enterView';
 import ProjectImage from './ProjectImage';
 import VideoSources from './VideoSources';
 import type { Block, Cell } from './blocks';
@@ -120,6 +122,8 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const cleanups: (() => void)[] = [];
+      /* later and quicker on a phone — see `revealTiming` */
+      const T = revealTiming();
 
       /* Per still, not per wrap — see `Rise` for the whole reasoning. A
          section of Mood's is six pictures in three rows and a single trigger
@@ -130,7 +134,6 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
          from the cell's position WITHIN ITS ROW, so two pictures side by side
          still arrive one after the other, and the row below waits for its own
          turn rather than inheriting the one above. */
-      const triggers: ScrollTrigger[] = [];
       const stills = gsap.utils.toArray<HTMLElement>('[data-still]', root.current);
 
       /* ── THE LOOPS HAVE TO BE TOLD TO PLAY ──────────────────────────
@@ -202,9 +205,9 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
         if (!ready) return;
 
         const tl = gsap
-          .timeline({ paused: true, delay: sameRow ? 0.08 : 0 })
-          .to(still, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' })
-          .to(pic, { scale: 1, duration: 1.2, ease: 'power3.out' }, 0);
+          .timeline({ paused: true, delay: sameRow ? T.stagger : 0 })
+          .to(still, { clipPath: 'inset(0% 0% 0% 0%)', duration: T.duration, ease: 'power3.out' })
+          .to(pic, { scale: 1, duration: T.inner, ease: 'power3.out' }, 0);
 
         /* ── THE UNCOVER WAITS FOR THE PICTURE ───────────────────────
            George: *"let's make sure there are no delays when the user is on
@@ -239,18 +242,15 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
           });
         };
 
-        const st = ScrollTrigger.create({
-          trigger: still,
-          start: 'top 88%',
-          once: true,
-          onEnter: () => void pictureReady().then(() => tl.play()),
-        });
-        triggers.push(st);
+        cleanups.push(
+          onEnterView(
+            still,
+            () => void pictureReady().then(() => tl.play()),
+            T.at,
+          ),
+        );
       });
-      return () => {
-        triggers.forEach((t) => t.kill());
-        cleanups.forEach((fn) => fn());
-      };
+      return () => cleanups.forEach((fn) => fn());
     },
     { scope: root, dependencies: [ready], revertOnUpdate: true },
   );

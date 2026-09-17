@@ -7,6 +7,8 @@ import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
 import { useGateReady } from './ProjectGate';
+import { revealTiming } from './revealTiming';
+import { onEnterView } from './enterView';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,6 +59,8 @@ export default function Rise({
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const kids = Array.from(root.current!.children);
       if (!kids.length) return;
+      /* later and quicker on a phone — see `revealTiming` */
+      const T = revealTiming();
 
       /* Parked as soon as the page mounts, played only once `ProjectGate`
          has lifted the curtain — see the same note in `ProjectImage`. */
@@ -76,26 +80,28 @@ export default function Rise({
          is the behaviour the words describe. The stagger is replaced by a
          small per-child delay so a chip and the paragraph under it still
          arrive in reading order when they cross together. */
+      const stop: (() => void)[] = [];
       kids.forEach((kid, i) => {
-        gsap.to(kid, {
-          autoAlpha: 1,
-          /* 40, not 24, and a second rather than 0.8: George could not see
-             the reveal at all at the smaller numbers — on a phone it finished
-             inside the momentum of a normal flick. */
-          y: 0,
-          duration: 1,
-          delay: i * 0.08,
-          ease: 'power3.out',
-          /* NOT `clamp()`. Clamping pulls a start that would be negative up
-             to zero, and a block already on screen at rest then sits at
-             progress 0 — parked and invisible — until the reader scrolls a
-             pixel. The title under the hero is exactly that block, and it
-             opened the page blank. Unclamped, a start that is already behind
-             the scroll fires on refresh instead, so the first screen arrives
-             on load and everything below it still waits its turn. */
-          scrollTrigger: { trigger: kid, start: 'top 88%' },
-        });
+        stop.push(
+          onEnterView(
+            kid,
+            () =>
+              void gsap.to(kid, {
+                autoAlpha: 1,
+                /* 40px of travel — 24 was too little to register at all. The
+                   TIMING is `revealTiming`'s, because the number that works
+                   on a laptop is wrong on a phone: see there. */
+                y: 0,
+                duration: T.duration,
+                delay: i * T.stagger,
+                ease: 'power3.out',
+              }),
+            T.at,
+          ),
+        );
       });
+
+      return () => stop.forEach((fn) => fn());
     },
     { scope: root, dependencies: [ready], revertOnUpdate: true },
   );

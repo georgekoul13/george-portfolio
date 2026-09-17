@@ -9,6 +9,8 @@ import '../scrollDefaults';
 import Picture from './Picture';
 import VideoSources from './VideoSources';
 import { useGateReady } from './ProjectGate';
+import { revealTiming } from './revealTiming';
+import { onEnterView } from './enterView';
 import type { Sources } from './blocks';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -113,10 +115,16 @@ export default function ProjectImage({
       if (pic) gsap.set(pic, { scale: 1.12 });
       if (!ready) return;
 
-      gsap
-        .timeline({ scrollTrigger: { trigger: box, start: 'top 85%' } })
-        .to(box, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' })
-        .to(pic, { scale: 1, duration: 1.2, ease: 'power3.out' }, 0);
+      /* later and quicker on a phone — see `revealTiming` */
+      const T = revealTiming();
+      const tl = gsap
+        .timeline({ paused: true })
+        .to(box, { clipPath: 'inset(0% 0% 0% 0%)', duration: T.duration, ease: 'power3.out' })
+        .to(pic, { scale: 1, duration: T.inner, ease: 'power3.out' }, 0);
+
+      /* An observer, not a ScrollTrigger — see `enterView` for the 1460px of
+         drift that forced the change. */
+      return onEnterView(box, () => tl.play(), T.at);
     },
     { scope: root, dependencies: [ready], revertOnUpdate: true },
   );
