@@ -59,12 +59,39 @@
 /**
  * Chip renames that apply to EVERY page.
  *
- * `layout.ts` stays a faithful read of the canvas; the renames live here
- * with the rest of the writing, because that is what they are. George,
- * 2026-09-17: *"Change brief to Overview everywhere."*
+ * `layout.ts` stays a faithful read of the canvas; the renames live here with
+ * the rest of the writing, because that is what they are. George:
+ * *"Change brief to Overview everywhere."*
+ *
+ * `proccess` is a typo on the canvas, not a house style.
  */
 export const CHIP_RENAMES: Record<string, string> = {
   Brief: 'Overview',
+  'The Design proccess': 'Design process',
+  /* sentence case, like every other chip in the set */
+  'Conversational Design': 'Conversational design',
+};
+
+/**
+ * A chip never opens with "The" — George, 2026-09-17: *"Remove the 'The' from
+ * all the Chips."*
+ *
+ * Right call, and it is a UX-writing one rather than a stylistic one. These
+ * are navigation labels: the sticky header reads the current one out as you
+ * scroll, and a reader skims the set to decide whether to keep going. An
+ * article in front of every item makes them all start the same way, which is
+ * the one thing a scannable list must not do. "Challenge, Brand, Website"
+ * reads as a list; "The challenge, The brand, The Website" reads as prose
+ * chopped up.
+ */
+export const dropArticle = (chip: string) => {
+  const bare = chip.replace(/^The\s+/, '');
+  /* Capitalise, because the canvas does not. George typed "The challenge"
+     and "The brand" with a lower-case second word — invisible while the
+     article carried the capital, and "challenge" sitting next to "Overview"
+     the moment it went. Only the first letter is touched, so a product name
+     inside a chip survives. */
+  return bare.charAt(0).toUpperCase() + bare.slice(1);
 };
 
 export interface SectionCopy {
@@ -135,10 +162,10 @@ export const COPY: Record<string, ProjectCopy> = {
       {
         // The brand — the 11 stills
         text:
-          'The company was called Gaspardesk. That fit a helpdesk, but it said ' +
-          'nothing about the AI and would not stretch as the company grew. We ' +
-          'became Gaspar AI. My boss wanted something more playful than other ' +
-          'AI companies, so I turned Gaspar into a character.',
+          'I changed the name and the logo together. Gaspardesk fit a helpdesk ' +
+          'but nothing wider, so we became Gaspar AI — a name that could grow ' +
+          'with the product. I turned Gaspar into a character, with a smaller ' +
+          'robot for each automation it could run.',
       },
       {
         /* Was "The Design proccess" on the canvas. George wanted a section
@@ -147,7 +174,12 @@ export const COPY: Record<string, ProjectCopy> = {
            checkable version: *"the scale is the story — one designer, whole
            product from scratch."* The picture argues it; the words say what
            the picture cannot. */
-        chip: 'The scale of it',
+        /* Was "The scale of it", which was mine and not good. This is the
+           section a recruiter is looking for and it had no word for itself:
+           the chips run Overview, Challenge, Brand, ?, Website, Website vol2,
+           Conversational Design, and the gap is the product work — the core
+           of the job the page is applying for. Name the discipline. */
+        chip: 'Product design',
         text:
           'I was the only designer, and I drew every screen from scratch over ' +
           'sixteen months — the components, how everything worked on smaller ' +
@@ -158,10 +190,10 @@ export const COPY: Record<string, ProjectCopy> = {
         // the first commercial site
         chip: 'The Website',
         text:
-          'The first thing I shipped. The company needed somewhere to send ' +
-          'people while everything else was rebuilt, so I built a site around ' +
-          'the new name, the new logo and Gaspar. Every other AI company ' +
-          'looked like enterprise software, so I made ours playful.',
+          'The company needed a site to send people to while the rest was ' +
+          'being rebuilt. I built it around the new name, the new logo and ' +
+          'Gaspar. Every other AI company looked like enterprise software, so ' +
+          'I made ours playful.',
         /* No list to give, so no arrows. See `bullets` on `SectionCopy`. */
         bullets: [],
       },

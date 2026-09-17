@@ -1,5 +1,5 @@
 import { ASSETS, type Loop, type Shot } from './assets';
-import { COPY, CHIP_RENAMES, type SectionCopy } from './copy';
+import { COPY, CHIP_RENAMES, dropArticle, type SectionCopy } from './copy';
 import { LAYOUT, type LayoutCell } from './layout';
 import type { Block, Cell, Vol2Project } from './blocks';
 
@@ -171,7 +171,7 @@ function buildBlocks(slug: string, folder: string): Block[] {
   /* The chip a section actually shows: what `copy.ts` says for this one, or
      a rename that applies everywhere, or the working label off the canvas. */
   const label = (w: SectionCopy | undefined, chip: string) =>
-    w?.chip ?? CHIP_RENAMES[chip] ?? chip;
+    dropArticle(w?.chip ?? CHIP_RENAMES[chip] ?? chip);
 
   /** the still for one slot, or nothing when the export does not have it */
   const fill = (c: LayoutCell): string | undefined =>
