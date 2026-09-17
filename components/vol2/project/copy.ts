@@ -129,6 +129,43 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Cabaret Movie Poster — written 2026-09-17 ──────────────────────
+     Personal work. An alternative poster for Bob Fosse's Cabaret, 1972.
+
+     George called it *"an experimental project"* and did not offer a thesis,
+     so the page does not build one for him. What he did confirm: *"the drop
+     falls on the dancer. It's based on the story of the movie cabaret."*
+     That is the whole idea and it is enough — the poster is doing the
+     explaining, which is what a poster is for. */
+  cabaret: {
+    subtitle:
+      "An alternative poster for Bob Fosse's Cabaret, 1972.",
+    meta: {
+      client: 'Personal project',
+      role: 'Visual Designer',
+      deliverables: '2 posters',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Berlin keeps dancing while something else arrives above it. That is ' +
+          'the film, and it is the poster.',
+      },
+      null, // the poster, full width
+      {
+        /* Two posters, not two directions — and no arrows, because nothing
+           here is a list. */
+        chip: 'Posters',
+        text:
+          'The dancer is upside down, mid-movement, and the swastika above her ' +
+          'lets one drop fall onto her. In the second the symbol takes the ' +
+          'whole sheet and the title sits over it. Black, white and one red.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Tarot Cards — written 2026-09-17 ───────────────────────────────
      Personal work. A full Major Arcana, 22 cards, of which eight are on the
      page and all 22 are in the full-deck shot.
