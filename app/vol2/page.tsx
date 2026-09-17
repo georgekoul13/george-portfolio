@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { AUTHOR, canonical, jsonLd, page as seoPage } from '@/lib/seo';
 import Loader from '@/components/vol2/Loader';
 import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
@@ -34,8 +36,37 @@ import CopyrightSection from '@/components/vol2/CopyrightSection';
  * `PanelStack`. A panel pins once it is whole on screen and the next slides
  * up over it while it holds still.
  */
+/**
+ * The home page's own words. It inherited the root layout's line before
+ * this, which is the same line every other page had.
+ */
+export const metadata: Metadata = seoPage({
+  title: 'Product & visual designer',
+  description:
+    'George Koulouris designs products, brands and the things around them — '
+    + 'apps, insurance platforms, identities, posters and type. Based in Greece.',
+});
+
 export default function Vol2Page() {
   return (
+    <>
+    {/* Who the site is about, in the form a search engine can use. Without
+        this it has to infer the person, the job and the location from the
+        copy — and a portfolio's copy is written for humans, not for that. */}
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={jsonLd({
+        '@type': 'Person',
+        name: AUTHOR,
+        url: canonical(),
+        jobTitle: 'Product & Visual Designer',
+        address: { '@type': 'PostalAddress', addressCountry: 'GR' },
+        sameAs: [
+          'https://www.linkedin.com/in/george-koulouris/',
+        ],
+        knowsAbout: ['Product Design', 'UX Design', 'UI Design', 'Brand Identity', 'Typography', 'Illustration'],
+      })}
+    />
     <div data-vol2>
       {/* first in the tree on purpose — it stops the page's animations during
           render, before any section's own timeline is built */}
@@ -100,5 +131,6 @@ export default function Vol2Page() {
         />
       </main>
     </div>
+    </>
   );
 }
