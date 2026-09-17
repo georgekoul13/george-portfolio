@@ -23,10 +23,11 @@
  * ── how long a line is allowed to be ──────────────────────────────────
  * Not a style preference — the template sets the limit twice over.
  *
- *   beside pictures   **10 to 15 words.** George: *"In the texts next to the
- *                     images i want something short like 10 to 15 words. If
- *                     we need to add more text we can have another section."*
- *                     A section is the unit of more, not a longer paragraph.
+ *   beside pictures   **up to 45 words.** Tried at 10-15 first and George
+ *                     called it: *"make the paragraphs next to the images
+ *                     bigger, max 45 words, cuz it does not make sense now."*
+ *                     Ten words in a 432 column beside a 538-tall video is a
+ *                     caption with a paragraph's worth of space under it.
  *   full width        about **20**, because it sets at 72/80 across the whole
  *                     1320. Forty words there is nine lines of display type
  *                     and stops being a statement.
@@ -50,7 +51,14 @@ export interface SectionCopy {
   /** replaces the working label in `layout.ts` */
   chip?: string;
   text: string;
-  /** the arrow-led lines, where the design gives a section some */
+  /**
+   * The arrow-led lines, where a section has a list to give.
+   *
+   * Absent falls back to the design's count as placeholders; an EMPTY ARRAY
+   * removes them. Both are needed — the design puts two lines under most
+   * sections, and only some of those sections turn out to have anything to
+   * enumerate.
+   */
   bullets?: string[];
 }
 
@@ -107,7 +115,10 @@ export const COPY: Record<string, ProjectCopy> = {
       {
         // The brand — the 11 stills
         text:
-          'Gaspardesk named where we were, not where we were going.',
+          'Gaspardesk named where we were, not where we were going — a ' +
+          'helpdesk, when the thing doing the work was AI. It became Gaspar ' +
+          'AI. The founder wanted more playfulness than the category had, so ' +
+          'Gaspar stopped being a word and became a character.',
       },
       {
         /* Was "The Design proccess" on the canvas. George wanted a section
@@ -118,30 +129,41 @@ export const COPY: Record<string, ProjectCopy> = {
            the picture cannot. */
         chip: 'The scale of it',
         text:
-          'One designer, sixteen months, every screen from scratch. The largest ' +
-          'part is under NDA.',
+          'Every screen drawn from scratch by one person over sixteen months: ' +
+          'components, responsive behaviour, and the prototypes the engineers ' +
+          'built from. No system to inherit, nobody to split it with. The ' +
+          'largest part is under NDA.',
       },
       {
         // the first commercial site
         chip: 'The Website',
         text:
-          'First job: somewhere to point people. New name, new logotype, and ' +
-          'Gaspar all over it.',
-        bullets: ['[to write]', '[to write]'],
+          'The first thing I shipped. The company needed somewhere to point ' +
+          'people while everything else was rebuilt, so the site carried the ' +
+          'new name, the new logotype and Gaspar himself — and leaned into ' +
+          'playfulness, in a category where everyone looked like enterprise ' +
+          'software.',
+        /* No list to give, so no arrows. See `bullets` on `SectionCopy`. */
+        bullets: [],
       },
       {
         // the same site a year on
         chip: 'The Website vol2',
         text:
-          'A year on, far more product to explain. Bigger, calmer, still ' +
-          'playful.',
-        bullets: ['[to write]', '[to write]'],
+          'A year on, the site could not hold what the company had become: far ' +
+          'more product, and more to say about it. Version two is bigger and ' +
+          'deliberately calmer — the playfulness pulled back to where it ' +
+          'supports the work instead of leading it.',
+        bullets: [],
       },
       {
         // Conversational Design — the two dialogue-manager diagrams
         text:
-          'Where a conversation branches, and what happens when someone raises ' +
-          'two things at once.',
+          "Gaspar's replies were designed, not written as they came up. " +
+          'Working with the AI engineers I mapped how a conversation actually ' +
+          'goes — where it branches, what happens when someone raises a second ' +
+          'thing halfway through, how it recovers from understanding the wrong ' +
+          'one.',
       },
     ],
   },
