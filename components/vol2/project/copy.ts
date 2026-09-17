@@ -340,8 +340,8 @@ export const COPY: Record<string, ProjectCopy> = {
      page and all 22 are in the full-deck shot.
 
      THE TITLE said "Tarrot", with two Rs, in the h1. Not a word, and the
-     same class of error as DEERISLD. The export folder still carries the
-     misspelling; the title does not.
+     same class of error as DEERISLD. The export folder carried it too and
+     has been renamed, so the misspelling is out of the image URLs as well.
 
      What it is, in his words: *"a personal project about queerness, the
      male body, patterns, nature."* */

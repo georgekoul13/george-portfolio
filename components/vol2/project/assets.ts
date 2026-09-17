@@ -795,53 +795,53 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "highlights": [],
     "videos": []
   },
-  "Tarrot Cards": {
-    "hero": "/images/vol2/projects/Tarrot%20Cards/hero.png",
+  "Tarot Cards": {
+    "hero": "/images/vol2/projects/Tarot%20Cards/hero.png",
     "stills": [
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2001.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2001.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2002.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2002.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2003.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2003.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2004.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2004.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2005.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2005.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2006.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2006.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2007.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2007.png",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/image%2008.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2008.png",
         "w": 1600,
         "h": 1600
       }
     ],
     "highlights": [
       {
-        "src": "/images/vol2/projects/Tarrot%20Cards/highlight.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/highlight.png",
         "w": 2640,
         "h": 1280
       }
