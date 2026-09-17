@@ -5,8 +5,8 @@
  * named for the project rather than for its slug, with a convention this
  * reads rather than guesses:
  *
- *   hero.png        the base picture, and the card's
- *   image N.png     a still — 800x800 for a grid cell, 1680x800 for a row
+ *   hero.webp       the base picture, and the card's
+ *   image N.webp    a still — 800x800 for a grid cell, 1680x800 for a row
  *   highlight N.*   the full-width slot, still or loop
  *   wireframe N.png a row-width still, the design-process slot
  *   wide N.png      a row-width still that is not a wireframe
@@ -41,13 +41,53 @@ const num = (s) => {
 };
 
 /** width/height straight out of the PNG IHDR — no decode, no dependency */
-function pngSize(file) {
-  const fd = openSync(file, 'r');
-  const head = Buffer.alloc(24);
-  readSync(fd, head, 0, 24, 0);
-  closeSync(fd);
+function pngSize(head) {
   if (head.toString('ascii', 1, 4) !== 'PNG') return null;
   return { w: head.readUInt32BE(16), h: head.readUInt32BE(20) };
+}
+
+/**
+ * The same for WebP, which is what these are now — 232MB of PNG became 18MB
+ * at q88 and the sources changed under this script.
+ *
+ * Three headers carry the size, and which one a file gets is decided by the
+ * encoder rather than by us, so all three are read:
+ *   VP8X  an extended file (this is what anything with alpha becomes)
+ *   VP8   plain lossy
+ *   VP8L  lossless
+ * Sizes are stored MINUS ONE in every case, which is the detail that makes a
+ * hand-rolled reader worth commenting rather than worth guessing at.
+ */
+function webpSize(head) {
+  if (head.toString('ascii', 0, 4) !== 'RIFF') return null;
+  if (head.toString('ascii', 8, 12) !== 'WEBP') return null;
+  const tag = head.toString('ascii', 12, 16);
+
+  if (tag === 'VP8X') {
+    return {
+      w: (head.readUIntLE(24, 3) & 0xffffff) + 1,
+      h: (head.readUIntLE(27, 3) & 0xffffff) + 1,
+    };
+  }
+  if (tag === 'VP8 ') {
+    // 20..22 frame tag, 23..25 the sync code, then 14-bit width and height
+    return { w: head.readUInt16LE(26) & 0x3fff, h: head.readUInt16LE(28) & 0x3fff };
+  }
+  if (tag === 'VP8L') {
+    // one signature byte, then 14 bits of width-1 and 14 of height-1, packed
+    const bits = head.readUInt32LE(21);
+    return { w: (bits & 0x3fff) + 1, h: ((bits >> 14) & 0x3fff) + 1 };
+  }
+  return null;
+}
+
+/** whichever of the two this file turns out to be */
+function imageSize(file) {
+  const fd = openSync(file, 'r');
+  const head = Buffer.alloc(32);
+  readSync(fd, head, 0, 32, 0);
+  closeSync(fd);
+  return pngSize(head) ?? webpSize(head);
 }
 
 const out = {};
@@ -56,7 +96,7 @@ for (const dir of readdirSync(ROOT).sort()) {
   const files = readdirSync(join(ROOT, dir)).filter((f) => f !== '.DS_Store');
   const url = (f) => `/images/vol2/projects/${dir}/${f}`.replace(/ /g, '%20');
   const shot = (f) => {
-    const s = /\.png$/i.test(f) ? pngSize(join(ROOT, dir, f)) : null;
+    const s = /\.(png|webp)$/i.test(f) ? imageSize(join(ROOT, dir, f)) : null;
     return { src: url(f), w: s?.w ?? 0, h: s?.h ?? 0 };
   };
 

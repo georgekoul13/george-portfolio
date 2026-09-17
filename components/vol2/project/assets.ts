@@ -26,60 +26,60 @@ export interface ProjectAssets {
 
 export const ASSETS: Record<string, ProjectAssets> = {
   "BancaSure360": {
-    "hero": "/images/vol2/projects/BancaSure360/hero.png",
+    "hero": "/images/vol2/projects/BancaSure360/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/BancaSure360/wireframe%201.png",
+        "src": "/images/vol2/projects/BancaSure360/wireframe%201.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/wireframe%202.png",
+        "src": "/images/vol2/projects/BancaSure360/wireframe%202.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%2001.png",
+        "src": "/images/vol2/projects/BancaSure360/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%202.png",
+        "src": "/images/vol2/projects/BancaSure360/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%203.png",
+        "src": "/images/vol2/projects/BancaSure360/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%204.png",
+        "src": "/images/vol2/projects/BancaSure360/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%205.png",
+        "src": "/images/vol2/projects/BancaSure360/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%206.png",
+        "src": "/images/vol2/projects/BancaSure360/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%207.png",
+        "src": "/images/vol2/projects/BancaSure360/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%208.png",
+        "src": "/images/vol2/projects/BancaSure360/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/BancaSure360/image%209.png",
+        "src": "/images/vol2/projects/BancaSure360/image%209.webp",
         "w": 800,
         "h": 800
       }
@@ -88,55 +88,55 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Benefit Apps": {
-    "hero": "/images/vol2/projects/Benefit%20Apps/hero.png",
+    "hero": "/images/vol2/projects/Benefit%20Apps/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/wireframe.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/wireframe.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%2001.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%202.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%203.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%203.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%204.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%205.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%206.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%207.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%208.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Benefit%20Apps/image%209.png",
+        "src": "/images/vol2/projects/Benefit%20Apps/image%209.webp",
         "w": 1680,
         "h": 800
       }
@@ -145,22 +145,22 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Cabaret": {
-    "hero": "/images/vol2/projects/Cabaret/hero.png",
+    "hero": "/images/vol2/projects/Cabaret/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Cabaret/image%209.png",
+        "src": "/images/vol2/projects/Cabaret/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cabaret/image%2010.png",
+        "src": "/images/vol2/projects/Cabaret/image%2010.webp",
         "w": 800,
         "h": 800
       }
     ],
     "highlights": [
       {
-        "src": "/images/vol2/projects/Cabaret/highlight.png",
+        "src": "/images/vol2/projects/Cabaret/highlight.webp",
         "w": 2640,
         "h": 1280
       }
@@ -168,60 +168,60 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Cancellation Insurance": {
-    "hero": "/images/vol2/projects/Cancellation%20Insurance/hero.png",
+    "hero": "/images/vol2/projects/Cancellation%20Insurance/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/wireframe.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/wireframe.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%201.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%201.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%202.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%203.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%204.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%205.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%206.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%207.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%208.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%209.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cancellation%20Insurance/image%2010.png",
+        "src": "/images/vol2/projects/Cancellation%20Insurance/image%2010.webp",
         "w": 800,
         "h": 800
       }
@@ -235,60 +235,60 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "Cybersential": {
-    "hero": "/images/vol2/projects/Cybersential/hero.png",
+    "hero": "/images/vol2/projects/Cybersential/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Cybersential/wireframe.png",
+        "src": "/images/vol2/projects/Cybersential/wireframe.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%201.png",
+        "src": "/images/vol2/projects/Cybersential/image%201.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%202.png",
+        "src": "/images/vol2/projects/Cybersential/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%203.png",
+        "src": "/images/vol2/projects/Cybersential/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%204.png",
+        "src": "/images/vol2/projects/Cybersential/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%205.png",
+        "src": "/images/vol2/projects/Cybersential/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%206.png",
+        "src": "/images/vol2/projects/Cybersential/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%207.png",
+        "src": "/images/vol2/projects/Cybersential/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%208.png",
+        "src": "/images/vol2/projects/Cybersential/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%209.png",
+        "src": "/images/vol2/projects/Cybersential/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Cybersential/image%2010.png",
+        "src": "/images/vol2/projects/Cybersential/image%2010.webp",
         "w": 800,
         "h": 800
       }
@@ -297,20 +297,20 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Czech": {
-    "hero": "/images/vol2/projects/Czech/hero.png",
+    "hero": "/images/vol2/projects/Czech/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Czech/image%2001.png",
+        "src": "/images/vol2/projects/Czech/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Czech/image%2002.png",
+        "src": "/images/vol2/projects/Czech/image%2002.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Czech/image%2003.png",
+        "src": "/images/vol2/projects/Czech/image%2003.webp",
         "w": 800,
         "h": 800
       }
@@ -324,67 +324,67 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "Danai Michali": {
-    "hero": "/images/vol2/projects/Danai%20Michali/hero.png",
+    "hero": "/images/vol2/projects/Danai%20Michali/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%2001.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%202.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%203.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%204.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%205.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%206.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%207.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%208.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%209.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/image%2010.png",
+        "src": "/images/vol2/projects/Danai%20Michali/image%2010.webp",
         "w": 800,
         "h": 800
       }
     ],
     "highlights": [
       {
-        "src": "/images/vol2/projects/Danai%20Michali/highlight%201.png",
+        "src": "/images/vol2/projects/Danai%20Michali/highlight%201.webp",
         "w": 2640,
         "h": 1280
       },
       {
-        "src": "/images/vol2/projects/Danai%20Michali/highlight%202.png",
+        "src": "/images/vol2/projects/Danai%20Michali/highlight%202.webp",
         "w": 2640,
         "h": 1280
       }
@@ -392,40 +392,40 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Deerislnd": {
-    "hero": "/images/vol2/projects/Deerislnd/hero.png",
+    "hero": "/images/vol2/projects/Deerislnd/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Deerislnd/image%201.png",
+        "src": "/images/vol2/projects/Deerislnd/image%201.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%202.png",
+        "src": "/images/vol2/projects/Deerislnd/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%203.png",
+        "src": "/images/vol2/projects/Deerislnd/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%204.png",
+        "src": "/images/vol2/projects/Deerislnd/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%205.png",
+        "src": "/images/vol2/projects/Deerislnd/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%206.png",
+        "src": "/images/vol2/projects/Deerislnd/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Deerislnd/image%207.png",
+        "src": "/images/vol2/projects/Deerislnd/image%207.webp",
         "w": 800,
         "h": 800
       }
@@ -443,75 +443,75 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "Gaspar AI": {
-    "hero": "/images/vol2/projects/Gaspar%20AI/hero.png",
+    "hero": "/images/vol2/projects/Gaspar%20AI/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%2001.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%202.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%203.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%204.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%205.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%206.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%207.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%208.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%209.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%2010.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%2010.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/image%2011.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/image%2011.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/wide%2001.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2001.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/wide%2002.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2002.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Gaspar%20AI/wide%2003.png",
+        "src": "/images/vol2/projects/Gaspar%20AI/wide%2003.webp",
         "w": 1680,
         "h": 800
       }
@@ -533,105 +533,105 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "Mood": {
-    "hero": "/images/vol2/projects/Mood/hero.png",
+    "hero": "/images/vol2/projects/Mood/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Mood/image%2001.png",
+        "src": "/images/vol2/projects/Mood/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%202.png",
+        "src": "/images/vol2/projects/Mood/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%203.png",
+        "src": "/images/vol2/projects/Mood/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%204.png",
+        "src": "/images/vol2/projects/Mood/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%205.png",
+        "src": "/images/vol2/projects/Mood/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%206.png",
+        "src": "/images/vol2/projects/Mood/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%207.png",
+        "src": "/images/vol2/projects/Mood/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%208.png",
+        "src": "/images/vol2/projects/Mood/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%209.png",
+        "src": "/images/vol2/projects/Mood/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2010.png",
+        "src": "/images/vol2/projects/Mood/image%2010.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2011.png",
+        "src": "/images/vol2/projects/Mood/image%2011.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2012.png",
+        "src": "/images/vol2/projects/Mood/image%2012.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2013.png",
+        "src": "/images/vol2/projects/Mood/image%2013.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2014.png",
+        "src": "/images/vol2/projects/Mood/image%2014.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2015.png",
+        "src": "/images/vol2/projects/Mood/image%2015.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2016.png",
+        "src": "/images/vol2/projects/Mood/image%2016.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2017.png",
+        "src": "/images/vol2/projects/Mood/image%2017.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2018.png",
+        "src": "/images/vol2/projects/Mood/image%2018.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2020.png",
+        "src": "/images/vol2/projects/Mood/image%2020.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Mood/image%2021.png",
+        "src": "/images/vol2/projects/Mood/image%2021.webp",
         "w": 800,
         "h": 800
       }
@@ -640,45 +640,45 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Nixteri": {
-    "hero": "/images/vol2/projects/Nixteri/hero.png",
+    "hero": "/images/vol2/projects/Nixteri/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Nixteri/image%2001.png",
+        "src": "/images/vol2/projects/Nixteri/image%2001.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2002.png",
+        "src": "/images/vol2/projects/Nixteri/image%2002.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2003.png",
+        "src": "/images/vol2/projects/Nixteri/image%2003.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2004.png",
+        "src": "/images/vol2/projects/Nixteri/image%2004.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2005.png",
+        "src": "/images/vol2/projects/Nixteri/image%2005.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2006.png",
+        "src": "/images/vol2/projects/Nixteri/image%2006.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2007.png",
+        "src": "/images/vol2/projects/Nixteri/image%2007.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Nixteri/image%2008.png",
+        "src": "/images/vol2/projects/Nixteri/image%2008.webp",
         "w": 800,
         "h": 800
       }
@@ -687,30 +687,30 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Olga Posonidou": {
-    "hero": "/images/vol2/projects/Olga%20Posonidou/hero.png",
+    "hero": "/images/vol2/projects/Olga%20Posonidou/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Olga%20Posonidou/image%201.png",
+        "src": "/images/vol2/projects/Olga%20Posonidou/image%201.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Olga%20Posonidou/image%202.png",
+        "src": "/images/vol2/projects/Olga%20Posonidou/image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Olga%20Posonidou/image%203.png",
+        "src": "/images/vol2/projects/Olga%20Posonidou/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Olga%20Posonidou/image%204.png",
+        "src": "/images/vol2/projects/Olga%20Posonidou/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Olga%20Posonidou/image%205.png",
+        "src": "/images/vol2/projects/Olga%20Posonidou/image%205.webp",
         "w": 800,
         "h": 800
       }
@@ -719,75 +719,75 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Piraeus Insurance": {
-    "hero": "/images/vol2/projects/Piraeus%20Insurance/hero.png",
+    "hero": "/images/vol2/projects/Piraeus%20Insurance/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/wireframe.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/wireframe.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2001.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2002.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2002.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2003.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2003.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2004.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2004.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2005.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2005.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%206.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%207.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%207.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%208.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%208.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%209.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%209.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2010.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2010.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2011.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2011.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2012.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2012.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2013.png",
+        "src": "/images/vol2/projects/Piraeus%20Insurance/image%2013.webp",
         "w": 800,
         "h": 800
       }
@@ -796,52 +796,52 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Tarot Cards": {
-    "hero": "/images/vol2/projects/Tarot%20Cards/hero.png",
+    "hero": "/images/vol2/projects/Tarot%20Cards/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2001.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2001.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2002.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2002.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2003.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2003.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2004.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2004.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2005.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2005.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2006.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2006.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2007.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2007.webp",
         "w": 1600,
         "h": 1600
       },
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/image%2008.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/image%2008.webp",
         "w": 1600,
         "h": 1600
       }
     ],
     "highlights": [
       {
-        "src": "/images/vol2/projects/Tarot%20Cards/highlight.png",
+        "src": "/images/vol2/projects/Tarot%20Cards/highlight.webp",
         "w": 2640,
         "h": 1280
       }
@@ -849,10 +849,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Typeface A": {
-    "hero": "/images/vol2/projects/Typeface%20A/hero.png",
+    "hero": "/images/vol2/projects/Typeface%20A/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Typeface%20A/image%201.png",
+        "src": "/images/vol2/projects/Typeface%20A/image%201.webp",
         "w": 1680,
         "h": 800
       }
@@ -866,10 +866,10 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "Typeface b": {
-    "hero": "/images/vol2/projects/Typeface%20b/hero.png",
+    "hero": "/images/vol2/projects/Typeface%20b/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Typeface%20b/image%201.png",
+        "src": "/images/vol2/projects/Typeface%20b/image%201.webp",
         "w": 1680,
         "h": 800
       }
@@ -878,15 +878,15 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "Vasiliki Vozora": {
-    "hero": "/images/vol2/projects/Vasiliki%20Vozora/hero.png",
+    "hero": "/images/vol2/projects/Vasiliki%20Vozora/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/Vasiliki%20Vozora/image%201.png",
+        "src": "/images/vol2/projects/Vasiliki%20Vozora/image%201.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/Vasiliki%20Vozora/image%202.png",
+        "src": "/images/vol2/projects/Vasiliki%20Vozora/image%202.webp",
         "w": 800,
         "h": 800
       }
@@ -900,40 +900,40 @@ export const ASSETS: Record<string, ProjectAssets> = {
     ]
   },
   "istorima": {
-    "hero": "/images/vol2/projects/istorima/hero.png",
+    "hero": "/images/vol2/projects/istorima/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/istorima/image%201.png",
+        "src": "/images/vol2/projects/istorima/image%201.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/Image%202.png",
+        "src": "/images/vol2/projects/istorima/Image%202.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/image%203.png",
+        "src": "/images/vol2/projects/istorima/image%203.webp",
         "w": 1680,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/image%204.png",
+        "src": "/images/vol2/projects/istorima/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/image%205.png",
+        "src": "/images/vol2/projects/istorima/image%205.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/image%206.png",
+        "src": "/images/vol2/projects/istorima/image%206.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/istorima/image%207.png",
+        "src": "/images/vol2/projects/istorima/image%207.webp",
         "w": 800,
         "h": 800
       }
@@ -942,30 +942,30 @@ export const ASSETS: Record<string, ProjectAssets> = {
     "videos": []
   },
   "pixel": {
-    "hero": "/images/vol2/projects/pixel/hero.png",
+    "hero": "/images/vol2/projects/pixel/hero.webp",
     "stills": [
       {
-        "src": "/images/vol2/projects/pixel/image%2001.png",
+        "src": "/images/vol2/projects/pixel/image%2001.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/pixel/image%2002.png",
+        "src": "/images/vol2/projects/pixel/image%2002.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/pixel/image%203.png",
+        "src": "/images/vol2/projects/pixel/image%203.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/pixel/image%204.png",
+        "src": "/images/vol2/projects/pixel/image%204.webp",
         "w": 800,
         "h": 800
       },
       {
-        "src": "/images/vol2/projects/pixel/image%205.png",
+        "src": "/images/vol2/projects/pixel/image%205.webp",
         "w": 800,
         "h": 800
       }
