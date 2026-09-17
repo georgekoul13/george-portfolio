@@ -71,11 +71,17 @@ export type Block =
   | { kind: 'media'; src?: string; sources?: Sources; poster?: string; alt?: string }
   | { kind: 'split'; chip: string; text: string; bullets?: string[]; cells: Cell[] };
 
+/**
+ * The facts row on the base.
+ *
+ * `designTime` was a fourth field in the design and is gone — George,
+ * 2026-09-17: *"I'm thinking of removing the design time from all pages."*
+ * It only ever answered well for a commissioned piece; on a job it is the
+ * tenure, which the row already implies and the copy can say better.
+ */
 export interface ProjectMetaFields {
   client: string;
   role: string;
-  /** George added this one — how long the thing took to design */
-  designTime: string;
   deliverables: string;
 }
 

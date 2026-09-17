@@ -92,8 +92,15 @@ export default function ProjectBase({
         <p style={{ font: 'var(--type-16-24-r)', color: 'var(--text-tertiary)' }}>{subtitle}</p>
       </div>
 
-      {/* One row at desktop. Below `lg` four cells across a phone would be
-          19px wide, so they wrap to two and then to one. */}
+      {/* One row at desktop, wrapping to two and then to one below `lg` —
+          three cells across a phone would be 25px wide.
+
+          THREE cells now, not four: `Design time` is gone. The proportions
+          are the design's all the same, because they were never per-cell —
+          the row is two halves, and Deliverables has always owned one of
+          them on its own. Dropping a field out of the left half widens the
+          two that remain from a quarter each to a third; it does not move
+          the half-way line, which is the part the eye reads. */}
       <div
         className="grid w-full grid-cols-1 px-[var(--gutter)] sm:grid-cols-2 lg:flex"
         style={{ gap: 'var(--project-meta-gap)' }}
@@ -101,10 +108,9 @@ export default function ProjectBase({
         <div className="flex min-w-0 flex-1 flex-col gap-[var(--project-meta-gap)] sm:flex-row">
           <Cell label="Client" value={meta.client} />
           <Cell label="Role" value={meta.role} />
-          <Cell label="Design time" value={meta.designTime} />
         </div>
-        {/* Deliverables gets the same width as the other three together —
-            it is a list, and the design gives it half the row. */}
+        {/* Deliverables gets half the row on its own — it is a list, and it
+            is the only cell that runs to more than three words. */}
         <div className="flex min-w-0 flex-1">
           <Cell label="Deliverables" value={meta.deliverables} />
         </div>

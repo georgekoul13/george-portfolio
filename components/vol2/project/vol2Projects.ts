@@ -1,19 +1,23 @@
 import { ASSETS, type Loop, type Shot } from './assets';
+import { COPY, type SectionCopy } from './copy';
 import { LAYOUT, type LayoutCell } from './layout';
 import type { Block, Cell, Vol2Project } from './blocks';
 
 /**
  * The nineteen project pages, on the template of Figma 366:11793.
  *
- * ── EVERY WORD BELOW IS A PLACEHOLDER ─────────────────────────────────
- * George: *"ALL THE TEXTS EVERYWHERE ARE PLACEHOLDERS we are going to do
- * them page by page."* The titles and the section chips are his and are
- * real; the subtitle, the section paragraphs, the arrow-led lines and all
- * four facts are not. They are marked rather than invented so that a page
- * reads as unfinished instead of reading as finished and wrong.
+ * ── the words live in `copy.ts` ───────────────────────────────────────
+ * A page George has written reads from there. A page he has not keeps the
+ * lorem below, and so does any section his entry does not reach — there is
+ * no state in between, which is the point. George: *"ALL THE TEXTS
+ * EVERYWHERE ARE PLACEHOLDERS we are going to do them page by page."*
  *
- * Do not "improve" a line here. We write them together, one project at a
- * time.
+ * The section chips turned out to be drafts too: *"we can change the wording
+ * 'The Design proccess' as well, it's just a placeholder."* So `copy.ts` may
+ * override a chip, and `layout.ts` holds his working label until it does.
+ *
+ * Do not write a line into either file from inference. We write them
+ * together, one project at a time.
  *
  * ── the PICTURES are not placeholders ─────────────────────────────────
  * They used to be arranged by this file: chips from a table here, stills
@@ -78,7 +82,6 @@ const LOREM_LINE = 'Forem ipsum dolor sit';
 const FACT = {
   client: 'Client name',
   role: 'Role',
-  designTime: 'N days',
   deliverables: 'What was delivered',
 };
 
@@ -104,8 +107,6 @@ const SOURCES: { slug: string; folder: string; title: string }[] = [
   { slug: 'typeface-a', folder: 'Typeface A', title: 'Typeface A' },
   { slug: 'typeface-b', folder: 'Typeface b', title: 'Typeface B' },
 ];
-
-const VIDEO = /\.(mp4|webm|mov)$/i;
 
 /**
  * Slots the design draws that the export does not have.
@@ -160,6 +161,13 @@ function buildBlocks(slug: string, folder: string): Block[] {
   const empty = NOT_EXPORTED[slug] ?? [];
   const repeats = REPEATS[slug] ?? {};
 
+  /* The words for block `at`, where this page has been written. A project
+     with no entry, or a section its entry does not reach, keeps the lorem —
+     so a half-written page is impossible: it is either George's words or
+     visibly not. */
+  const written = COPY[slug]?.sections;
+  const says = (at: number): SectionCopy | undefined => written?.[at] ?? undefined;
+
   /** the still for one slot, or nothing when the export does not have it */
   const fill = (c: LayoutCell): string | undefined =>
     c.w >= 800 ? wides.shift() : squares.shift();
@@ -186,7 +194,8 @@ function buildBlocks(slug: string, folder: string): Block[] {
   const blocks: Block[] = [];
   plan.blocks.forEach((b, at) => {
     if (b.kind === 'text') {
-      blocks.push({ kind: 'text', chip: b.chip, text: LOREM });
+      const w = says(at);
+      blocks.push({ kind: 'text', chip: w?.chip ?? b.chip, text: w?.text ?? LOREM, bullets: w?.bullets });
       return;
     }
 
@@ -209,7 +218,10 @@ function buildBlocks(slug: string, folder: string): Block[] {
       return;
     }
 
-    const bullets = b.bullets ? Array.from({ length: b.bullets }, () => LOREM_LINE) : undefined;
+    const w = says(at);
+    const bullets =
+      w?.bullets ?? (b.bullets ? Array.from({ length: b.bullets }, () => LOREM_LINE) : undefined);
+    const chip = w?.chip ?? b.chip;
 
     /* A section that shows pictures the page shows again reads them by
        index rather than taking them off the queue — see `REPEATS`. */
@@ -225,10 +237,10 @@ function buildBlocks(slug: string, folder: string): Block[] {
     /* A split whose pictures are all missing is still a section George
        wrote — it keeps its chip and its words and stops being a split. */
     if (!cells.length) {
-      blocks.push({ kind: 'text', chip: b.chip, text: LOREM, bullets });
+      blocks.push({ kind: 'text', chip, text: w?.text ?? LOREM, bullets });
       return;
     }
-    blocks.push({ kind: 'split', chip: b.chip, text: LOREM_LONG, bullets, cells });
+    blocks.push({ kind: 'split', chip, text: w?.text ?? LOREM_LONG, bullets, cells });
   });
 
   return blocks;
@@ -240,8 +252,8 @@ const BY_SLUG = new Map<string, Vol2Project>(
     {
       slug,
       title,
-      subtitle: LOREM,
-      meta: { ...FACT },
+      subtitle: COPY[slug]?.subtitle ?? LOREM,
+      meta: COPY[slug]?.meta ?? { ...FACT },
       hero: ASSETS[folder]?.hero ?? '',
       blocks: buildBlocks(slug, folder),
     },
