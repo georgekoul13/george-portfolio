@@ -482,9 +482,31 @@ export default function MenuBar() {
               ✕ are the same two bars in different places — drawn as one
               shape they could only cross-fade, and the recording rotates
               them. */}
+          {/* THE RESTING OFFSET IS WRITTEN HERE, not left to GSAP.
+ 
+              Both bars sit at dead centre in the layout — the ✕'s position —
+              and the burger only exists once something moves them ∓4 apart.
+              That something was `gsap.set`, and `Loader` parks
+              `gsap.globalTimeline` for the whole of the home page's
+              entrance: a paused clock renders no tweens, a zero-duration one
+              included. So the two bars stayed stacked as ONE LINE for as long
+              as the curtain was up, and snapped into a burger a moment after
+              it lifted.
+ 
+              George: *"because this is the first thing the user see, is very
+              noticeable."* It is the same trap the sleeping avatar hit, and
+              the same answer: a RESTING STATE IS NOT AN ANIMATION. Written as
+              a transform, which is what GSAP reads and writes for `y`, so the
+              tween picks up exactly where this leaves off. */}
           <span aria-hidden="true" className="relative block size-[18px]">
-            <span ref={barTop} style={{ ...BAR, top: '50%', marginTop: -0.75 }} />
-            <span ref={barBottom} style={{ ...BAR, top: '50%', marginTop: -0.75 }} />
+            <span
+              ref={barTop}
+              style={{ ...BAR, top: '50%', marginTop: -0.75, transform: 'translateY(-4px)' }}
+            />
+            <span
+              ref={barBottom}
+              style={{ ...BAR, top: '50%', marginTop: -0.75, transform: 'translateY(4px)' }}
+            />
           </span>
         </button>
 
