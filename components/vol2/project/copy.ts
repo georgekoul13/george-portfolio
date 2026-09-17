@@ -124,6 +124,74 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Cancellation Insurance — written 2026-09-17 ────────────────────
+     Wallbid, 2024-25. Live with Eurolife FFH, and George cleared their name
+     staying visible in the Useful Documents list on screen 5: *"the project
+     is live with eurolife ff so let's keep it."*
+
+     The product calls itself "My Travel Wallet" on screen; the old record
+     files it as Cancellation Wallet; George's canvas titles the page
+     Cancellation Insurance. The page keeps his title. */
+  'cancellation-wallet': {
+    subtitle:
+      'Travel insurance you get by ticking a box on a hotel booking. This is ' +
+      'where you manage it.',
+    meta: {
+      client: 'Wallbid',
+      role: 'Product Designer',
+      deliverables: 'The whole platform design',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Tick the insurance box when you book a hotel, and an email brings ' +
+          'you here to manage what you bought.',
+      },
+      null, // the Figma loop, full width
+      {
+        /* The challenge, and it is a good one — George: *"some users got
+           there only after something happened, some set up everything
+           before."* The people who most need the product prepared least. */
+        text:
+          'Some people set everything up in advance. Others arrive only after ' +
+          'something has gone wrong, with nothing filled in.',
+      },
+      {
+        /* Design process. Same shape as Piraeus: the constraint is
+           compliance, not screen count. *"in order to do the claim
+           everything has to be set up in order to be compliant with the
+           insurance company."* Every requirement named here is visible in
+           the screens — guests, consents, one guest per room. */
+        text:
+          'You cannot file a claim until the policy is complete: every guest ' +
+          'named, every consent accepted, every room assigned. That is the ' +
+          "insurer's requirement. The flow is built to get people through it " +
+          'early, and to get them through it fast when they have not.',
+      },
+      {
+        /* Was "The solution", which George rejected: *"i'm not sure that
+           solution is the best wording - here i have some of the pages of
+           that product more or less categorised in different sections of the
+           platform."* They are pages from across the product rather than one
+           argument, so the chip says so — and borrows the product's own name
+           off the screen. */
+        chip: 'Inside the wallet',
+        text:
+          'There is no app to download and no password to remember. The email ' +
+          'drops you in, a code verifies you, and from there you find your ' +
+          'booking, say which room you are in, add the people staying with ' +
+          'you, and submit.',
+      },
+      {
+        // Complexity — the many-parties problem plus the white-label
+        text:
+          'Every booking carries different cover from a different insurer, and ' +
+          'the platform is rebranded for each partner selling it.',
+      },
+    ],
+  },
+
   /* ── BancaSure360 — written 2026-09-17 ──────────────────────────────
      Wallbid, 2024-25. A product of theirs sold to banks, not a commission.
 
