@@ -120,7 +120,29 @@ const EAR_SWELL = 1.1;
 const EASE = 'power3';
 const DUR = 0.5;
 
-export default function Avatar({ svg, className }: { svg: string; className?: string }) {
+export default function Avatar({
+  svg,
+  className,
+  /**
+   * Asleep, and staying that way.
+   *
+   * George, on the 404: *"put the sleeping version without waking it up —
+   * cuz in the error state everything sleeps."* So this is not the idle doze
+   * with a shorter fuse; it is a different state of the same drawing. He
+   * never tracks a cursor, never answers a tilt, never wakes on a tap, and
+   * the Zs run from the moment he is on screen.
+   *
+   * Handled before the rig is built rather than by muting each listener
+   * afterwards, because there is nothing on that page for him to respond
+   * to — no menu to love, no cursor to follow, and an idle timer whose only
+   * possible outcome is the state he is already in.
+   */
+  sleeping = false,
+}: {
+  svg: string;
+  className?: string;
+  sleeping?: boolean;
+}) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -311,6 +333,48 @@ export default function Avatar({ svg, className }: { svg: string; className?: st
           else aim(lu, lv);
         }
       };
+
+      /* ── asleep for good ─────────────────────────────────────────────
+         The 404's state, and it returns BEFORE anything that could wake
+         him exists — the hearts listener, the idle timer, the observer, and
+         the window-level `pointermove`/`keydown`/`scroll` handlers that
+         count reading the page as being awake.
+
+         Placed after those the first time, which looked right and was not:
+         the listeners were already armed by the time this ran, so the very
+         first mouse move opened his eyes. George: *"the illustration should
+         always be sleeping in the 404! without getting up from the mouse!"*
+         Position is the whole mechanism here — there is no path out of this
+         state because no path is ever built.
+
+         The face is written to the elements rather than set through GSAP,
+         for the reason in the note below: a parked global timeline renders
+         no tweens, and a resting state is not an animation.
+
+         The observer stays, because the Zs should not loop in a tab nobody
+         is looking at. */
+      if (sleeping) {
+        mood = 'asleep';
+        const hardSet = (els: Element[], on: boolean) =>
+          els.forEach((e) => {
+            (e as SVGElement).style.opacity = on ? '1' : '0';
+            (e as SVGElement).style.visibility = on ? 'visible' : 'hidden';
+          });
+        hardSet(eyesOpen, false);
+        hardSet(eyesShut, true);
+        if (zzz) hardSet([zzz], true);
+        leave();
+        zLoop.play(0);
+
+        const idle = new IntersectionObserver(([e]) =>
+          e.isIntersecting ? zLoop.play(0) : zLoop.pause(),
+        );
+        idle.observe(stage);
+        return () => {
+          idle.disconnect();
+          zLoop.kill();
+        };
+      }
 
       /* ── hearts ───────────────────────────────────────────────────────
          `MenuBar` says when: hover on a mouse, open on a touch screen, since

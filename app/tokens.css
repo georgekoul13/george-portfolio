@@ -158,6 +158,11 @@
   --type-32-40-r: 400 clamp(16px, calc(10.36px + 1.503vw), 32px)/clamp(24px, calc(18.36px + 1.503vw), 40px) var(--font-sans);
   --type-32-32-m: 500 32px/32px var(--font-sans);
   --type-32-40-sb: 600 32px/40px var(--font-sans);  /* project summary line */
+  /* the 404's one line — Figma 398:17371, Montserrat Bold 32/40. It takes
+     the same clamp as `--type-32-40-r` rather than a fixed 32, because it is
+     the only thing on that page and a phone should not have to read it at
+     desktop size. 32 and 40 are both on the rule of 8. */
+  --type-32-40-b: 700 clamp(16px, calc(10.36px + 1.503vw), 32px)/clamp(24px, calc(18.36px + 1.503vw), 40px) var(--font-sans);
   --type-48-48-b: 700 clamp(30px, calc(23.66px + 1.69vw), 48px)/clamp(30px, calc(23.66px + 1.69vw), 48px) var(--font-sans);   /* the "Categories" chip */
   --type-56-64-m: 500 clamp(34px, calc(26.25px + 2.066vw), 56px)/clamp(40px, calc(31.55px + 2.254vw), 64px) var(--font-sans);   /* letter-spacing: 5px */
   --type-72-80-r: 400 clamp(38px, calc(26.03px + 3.192vw), 72px)/clamp(44px, calc(31.32px + 3.38vw), 80px) var(--font-sans);
@@ -265,6 +270,39 @@
 
    `--chip-ink` is left alone on purpose (see above): the chips sit on
    their own brand colours, so their labels stay near-black either way. */
+/**
+ * The way BACK to the dark mapping, for a control that sits inside a light
+ * subtree but belongs to the dark language.
+ *
+ * `:root` carries the dark values and `[data-tone='light']` overrides them,
+ * so until now a light panel was a one-way door — everything nested inside
+ * it was light, with no way to opt out. The 404 is the case that needed the
+ * other direction: the page is cream, but its Back tile is the SAME control
+ * the inner pages float over dark panels, and George wants it to read the
+ * same. *"the button here should be the same as the back button we use in
+ * the inner pages."*
+ *
+ * Restating the values rather than pointing at `:root`: a custom property
+ * inherits from the nearest ancestor that sets it, so `var(--bg-raised)`
+ * here would resolve against the light panel and hand back the light value.
+ */
+[data-tone='dark'] {
+  --bg-page:    var(--neutral-950);
+  --bg-surface: var(--neutral-900);
+  --bg-raised:  var(--neutral-800);
+  --bg-inverse: var(--neutral-50);
+
+  --text-primary:   var(--neutral-50);
+  --text-secondary: var(--neutral-200);
+  --text-tertiary:  var(--neutral-400);
+  --text-disabled:  var(--neutral-500);
+  --text-inverse:   var(--neutral-950);
+
+  --border-subtle:  var(--neutral-800);
+  --border-default: var(--neutral-700);
+  --border-strong:  var(--neutral-600);
+}
+
 [data-tone='light'] {
   --bg-page:    var(--neutral-50);
   --bg-surface: var(--neutral-100);
