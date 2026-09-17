@@ -286,6 +286,24 @@
  * inherits from the nearest ancestor that sets it, so `var(--bg-raised)`
  * here would resolve against the light panel and hand back the light value.
  */
+/**
+ * The LARGE card's own numbers, and they only exist from `md` up.
+ *
+ * George, on a phone: *"all the project cards should have the same ui."* At
+ * that width every card is full width already, so the large treatment was
+ * only making one card's type bigger than the identical cards under it. The
+ * fallbacks in `ProjectCards` are the medium values, so below this the two
+ * are the same card.
+ */
+@media (min-width: 768px) {
+  :root {
+    --card-aspect: 640 / 480;
+    --card-title: var(--type-24-24-b);
+    --card-line: var(--type-16-24-r);
+    --card-gap-large-r: var(--card-gap-large);
+  }
+}
+
 [data-tone='dark'] {
   --bg-page:    var(--neutral-950);
   --bg-surface: var(--neutral-900);

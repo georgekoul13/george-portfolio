@@ -181,7 +181,13 @@ export default function ProjectHeader({
             ref={fill}
             data-progress
             className="absolute inset-0 block origin-left"
-            style={{ background: 'var(--text-tertiary)', borderRadius: 100, transform: 'scaleX(0)' }}
+            /* The brand green, not grey. George: *"can we change the color
+               of the filled progress bar to brand color/green?"* It is the
+               only moving, quantitative thing on the page — the one place a
+               single accent earns its keep — and grey-on-grey made it read
+               as a divider rather than as a measure. `--green-500` is the
+               same green the reveal beats wave through the headlines. */
+            style={{ background: 'var(--green-500)', borderRadius: 100, transform: 'scaleX(0)' }}
           />
         </div>
       </div>

@@ -39,6 +39,22 @@ gsap.registerPlugin(ScrollTrigger);
 const LARGE_ASPECT = '640 / 480';
 const MEDIUM_ASPECT = '1240 / 960'; // 413.33 × 320
 
+/**
+ * ── ONE CARD BELOW `md`, TWO ABOVE IT ────────────────────────────────
+ * George, on the category page on a phone: *"all the project cards should
+ * have the same ui (similar to the 2nd one in the screenshot)."*
+ *
+ * The `large` treatment exists because the design gives the first two
+ * projects a whole row each at desktop width, where a bigger card earns
+ * bigger type. On a phone EVERY card is already full width, so `large` was
+ * not making a card larger — it was only making its title and its line
+ * bigger than the identical cards under it, for no reason the reader can
+ * see. Two cards the same size with different type reads as a mistake.
+ *
+ * So the distinction is a breakpoint now rather than a prop: the same
+ * component, sized up only where the layout actually differs. `md` is where
+ * the grid stops being one column.
+ */
 export function Card({ project, large }: { project: CardProject; large: boolean }) {
   return (
     <Link
@@ -56,7 +72,8 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
            it lands the box is the page's own black and reads as a hole.
            The project pages got this tone already; the cards were missed. */
         style={{
-          aspectRatio: large ? LARGE_ASPECT : MEDIUM_ASPECT,
+          /* the two are within 3% of each other; below `md` they are one */
+          aspectRatio: large ? `var(--card-aspect, ${MEDIUM_ASPECT})` : MEDIUM_ASPECT,
           background: 'var(--bg-raised)',
         }}
       >
@@ -95,7 +112,8 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
         <span
           className="w-full uppercase"
           style={{
-            font: large ? 'var(--type-24-24-b)' : 'var(--type-16-20-b)',
+            /* the large step is a `md:` token, so a phone gets one size */
+            font: large ? 'var(--card-title, var(--type-16-20-b))' : 'var(--type-16-20-b)',
             color: 'var(--text-primary)',
           }}
         >
@@ -104,7 +122,7 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
         <span
           className="w-full"
           style={{
-            font: large ? 'var(--type-16-24-r)' : 'var(--type-14-20-r)',
+            font: large ? 'var(--card-line, var(--type-14-20-r))' : 'var(--type-14-20-r)',
             color: 'var(--text-secondary)',
           }}
         >
