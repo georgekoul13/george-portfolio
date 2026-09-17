@@ -129,6 +129,58 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── To Nixteri Book — written 2026-09-17 ───────────────────────────
+     Freelance. Το νυχτέρι by Λευτέρης Σουκουλδάνος, Πρότυπες Εκδόσεις Πηγή,
+     115pp, ISBN 978-960-626-954-7. Client name in Latin characters at
+     George's request.
+
+     THE AUTHOR'S NAME: my own note had "Σουλτάνογλου" and the stored record
+     had "Σουκουλδάνος". The cover artwork settled it — ΛΕΥΤΕΡΗΣ
+     ΣΟΥΚΟΥΛΔΑΝΟΣ — and pigi.gr confirms. Read the artwork, not the notes.
+
+     The concept, in his words: *"7 women, 7 stories, 7 woman figures. Each
+     one has the proper symbol on each apron according to the story."* The
+     book opens with kyra-Rinio's death and the nixteri held for her — an
+     all-night vigil of women, where her life comes back through their
+     stories. So the figures on the cover are the cast, not a border. */
+  'book-cover': {
+    subtitle:
+      'Cover and visual identity for To Nixteri, a collection of seven ' +
+      'stories, built from Balkan folk embroidery.',
+    meta: {
+      client: 'Lefteris Soukouldanos',
+      role: 'Visual Designer',
+      deliverables: 'Cover and book visual identity',
+    },
+    sections: [
+      {
+        // Overview — the plot, because the plot IS the concept
+        text:
+          'A woman dies, and the women who knew her sit up all night telling ' +
+          'her story. Seven women, seven stories.',
+      },
+      {
+        text:
+          'So the cover is the seven of them. One figure, rebuilt seven times, ' +
+          'each with the symbol of her own story stitched on her apron — ' +
+          'bread, a cross, a horse, a bird. They are not decoration, they are ' +
+          'the seven women.',
+        bullets: ['Seven women, seven stories', 'A symbol on every apron'],
+      },
+      {
+        /* The challenge, his answer: real research into Greek, Balkan and
+           Slavic folk pattern, and *"tried to produce something that respects
+           their rules as much as possible. And i tried to keep the
+           cross-stitch feeling."* Working inside a craft's grammar rather
+           than borrowing its look. */
+        text:
+          'I researched real Greek, Balkan and Slavic folk patterns and worked ' +
+          'inside their rules, so it reads as cross-stitch rather than an ' +
+          'imitation.',
+      },
+    ],
+  },
+
   /* ── Deerislnd Posters — written 2026-09-17 ─────────────────────────
      Freelance. Deerislnd played the This is Athens City Festival at Theatro
      Dora Stratou, 16 May 2026, free entrance.
