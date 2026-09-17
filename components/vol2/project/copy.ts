@@ -124,6 +124,65 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── BancaSure360 — written 2026-09-17 ──────────────────────────────
+     Wallbid, 2024-25. A product of theirs sold to banks, not a commission.
+
+     NAME NO BANK. The screens carry Attica, ETHNIKI and Piraeus in a payment
+     dropdown, and they are demonstrations of the white-label skin rather
+     than live deals — Attica was a real client but the deal is not live.
+     George's rule holds: Piraeus is the only engagement he states outright,
+     and it has its own page. The dashboard screens are skinned "The Bank",
+     which is the honest way to show it. */
+  bancasure360: {
+    subtitle:
+      'A platform banks use to sell insurance. One product for every bank, ' +
+      'wearing whichever brand is selling it.',
+    meta: {
+      client: 'Wallbid',
+      role: 'Product Designer',
+      deliverables: 'The whole platform design',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Bank employees sell insurance here, manage their clients and handle ' +
+          'claims. Their managers see the same work from above.',
+      },
+      {
+        // Design process — the two canvas maps
+        text:
+          'I designed the whole platform: quotes, applications, the basket, ' +
+          'customer overviews, claims, and a different view for every level of ' +
+          'manager. Each of those brings its own modals and in-between states, ' +
+          'which is most of what you see mapped here.',
+      },
+      {
+        /* Complexity. On this page and Cancellation Insurance it is the
+           white-label on top of the three-way balancing — George: *"only in
+           BancaSure360 & Cancellation Insurance had the added complexity
+           that needed to be white labeled."* Asked whether a bank's brand
+           ever broke a screen: *"no, nothing broke - the system was solid."*
+           Which is the claim worth making, so it is the last clause. */
+        text:
+          'The same platform carries whichever bank is selling it. Colours, ' +
+          'logo, typography and some flows change, and the system holds.',
+      },
+      {
+        /* Was "Various insurance products", which was wrong — the nine
+           screens are dashboards, and the first is a seller's targets view.
+           George: *"these are the dashboards and the different views per user
+           role."* */
+        chip: 'Dashboards by role',
+        text:
+          'Three kinds of person use this: the employee selling policies, ' +
+          'their manager, and the manager above that. Each gets a different ' +
+          'dashboard and different powers, built from the same parts so the ' +
+          'product still feels like one thing.',
+      },
+    ],
+  },
+
   /* ── Piraeus Insurance — written 2026-09-17 ─────────────────────────
      Wallbid, 2024-25. The ONE client George can name outright: *"Only
      piraeus is a deal i can say with confident."*
