@@ -30,7 +30,8 @@
  * Run it after every export: `node scripts/build-project-assets.mjs`.
  * Hand-editing the output means the next export silently disagrees with it.
  */
-import { existsSync, readdirSync, statSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 const ROOT = 'public/images/vol2/projects';
@@ -99,7 +100,24 @@ for (const dir of readdirSync(ROOT).sort()) {
   const files = readdirSync(join(ROOT, dir)).filter(
     (f) => f !== '.DS_Store' && f !== 'r',
   );
-  const url = (f) => `/images/vol2/projects/${dir}/${f}`.replace(/ /g, '%20');
+  /**
+   * A url with a CONTENT FINGERPRINT on it.
+   *
+   * These files are not hashed in their names — George exports `hero.webp`
+   * and replaces it in place, as he did with nine Piraeus images — so Next
+   * serves everything under `public/` as `max-age=0` and a returning reader
+   * revalidates all thirty-odd pictures on every visit. On a phone that is
+   * thirty round trips to be told nothing changed.
+   *
+   * Eight characters of the file's own hash make the url change whenever the
+   * bytes do, which is what lets `next.config.mjs` mark these `immutable`
+   * for a year. Replace a picture, re-run this script, and every reader gets
+   * the new one immediately — the old url is simply never requested again.
+   */
+  const stamp = (f) =>
+    createHash('sha1').update(readFileSync(join(ROOT, dir, f))).digest('hex').slice(0, 8);
+  const url = (f) =>
+    `/images/vol2/projects/${dir}/${f}`.replace(/ /g, '%20') + `?v=${stamp(f)}`;
   /**
    * A picture, plus the smaller copies of it that exist on disk.
    *
