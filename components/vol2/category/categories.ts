@@ -1,6 +1,6 @@
 import projects from '@/data/projects.json';
 import { STILLS } from '../project/stills';
-import { HERO_BY_SLUG } from '../project/vol2Projects';
+import { CARD_BY_SLUG, HERO_BY_SLUG } from '../project/vol2Projects';
 
 /**
  * The three category pages — Figma "Category template", node 147:9780.
@@ -74,6 +74,10 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     intro: 'Designing habits, experiences & products.',
     lead: 'Research, flows and interfaces — the unglamorous half of design, done properly.',
     beats: ['PRODUCTS', 'EXPERIENCES', 'HABITS'],
+    /* `insurance-product-flows` is gone: it lost its place when the Wallbid
+       apps page was dropped, and it is not one of the nineteen George
+       designed. A card linking to a project that does not exist is a 404
+       with a picture on it. */
     slugs: [
       'gaspar-ai',
       'mood',
@@ -81,7 +85,6 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
       'bancasure360',
       'cybersential',
       'cancellation-wallet',
-      'insurance-product-flows',
       'benefit',
       'istorima',
     ],
@@ -95,7 +98,9 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     intro: 'Designing covers, marks & letters.',
     lead: 'Covers, marks and layouts. Mostly type, mostly restraint.',
     beats: ['COVERS', 'MARKS', 'LETTERS'],
-    slugs: ['book-cover', 'danai-michali', 'olga-posonidou', 'vasiliki-vozora', 'maria-fitsopoulou'],
+    /* `maria-fitsopoulou` is paused — George: *"I'm thinking of posing maria
+       and primer for now cuz i don't have time to create all that mock ups."* */
+    slugs: ['book-cover', 'danai-michali', 'olga-posonidou', 'vasiliki-vozora'],
   },
 
   creative: {
@@ -106,7 +111,19 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
     intro: 'Drawing worlds, posters & identities.',
     lead: 'Posters, identities and illustrated worlds — the briefs that say “have fun with it”.',
     beats: ['WORLDS', 'POSTERS', 'IDENTITIES'],
-    slugs: ['deerislnd', 'athens-goes-mayan', 'arcana', 'in-pixels-we-see', 'cabaret', 'custom-typefaces'],
+    /* `athens-goes-mayan` is not one of the nineteen, and `custom-typefaces`
+       was the two typefaces as one project — they are separate pages now, and
+       the invented names went with it. Czech Image is new here: it had no
+       card at all, which is how a competition win stayed invisible. */
+    slugs: [
+      'deerislnd',
+      'arcana',
+      'in-pixels-we-see',
+      'cabaret',
+      'czech-image',
+      'angular-typeface',
+      'rounded-typeface',
+    ],
   },
 };
 
@@ -147,7 +164,6 @@ const TAGS: Record<string, string> = {
   bancasure360: 'INSURTECH',
   cybersential: 'CYBERSECURITY',
   'cancellation-wallet': 'TRAVEL',
-  'insurance-product-flows': 'INSURANCE',
   benefit: 'SHIPPING',
   istorima: 'CULTURE',
 
@@ -155,17 +171,17 @@ const TAGS: Record<string, string> = {
   'danai-michali': 'COUNSELLING',
   'olga-posonidou': 'PSYCHOTHERAPY',
   'vasiliki-vozora': 'FAMILY THERAPY',
-  'maria-fitsopoulou': 'DENTISTRY',
   'book-cover': 'PUBLISHING',
 
 
   // creative — medium, except the festivals
   deerislnd: 'EVENTS',
-  'athens-goes-mayan': 'FESTIVAL',
   arcana: 'PERSONAL',
   'in-pixels-we-see': 'PIXEL ART',
   cabaret: 'POSTER',
-  'custom-typefaces': 'TYPE DESIGN',
+  'czech-image': 'POSTER',
+  'angular-typeface': 'TYPE DESIGN',
+  'rounded-typeface': 'TYPE DESIGN',
 };
 
 /**
@@ -219,6 +235,22 @@ function cardImage(slug: string): string {
 export function cardsForSlugs(slugs: string[], fallbackTag = 'PROJECT'): CardProject[] {
   const bySlug = new Map(projects.map((p) => [p.slug, p]));
   return slugs.flatMap((slug) => {
+    /* Vol 2 FIRST. The card used to take its title and subtitle from
+       `data/projects.json`, which still says Gaspar is an "AI-powered
+       insurance assistant" and Mood an "Emotional wellbeing tracking app
+       concept" — invented, and never corrected when the descriptions were.
+       So the card contradicted the page it opened. `CARD_BY_SLUG` is built
+       from the same `copy.ts` the page reads. */
+    const card = CARD_BY_SLUG[slug];
+    if (card) {
+      return [{
+        slug,
+        title: card.title,
+        subtitle: card.subtitle,
+        image: cardImage(slug),
+        tag: TAGS[slug] ?? fallbackTag,
+      }];
+    }
     const p = bySlug.get(slug);
     if (!p) return [];
     return [{

@@ -306,11 +306,33 @@ export function moreAfter(slug: string): string[] {
 }
 
 /**
- * Just the opening picture of each project, for the cards.
+ * WHAT A CARD SHOWS — title, subtitle and picture, for every one of the
+ * nineteen.
  *
- * `categories.ts` needs the hero and nothing else; importing the records
- * themselves would pull every block of all nineteen into the category
- * bundle to read one string from each.
+ * This is here rather than in `categories.ts` because the cards were reading
+ * `data/projects.json`, and that file still carries what earlier sessions
+ * invented: Gaspar as an "AI-powered insurance assistant", Mood as an
+ * "Emotional wellbeing tracking app concept", Benefit as "employee benefits
+ * management". So the card said one thing and the page underneath said
+ * another, which is how the fabrications survived a correction pass in
+ * August — the description was fixed and the subtitle was not.
+ *
+ * One source. If it is not in `copy.ts`, it does not go on a card.
+ */
+export const CARD_BY_SLUG: Record<string, { title: string; subtitle: string; hero: string }> =
+  Object.fromEntries(
+    SOURCES.map(({ slug, folder, title }) => [
+      slug,
+      {
+        title,
+        subtitle: COPY[slug]?.subtitle ?? '',
+        hero: ASSETS[folder]?.hero ?? '',
+      },
+    ]),
+  );
+
+/**
+ * Just the opening picture of each project, for the cards.
  */
 export const HERO_BY_SLUG: Record<string, string> = Object.fromEntries(
   SOURCES.map(({ slug, folder }) => [slug, ASSETS[folder]?.hero]).filter(

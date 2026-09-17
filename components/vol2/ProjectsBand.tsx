@@ -12,6 +12,10 @@ import { getHoldProgress } from './holdProgress';
 import './scrollDefaults';
 import ProjectCards from './category/ProjectCards';
 import { cardsForSlugs } from './category/categories';
+import { HERO_BY_SLUG } from './project/vol2Projects';
+
+/** a project's own opening picture — see `CARDS` */
+const hero = (slug: string) => HERO_BY_SLUG[slug] ?? '';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -58,28 +62,35 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  */
 
 /**
- * Fourteen, as asked. Nine of these carry George's new 900x675 artwork; the
- * five marked `low` are stand-ins pulled from elsewhere in the repo at
- * whatever size they happen to be, and they WILL look soft at this card
- * size. They are here to prove the mechanic at 14, not to ship.
+ * Fourteen of the nineteen, and every one of them is a page that exists.
+ *
+ * It used to carry `athens-goes-mayan`, `illustrations` and
+ * `maria-fitsopoulou` — three slugs with no project behind them any more.
+ * Each was a card on the home page linking straight to a 404, which is worse
+ * than not being there: a reader clicks the thing that interested them and
+ * is told it is gone.
+ *
+ * The pictures are each project's own hero now, the same file its page opens
+ * on and the same one its card carries everywhere else, rather than the old
+ * 270x200 orbit thumbnails stretched across a card drawn at 1240 wide. That
+ * is why they used to look soft.
  */
 const CARDS = [
-  { slug: 'olga-posonidou',   title: 'Olga Posonidou',   img: '/images/projects/orbit/olga-posonidou-1.png' },
-  { slug: 'arcana',           title: 'Arcana',           img: '/images/projects/orbit/arcana-1.png' },
-  { slug: 'deerislnd',        title: 'DEERISLND',        img: '/images/projects/orbit/deerislnd-1.png' },
-  { slug: 'cabaret',          title: 'Cabaret',          img: '/images/projects/orbit/cabaret-1.png' },
-  { slug: 'gaspar-ai',        title: 'Gaspar AI',        img: '/images/projects/gaspar/gaspar-04.png' },
-  { slug: 'danai-michali',    title: 'Danai Michali',    img: '/images/projects/orbit/danai-michali-1.png' },
-  { slug: 'in-pixels-we-see', title: 'In Pixels We See', img: '/images/projects/orbit/in-pixels-we-see-1.png' },
-  { slug: 'book-cover',       title: 'Book Cover',       img: '/images/projects/book/book-01.png',      low: true },
-  { slug: 'vasiliki-vozora',  title: 'Vasiliki Vozora',  img: '/images/projects/orbit/vasiliki-vozora-1.png' },
-  { slug: 'athens-goes-mayan',title: 'Athens Goes Mayan',img: '/images/projects/orbit/athens-goes-mayan-1.png' },
-  { slug: 'illustrations',    title: 'Illustrations',    img: '/images/projects/creatives/creative-01.png', low: true },
-  { slug: 'maria-fitsopoulou',title: 'Maria Fitsopoulou',img: '/images/projects/orbit/maria-fitsopoulou-1.png' },
-  { slug: 'mood',             title: 'Mood',             img: '/images/projects/mood/mood-04.png',      low: true },
-  { slug: 'cybersential',     title: 'Cybersential',     img: '/images/projects/orbit/cybersential-1.png', low: true },
+  { slug: 'olga-posonidou',    title: 'Olga Posonidou',    img: hero('olga-posonidou') },
+  { slug: 'arcana',            title: 'Tarot Cards',       img: hero('arcana') },
+  { slug: 'deerislnd',         title: 'Deerislnd Posters', img: hero('deerislnd') },
+  { slug: 'cabaret',           title: 'Cabaret',           img: hero('cabaret') },
+  { slug: 'gaspar-ai',         title: 'Gaspar AI',         img: hero('gaspar-ai') },
+  { slug: 'danai-michali',     title: 'Danai Michali',     img: hero('danai-michali') },
+  { slug: 'in-pixels-we-see',  title: 'In Pixels We See',  img: hero('in-pixels-we-see') },
+  { slug: 'book-cover',        title: 'To Nixteri Book',   img: hero('book-cover') },
+  { slug: 'vasiliki-vozora',   title: 'Vasiliki Vozora',   img: hero('vasiliki-vozora') },
+  { slug: 'czech-image',       title: 'Czech Image',       img: hero('czech-image') },
+  { slug: 'istorima',          title: 'Istorima',          img: hero('istorima') },
+  { slug: 'piraeus-insurance', title: 'Piraeus Insurance', img: hero('piraeus-insurance') },
+  { slug: 'mood',              title: 'Mood',              img: hero('mood') },
+  { slug: 'cybersential',      title: 'Cybersential',      img: hero('cybersential') },
 ];
-
 const N = CARDS.length;
 
 export type Tuning = typeof DEFAULTS;
