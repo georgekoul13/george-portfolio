@@ -124,6 +124,83 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Cybersential — written 2026-09-17 ──────────────────────────────
+     Wallbid, 2024-25. Live at hotelbeds.wallbid.io/cybersential.
+
+     HOTELS AND HBX STAY OUT OF IT. The stored record led with "a cyber risk
+     assessment built at Wallbid for hotels, offered to HBX Group partners",
+     and the live page is hotel-framed throughout — but that page sits on a
+     partner subdomain, and George redirected: *"it doesnt have to do with
+     hotels... let's focus on the cyber security of the product."* So the
+     page is about what the product does, not who distributes it.
+
+     Every service named here is on the live page: dark web monitoring,
+     vulnerability scanning, blacklist monitoring, SPF/DMARC/DKIM. The
+     prices, the thirty-day payment link and the domain counters are off the
+     screens themselves. */
+  cybersential: {
+    subtitle:
+      'A cyber risk assessment for businesses: dark web leaks, vulnerability ' +
+      'scans, blacklists and email fraud, in one subscription.',
+    meta: {
+      client: 'Wallbid',
+      role: 'Product Designer',
+      deliverables: 'The whole platform design',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Cybersential watches a business for the things it cannot see: ' +
+          'leaked data, open vulnerabilities, blacklisted domains, spoofed ' +
+          'email.',
+      },
+      {
+        /* The challenge, in his words: *"the client wanted something easy
+           that anyone could understand but at the same time this was not
+           complaiant with legal - so i had to balance."* */
+        text:
+          'The client wanted language anyone could understand. Legal would not ' +
+          'allow it. Most of the work was between those two.',
+      },
+      {
+        /* Design process — read off the map itself, which groups into Sales
+           flow, Wallet and Email, and is mostly the screens nobody
+           advertises. Two separate sets of terms and conditions is the
+           challenge made visible. */
+        text:
+          'The map has three parts: the selling site, the wallet and the ' +
+          'emails. Most of it is not the main route through — two sets of ' +
+          'terms and conditions, a privacy notice, FAQs, session and error ' +
+          'screens, and a setup template for every service.',
+      },
+      {
+        // Sales flow
+        text:
+          'You read what it does, pick a plan, enter your company details for ' +
+          'the invoice, and get a payment link. You can pay now or keep the ' +
+          'link and pay within thirty days, which is when the subscription ' +
+          'starts.',
+      },
+      {
+        /* Wallet. The same shape as Cancellation Insurance: you have bought
+           something and it does nothing until you tell it what to watch. The
+           counters on screen are literal — 0/4 domains, 0/5 websites. */
+        text:
+          'Buying it is not the same as having it. In the wallet you tell each ' +
+          'service what to watch — which domains, which inboxes — and verify ' +
+          'them. Nothing runs until they are all set up, so the wallet counts ' +
+          'what is still missing.',
+      },
+      {
+        // Complexity — three parties again, his answer
+        text:
+          'Wallbid built it, Safestate ran the security, and a partner sold ' +
+          'it. Every decision had to suit all three.',
+      },
+    ],
+  },
+
   /* ── Cancellation Insurance — written 2026-09-17 ────────────────────
      Wallbid, 2024-25. Live with Eurolife FFH, and George cleared their name
      staying visible in the Useful Documents list on screen 5: *"the project
