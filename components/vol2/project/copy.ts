@@ -32,6 +32,26 @@
  *                     1320. Forty words there is nine lines of display type
  *                     and stops being a statement.
  *
+ * ── the voice ─────────────────────────────────────────────────────────
+ * Plain, spoken English. George, on the first draft: *"I feel that the texts
+ * are hard to read. Let's have a more human like and simple way of
+ * communicating."* He was right — it was written like an essay.
+ *
+ * What that means in practice, because "be simple" is not an instruction:
+ *
+ *   - Say **I**. He did the work; the page is him talking about it.
+ *   - Whole sentences with verbs in them. "A dated brand, a logo with no
+ *     idea behind it" is a headline, not something a person says.
+ *   - One idea per sentence. No stacking clauses behind an em-dash.
+ *   - Ordinary words. "How everything worked on smaller screens", not
+ *     "responsive behaviour". "Gets back on track when it misunderstands",
+ *     not "recovers from understanding the wrong one".
+ *   - No aphorisms. "Gaspar stopped being a word and became a character"
+ *     sounds clever and tells you nothing.
+ *
+ * This is a portfolio, not a manifesto. It should read like him explaining
+ * the work across a table.
+ *
  * NOTHING HERE IS INFERRED. Every line comes from George in conversation,
  * and anything he has not said stays lorem until he does.
  */
@@ -89,8 +109,8 @@ export const COPY: Record<string, ProjectCopy> = {
      he confirmed they are the conversational work, not the portal. */
   'gaspar-ai': {
     subtitle:
-      'A generative-AI help desk for IT and HR. Sixteen months on its name, ' +
-      'its product and its voice.',
+      'A generative AI help desk for IT and HR teams. I redesigned the brand, ' +
+      'the product and the way it talks.',
     meta: {
       client: 'Gaspar AI',
       role: 'Lead Product Designer',
@@ -101,24 +121,24 @@ export const COPY: Record<string, ProjectCopy> = {
       {
         // Overview — full width, 72/80, so it is a statement and not a paragraph
         text:
-          'Gaspar AI resolves employee IT and HR requests inside Slack and ' +
-          'Teams, automatically, before they become tickets.',
+          'Gaspar AI answers IT and HR questions for employees, right inside ' +
+          'Slack or Teams, without anyone opening a ticket.',
       },
       null, // the Figma loop, full width
       {
         /* The challenge. George asked for the previous designer to be left
            out of it — the state of the work is the point, not who made it. */
         text:
-          'A dated brand, a logo with no idea behind it, and a product grown ' +
-          'without a plan.',
+          'The brand felt old, the logo said nothing about what the product ' +
+          'did, and the product had grown without a plan.',
       },
       {
         // The brand — the 11 stills
         text:
-          'Gaspardesk named where we were, not where we were going — a ' +
-          'helpdesk, when the thing doing the work was AI. It became Gaspar ' +
-          'AI. The founder wanted more playfulness than the category had, so ' +
-          'Gaspar stopped being a word and became a character.',
+          'The company was called Gaspardesk. That fit a helpdesk, but it said ' +
+          'nothing about the AI and would not stretch as the company grew. We ' +
+          'became Gaspar AI. My boss wanted something more playful than other ' +
+          'AI companies, so I turned Gaspar into a character.',
       },
       {
         /* Was "The Design proccess" on the canvas. George wanted a section
@@ -129,20 +149,19 @@ export const COPY: Record<string, ProjectCopy> = {
            the picture cannot. */
         chip: 'The scale of it',
         text:
-          'Every screen drawn from scratch by one person over sixteen months: ' +
-          'components, responsive behaviour, and the prototypes the engineers ' +
-          'built from. No system to inherit, nobody to split it with. The ' +
-          'largest part is under NDA.',
+          'I was the only designer, and I drew every screen from scratch over ' +
+          'sixteen months — the components, how everything worked on smaller ' +
+          'screens, and the prototypes the developers built from. The biggest ' +
+          'part of the work is under NDA.',
       },
       {
         // the first commercial site
         chip: 'The Website',
         text:
-          'The first thing I shipped. The company needed somewhere to point ' +
-          'people while everything else was rebuilt, so the site carried the ' +
-          'new name, the new logotype and Gaspar himself — and leaned into ' +
-          'playfulness, in a category where everyone looked like enterprise ' +
-          'software.',
+          'The first thing I shipped. The company needed somewhere to send ' +
+          'people while everything else was rebuilt, so I built a site around ' +
+          'the new name, the new logo and Gaspar. Every other AI company ' +
+          'looked like enterprise software, so I made ours playful.',
         /* No list to give, so no arrows. See `bullets` on `SectionCopy`. */
         bullets: [],
       },
@@ -150,20 +169,19 @@ export const COPY: Record<string, ProjectCopy> = {
         // the same site a year on
         chip: 'The Website vol2',
         text:
-          'A year on, the site could not hold what the company had become: far ' +
-          'more product, and more to say about it. Version two is bigger and ' +
-          'deliberately calmer — the playfulness pulled back to where it ' +
-          'supports the work instead of leading it.',
+          'A year later the site could not hold everything we had added. There ' +
+          'was much more product to explain, so I rebuilt it bigger and ' +
+          'calmer. The playfulness is still there, just quieter. It supports ' +
+          'the work now instead of leading it.',
         bullets: [],
       },
       {
         // Conversational Design — the two dialogue-manager diagrams
         text:
-          "Gaspar's replies were designed, not written as they came up. " +
-          'Working with the AI engineers I mapped how a conversation actually ' +
-          'goes — where it branches, what happens when someone raises a second ' +
-          'thing halfway through, how it recovers from understanding the wrong ' +
-          'one.',
+          'I worked with the AI engineers on how Gaspar talks. I mapped out ' +
+          'how a conversation can go: where it splits, what happens when ' +
+          'someone asks about two things at once, and how it gets back on ' +
+          'track when it misunderstands.',
       },
     ],
   },
