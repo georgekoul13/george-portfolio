@@ -1050,9 +1050,15 @@ export const COPY: Record<string, ProjectCopy> = {
        interface used by their employees" and conflates the two. He confirmed
        it as a deliverable before either of us noticed it came from my guess
        rather than from him. */
+    /* The direction of the deal, which the first version had backwards —
+       George: *"the insurance products of multiple companies are sold
+       through the bank."* The bank is the counter, not the buyer: several
+       insurers reach customers through it. "Products the bank sells through
+       its partners" said the opposite, and it is the one fact this sentence
+       exists to carry. */
     subtitle:
-      'Insurance flows inside the Piraeus Bank app and website, for products ' +
-      'the bank sells through its partners.',
+      'Insurance flows inside the Piraeus Bank app and website, where several ' +
+      'insurers sell their products through the bank.',
     meta: {
       client: 'Piraeus Bank',
       role: 'Product Designer',
@@ -1081,7 +1087,7 @@ export const COPY: Record<string, ProjectCopy> = {
       {
         // Various insurance products — phone, pet, cyber
         text:
-          'The bank sells several products through its partners: phone cover, ' +
+          'Several insurers sell through the bank: phone cover, ' +
           'pet cover, cyber cover and more. Each one comes from a different ' +
           'insurer with its own rules, so each needed its own flow while still ' +
           'feeling like the same app.',
