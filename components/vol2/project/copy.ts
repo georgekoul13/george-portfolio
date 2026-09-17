@@ -124,6 +124,79 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Piraeus Insurance — written 2026-09-17 ─────────────────────────
+     Wallbid, 2024-25. The ONE client George can name outright: *"Only
+     piraeus is a deal i can say with confident."*
+
+     What can be shown: not much of the product, because most of it has not
+     launched. *"i can not go in a lot details cuz not everything is online
+     yet."* Focus on You is the exception — it is live on the bank's own
+     site, so it can be named and described.
+
+     Insurer names stay out of the WORDS. They are all over the app screens,
+     and George cleared those to stay ("leave them") because a product
+     anyone can buy in the Piraeus app is public, whichever brand is on it.
+     The flow map was different: ERGO appeared there as his own working
+     annotation, and it is blurred. */
+  'piraeus-insurance': {
+    subtitle:
+      'Insurance flows inside the Piraeus Bank app and website, and the tools ' +
+      "the bank's own staff use to sell them.",
+    meta: {
+      client: 'Piraeus Bank',
+      role: 'Product Designer',
+      deliverables: 'Insurance flows for app and web, internal tools for bank staff',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Piraeus Bank sells insurance it does not underwrite. I designed how ' +
+          'customers buy it, in the app and online.',
+      },
+      {
+        // Design process — the flow map
+        text:
+          'Every product had its own flow, and each one needed research before ' +
+          'I could draw it. I mapped them all out, then spent most of my time ' +
+          'removing steps. The shorter the path from choosing a policy to ' +
+          'owning one, the more people finish it.',
+      },
+      {
+        // Various insurance products — phone, pet, cyber
+        text:
+          'The bank sells several products through its partners: phone cover, ' +
+          'pet cover, cyber cover and more. Each one comes from a different ' +
+          'insurer with its own rules, so each needed its own flow while still ' +
+          'feeling like the same app.',
+      },
+      {
+        /* Challenge = the SITUATION. Complexity, four sections down, is the
+           daily work. Both came out of one answer from George and would
+           otherwise have said the same thing twice. */
+        text:
+          'Piraeus cannot sell insurance on its own, and the partners it needs ' +
+          'run old systems with workflows that do not bend.',
+      },
+      {
+        /* Was "Phone insurance" on the canvas, which was wrong — phone, pet
+           and cyber are all in the section above. George: *"yes rename it to
+           Focus on You."* */
+        chip: 'Focus on You',
+        text:
+          'Focus on You is health cover, and the one product here that is ' +
+          'already live. You can buy it inside the Piraeus app or e-banking in ' +
+          'a few steps, with no medical history check and no waiting.',
+      },
+      {
+        // Complexity = the daily work
+        text:
+          "Every screen had to satisfy three sides at once: the bank's sales " +
+          "targets, each insurer's fixed process, and what we could build.",
+      },
+    ],
+  },
+
   /* ── Gaspar AI — written 2026-09-17 ─────────────────────────────────
      Sep 2022 – Jan 2024, his own employer rather than a client.
 
