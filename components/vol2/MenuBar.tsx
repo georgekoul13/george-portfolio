@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { returnTo } from './backTarget';
+import { usePathname, useRouter } from 'next/navigation';
+import { hasHistory, returnTo } from './backTarget';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -68,6 +68,48 @@ const GAP = 2;
 const TILE = 'flex shrink-0 items-center gap-[4px] rounded-[4px] px-[14px] py-[11px]';
 
 /** Montserrat cap band at line-height 1 runs 0.1585em → 0.8585em. */
+/* ── the Back tile, shared by its two forms ──────────────────────────
+   238:6401 draws this one OUTLINED where the other two are filled — a
+   quieter control, because it is the one you use when you are done rather
+   than the one you came for. The border is kept and the fill is not: that
+   node sits on a cream frame, so its transparent tile reads as a light
+   square with a dark arrow, and this menu floats over cream panels AND dark
+   ones. Left transparent it was a cream arrow on cream — an empty box. The
+   surface comes back so the glyph is legible wherever the menu happens to
+   be, and the border still marks it apart. */
+export const BACK_TILE = 'flex size-[32px] shrink-0 items-center justify-center rounded-[4px] p-[7px]';
+
+export const BACK_STYLE: React.CSSProperties = {
+  /* `--bg-raised`, a step up from the row's `--bg-surface` — the same lift
+     the close button gets, so the two controls that take you OUT of
+     something read alike. */
+  background: 'var(--bg-raised)',
+  border: '1px solid var(--border-subtle)',
+  color: 'var(--text-primary)',
+  transition: 'border-color .25s ease',
+};
+
+/* the menu's own `icon/arrow-down` turned a quarter turn clockwise, which is
+   what the node does. Drawn as a mask, like every other icon here, so the
+   export's hard-coded stroke colour cannot fight the tile it sits in. */
+export function BackGlyph() {
+  return (
+    <span
+      aria-hidden="true"
+      className="block size-[18px] rotate-90"
+      style={{
+        background: 'currentColor',
+        maskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
+        WebkitMaskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
+        maskSize: '100% 100%',
+        WebkitMaskSize: '100% 100%',
+        maskRepeat: 'no-repeat',
+        WebkitMaskRepeat: 'no-repeat',
+      }}
+    />
+  );
+}
+
 const CAP_TRIM = {
   lineHeight: 1,
   marginTop: '-0.1585em',
@@ -152,22 +194,29 @@ export default function MenuBar() {
    * Back — Figma 238:6401, the menu as it appears on a category page: an
    * outlined tile carrying a left arrow, ahead of the burger.
    *
-   * Where it goes is `backTarget`'s answer, not the browser's. `history.back()`
-   * would throw someone who arrived on a shared link straight off the site,
-   * and would walk someone who hopped project → project → project back
-   * through every one of them; `returnTo` remembers only the LISTING pages,
-   * so a category returns you home and a project returns you to the grid you
-   * were actually browsing. Home is the fallback for a cold arrival.
+   * IT IS THE BROWSER'S OWN HISTORY, one step — George: *"it always has to
+   * take you to the previous page… the back button on mood should go to
+   * gaspar."* This used to return you to the last LISTING page instead,
+   * skipping the project → project trail that More Projects builds; see
+   * `backTarget` for why that reversed.
+   *
+   * The fixed destination survives for one case only: a reader who arrived
+   * on a shared link has nothing of ours behind them, and a history step
+   * would put them on whatever page sent them. There, and only there, this
+   * is still a `<Link>` to the listing.
    *
    * Read in an effect because it comes out of `sessionStorage`, which the
    * server has no view of — so the tile is absent from the first paint and
    * appears with hydration rather than rendering a destination that turns
    * out to be wrong.
    */
-  const [back, setBack] = useState<string | null>(null);
+  const router = useRouter();
+  const [back, setBack] = useState<{ href: string | null } | null>(null);
   useEffect(() => {
     if (!pathname.startsWith('/vol2') || pathname === '/vol2') return setBack(null);
-    setBack(returnTo(pathname) ?? '/vol2');
+    /* `href: null` means "step back"; a string means "there is no history of
+       ours, go here instead". */
+    setBack(hasHistory() ? { href: null } : { href: returnTo(pathname) ?? '/vol2' });
   }, [pathname]);
 
   /* Vol2 is a parallel surface, so every link has to stay inside it — a
@@ -393,34 +442,28 @@ export default function MenuBar() {
              turn clockwise, which is what the node does. Drawn as a mask,
              like every other icon here, so the export's hard-coded stroke
              colour cannot fight the tile it sits in. */
-          <Link
-            href={back}
-            aria-label="Back"
-            className="flex size-[32px] shrink-0 items-center justify-center rounded-[4px] p-[7px]"
-            style={{
-              /* `--bg-raised`, a step up from the row's `--bg-surface` — the
-                 same lift the close button gets, so the two controls that
-                 take you OUT of something read alike. */
-              background: 'var(--bg-raised)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-primary)',
-              transition: 'border-color .25s ease',
-            }}
-          >
-            <span
-              aria-hidden="true"
-              className="block size-[18px] rotate-90"
-              style={{
-                background: 'currentColor',
-                maskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
-                WebkitMaskImage: 'url(/images/vol2/ui/icon/arrow-down.svg)',
-                maskSize: '100% 100%',
-                WebkitMaskSize: '100% 100%',
-                maskRepeat: 'no-repeat',
-                WebkitMaskRepeat: 'no-repeat',
-              }}
-            />
-          </Link>
+          /* A BUTTON when it is a history step, a LINK when it is a real
+             destination. There is no honest href for "one page back": a link
+             carrying the path you happen to have come from goes stale the
+             moment the reader uses the browser's own Back, and would then
+             push a forward entry instead of stepping. The anchor is kept for
+             the cold arrival, where the fallback IS a URL and worth
+             middle-clicking. Both wear the same tile. */
+          back.href ? (
+            <Link href={back.href} aria-label="Back" className={BACK_TILE} style={BACK_STYLE}>
+              <BackGlyph />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Back"
+              className={BACK_TILE}
+              style={BACK_STYLE}
+            >
+              <BackGlyph />
+            </button>
+          )
         )}
         <button
           type="button"
