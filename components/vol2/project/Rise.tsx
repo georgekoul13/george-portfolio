@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
+import { useGateReady } from './ProjectGate';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,12 +49,19 @@ export default function Rise({
   as?: 'div' | 'section';
 }) {
   const root = useRef<HTMLDivElement>(null);
+  /* nothing is built while the curtain is up — see `ProjectGate` */
+  const ready = useGateReady();
 
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const kids = Array.from(root.current!.children);
       if (!kids.length) return;
+
+      /* Parked as soon as the page mounts, played only once `ProjectGate`
+         has lifted the curtain — see the same note in `ProjectImage`. */
+      gsap.set(kids, { autoAlpha: 0, y: 40 });
+      if (!ready) return;
 
       /* ── EACH CHILD IS TRIGGERED BY ITSELF ───────────────────────────
          One trigger on the wrapper with a stagger was wrong, and George
@@ -69,14 +77,12 @@ export default function Rise({
          small per-child delay so a chip and the paragraph under it still
          arrive in reading order when they cross together. */
       kids.forEach((kid, i) => {
-        gsap.from(kid, {
-          autoAlpha: 0,
-          /* 40, not 24. George could not see the reveal at all at 24 over
-             0.8s — on a phone it finished inside the momentum of a normal
-             flick. The distance and the time both had to grow before the
-             arrival reads as movement rather than as the element simply
-             being there. */
-          y: 40,
+        gsap.to(kid, {
+          autoAlpha: 1,
+          /* 40, not 24, and a second rather than 0.8: George could not see
+             the reveal at all at the smaller numbers — on a phone it finished
+             inside the momentum of a normal flick. */
+          y: 0,
           duration: 1,
           delay: i * 0.08,
           ease: 'power3.out',
@@ -91,7 +97,7 @@ export default function Rise({
         });
       });
     },
-    { scope: root },
+    { scope: root, dependencies: [ready], revertOnUpdate: true },
   );
 
   return (

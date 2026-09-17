@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import LoaderPanel, { EXIT_MS } from './LoaderPanel';
 import gsap from 'gsap';
 
 /**
@@ -33,35 +34,8 @@ const MIN_SHOW = 1200;
 /** …and a ceiling, so a stalled font or image can never strand anyone here */
 const MAX_WAIT = 4000;
 
-/**
- * The creep. It eases out towards a distance it never quite reaches, so a
- * long wait keeps inching rather than arriving somewhere and stopping dead —
- * and however long the page takes, the haul always begins from something
- * already in motion. That continuity is most of what makes the exit read as
- * smooth instead of as a jerk from a standstill.
- */
-const CREEP_TO = 110;
-const CREEP_MS = 9000;
+/* the panel's own numbers live with the panel — see `LoaderPanel` */
 
-const EXIT_MS = 1200;
-/** gentle in, long settle — no snap at either end */
-const EXIT_EASE = 'cubic-bezier(0.5, 0, 0.2, 1)';
-
-/* ── LOADING… on the drum ───────────────────────────────────────────────
-   The same mechanic as the copyright line: each character turned about an
-   origin pushed back in z, so it swings on a cylinder rather than flipping
-   flat, with the turn staggered along the word to send a wave through it.
-
-   Written as a CSS animation rather than a GSAP one because GSAP is stopped
-   while the panel is up — see `holdEverything`. The keyframes are scoped to
-   this component's own markup and go away with it.                          */
-const TEXT = 'Loading…';
-const ROLL_MS = 1800;
-/** how far apart each character's turn starts */
-const ROLL_STEP_MS = 90;
-const FONT = 32;
-const DEPTH = -FONT;
-const PERSPECTIVE = 220;
 
 /**
  * Latched once and never cleared. It has to survive the release, because
@@ -210,56 +184,5 @@ export default function Loader() {
 
   if (skip || gone) return null;
 
-  const panelY = leaving ? '-100vh' : creeping ? `-${CREEP_TO}px` : '0px';
-
-  return (
-    // the stage holds still and clips, so nothing shows past the wipe's edge
-    <div aria-hidden="true" className="fixed inset-0 z-[100] overflow-hidden">
-      <style>{`
-        @keyframes gk-loader-roll {
-          0%   { transform: rotateX(0deg); }
-          40%  { transform: rotateX(360deg); }
-          100% { transform: rotateX(360deg); }
-        }
-      `}</style>
-
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{
-          background: 'var(--bg-inverse)',
-          transform: `translateY(${panelY})`,
-          transition: leaving
-            ? `transform ${EXIT_MS}ms ${EXIT_EASE}`
-            : `transform ${CREEP_MS}ms cubic-bezier(0.12, 0.7, 0.25, 1)`,
-          willChange: 'transform',
-        }}
-      >
-        <p
-          className="flex uppercase"
-          style={{
-            font: 'var(--type-32-32-m)',
-            color: 'var(--text-inverse)',
-            perspective: PERSPECTIVE,
-            transformStyle: 'preserve-3d',
-          }}
-        >
-          {TEXT.split('').map((ch, i) => (
-            <span
-              key={i}
-              className="inline-block"
-              style={{
-                transformOrigin: `50% 50% ${DEPTH}px`,
-                backfaceVisibility: 'hidden',
-                animation: `gk-loader-roll ${ROLL_MS}ms cubic-bezier(0.65, 0, 0.35, 1) infinite`,
-                animationDelay: `${i * ROLL_STEP_MS}ms`,
-              }}
-            >
-              {ch}
-            </span>
-          ))}
-        </p>
-
-      </div>
-    </div>
-  );
+  return <LoaderPanel leaving={leaving} creeping={creeping} />;
 }

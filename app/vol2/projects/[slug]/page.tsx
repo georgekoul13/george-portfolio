@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { AUTHOR, SITE, canonical, jsonLd, page as seoPage } from '@/lib/seo';
 import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
@@ -7,6 +9,7 @@ import CopyrightSection from '@/components/vol2/CopyrightSection';
 import ProjectBase from '@/components/vol2/project/ProjectBase';
 import ProjectHeader from '@/components/vol2/project/ProjectHeader';
 import ProjectBlocks from '@/components/vol2/project/ProjectBlocks';
+import ProjectGate from '@/components/vol2/project/ProjectGate';
 import MoreProjects from '@/components/vol2/project/MoreProjects';
 import { chipsOf } from '@/components/vol2/project/blocks';
 import {
@@ -40,6 +43,30 @@ export function generateStaticParams() {
   return allVol2ProjectSlugs().map((slug) => ({ slug }));
 }
 
+/**
+ * Every project gets its OWN title, description and share card.
+ *
+ * They all shared one line from the root layout before this — nineteen pages
+ * competing in search as the same page. The words are the ones already
+ * written for the page (`copy.ts`), so search results say what the project is
+ * rather than repeating the site tagline, and the card is the project's own
+ * hero rather than the generic one.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const project = getVol2Project(params.slug);
+  if (!project) return {};
+  return seoPage({
+    title: project.title,
+    description: project.subtitle,
+    path: `/projects/${params.slug}`,
+    image: SITE + project.hero,
+  });
+}
+
 export default async function ProjectPage({
   params,
 }: {
@@ -50,6 +77,28 @@ export default async function ProjectPage({
   if (!project) notFound();
 
   return (
+    /* Everything is inside the gate: it holds the loading curtain over the
+       page until the pictures have arrived, and withholds every entrance
+       animation until it lifts, so the page opens rather than catching up.
+       George: *"whenever the user taps on a card, the loading happens until
+       all the images are loaded and then the project page comes."* */
+    <ProjectGate>
+    {/* So a search engine reads this as a piece of work with an author, a
+        client and a date — not as a page of pictures. */}
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={jsonLd({
+        '@type': 'CreativeWork',
+        name: project.title,
+        description: project.subtitle,
+        url: canonical(`/projects/${slug}`),
+        image: SITE + project.hero,
+        author: { '@type': 'Person', name: AUTHOR, url: canonical() },
+        creator: { '@type': 'Person', name: AUTHOR },
+        ...(project.meta.client ? { sourceOrganization: { '@type': 'Organization', name: project.meta.client } } : {}),
+        ...(project.meta.role ? { jobTitle: project.meta.role } : {}),
+      })}
+    />
     <div className="relative min-h-screen">
       <NoiseField />
       <MenuBar />
@@ -107,5 +156,6 @@ export default async function ProjectPage({
         />
       </main>
     </div>
+    </ProjectGate>
   );
 }
