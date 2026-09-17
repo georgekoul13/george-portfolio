@@ -139,13 +139,20 @@ export const COPY: Record<string, ProjectCopy> = {
      The flow map was different: ERGO appeared there as his own working
      annotation, and it is blurred. */
   'piraeus-insurance': {
+    /* NOT the staff-facing tool. That is BancaSure360, a different project —
+       George: *"the tool that the bank's own staff use to sell them is the
+       bancasure360."* The claim was mine, from the old vol1 record, which
+       says he did "the customer-facing insurance flows AND the internal
+       interface used by their employees" and conflates the two. He confirmed
+       it as a deliverable before either of us noticed it came from my guess
+       rather than from him. */
     subtitle:
-      'Insurance flows inside the Piraeus Bank app and website, and the tools ' +
-      "the bank's own staff use to sell them.",
+      'Insurance flows inside the Piraeus Bank app and website, for products ' +
+      'the bank sells through its partners.',
     meta: {
       client: 'Piraeus Bank',
       role: 'Product Designer',
-      deliverables: 'Insurance flows for app and web, internal tools for bank staff',
+      deliverables: 'Customer-facing insurance flows for the app and website',
     },
     sections: [
       {
