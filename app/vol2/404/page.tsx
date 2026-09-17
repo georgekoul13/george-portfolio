@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import type { Metadata } from 'next';
 import NotFoundContent from '@/components/vol2/notfound/NotFoundContent';
 
 /**
@@ -10,6 +11,17 @@ import NotFoundContent from '@/components/vol2/notfound/NotFoundContent';
  * hands it over rather than making the browser fetch it. The real 404 cannot
  * — see the note in `NotFoundContent`.
  */
+/**
+ * NOINDEX. This is a preview of the error screen at a real URL — exactly the
+ * sort of page that gets indexed by accident and then turns up in a result
+ * for the site's own name. The audit caught it inheriting the root layout's
+ * title, which is how it would have shipped.
+ */
+export const metadata: Metadata = {
+  title: 'Page not found',
+  robots: { index: false, follow: false },
+};
+
 export default async function NotFoundPreview() {
   const svg = await readFile(
     path.join(process.cwd(), 'public/images/vol2/avatar/george.svg'),

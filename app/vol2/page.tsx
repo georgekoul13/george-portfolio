@@ -93,10 +93,27 @@ export default function Vol2Page() {
               revealRun: 200,
               tailRun: 300,
               content: (
-                <BaseScreen
-                  title={<Hero />}
-                  text="A professional over-thinker with a love for product and visual design"
-                />
+                <>
+                  {/* THE PAGE'S ONE H1, and it is screen-reader-only on
+                      purpose. The wordmark below is the name — it is what the
+                      reader sees — but it is drawn as an animated `role="img"`
+                      and carries no heading semantics, so this page shipped
+                      with no `<h1>` at all. An audit of all 23 routes found
+                      it: every other page had exactly one.
+
+                      Visually hidden rather than styled-away, so it is read
+                      by a screen reader and by a crawler while changing
+                      nothing on screen. The words match what the wordmark and
+                      the line under it already say — an `h1` that disagrees
+                      with the page is worse than none. */}
+                  <h1 className="sr-only">
+                    George Koulouris — product and visual designer
+                  </h1>
+                  <BaseScreen
+                    title={<Hero />}
+                    text="A professional over-thinker with a love for product and visual design"
+                  />
+                </>
               ),
               style: { background: 'var(--bg-page)', color: 'var(--text-primary)' },
             },
