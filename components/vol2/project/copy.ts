@@ -160,9 +160,14 @@ export const COPY: Record<string, ProjectCopy> = {
     sections: [
       {
         // Overview
+        /* His wording, with "counties" corrected to "countries". The point
+           of the change is that the competition ran across ten countries and
+           he answered it as the Greek entry — which is what makes placing
+           first mean something. */
         text:
-          'The Czech Centres asked designers across Europe to draw Czechia ' +
-          'through their own eyes. I answered three times.',
+          'The Czech Centres asked designers across countries in Europe to ' +
+          'draw Czechia through their own eyes. I answered three times in ' +
+          'Greece.',
       },
       null, // the folk pattern, animated, full width
       {
