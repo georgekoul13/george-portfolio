@@ -8,6 +8,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import { scrubToPosition } from './scrubToPosition';
+import { CATEGORIES as CATEGORY_DATA } from './category/categories';
+import { HERO_BY_SLUG } from './project/vol2Projects';
 
 import './scrollDefaults';
 
@@ -48,25 +50,29 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  * quarter-second of slowing is what makes it feel like it was your doing.
  */
 
-const CATEGORIES = [
-  {
-    name: 'Product',
-    href: '/product',
-    img: '/images/projects/gaspar/gaspar-04.png',
-  },
-  {
-    name: 'Graphic',
-    href: '/graphic',
-    img: '/images/projects/book/book-01.png',
-  },
-  {
-    name: 'Creative',
-    href: '/creative',
-    img: '/images/projects/creatives/creative-01.png',
-  },
-  /* The ABOUT ME card is gone with the About page — see the note in
-     `MenuBar`. Three categories, which is what the strip is for. */
-];
+/**
+ * What each card shows — the Vol 2 hero of the project that OPENS that
+ * category, looked up rather than written down.
+ *
+ * These three were still pointing at v1 files (`/images/projects/gaspar/
+ * gaspar-04.png` and friends), which is why George found the wrong pictures
+ * here while every other card on the site had been repointed: those paths
+ * still resolve, so nothing failed loudly — the strip just kept showing the
+ * old site's photography, in Product's case an exhibition stand rather than
+ * any product at all.
+ *
+ * So it reads `HERO_BY_SLUG` now, and the slug it reads is `CATEGORIES[…]
+ * .slugs[0]` — the first card on the page this links to. The strip cannot
+ * drift from the work again, and a category that gets reordered brings its
+ * new opener with it.
+ */
+const STRIP = (['product', 'graphic', 'creative'] as const).map((slug) => ({
+  name: CATEGORY_DATA[slug].label,
+  href: `/${slug}`,
+  img: HERO_BY_SLUG[CATEGORY_DATA[slug].slugs[0]] ?? '',
+}));
+/* The ABOUT ME card is gone with the About page — see the note in
+   `MenuBar`. Three categories, which is what the strip is for. */
 
 const CAP_TRIM = {
   lineHeight: 1,
@@ -155,33 +161,60 @@ export default function CategoryStrip() {
            Pointer events, so mouse and pen go through the same path; touch is
            left to the browser's own panning, which is better than anything
            re-implemented here. */
+        /* ── CAPTURE THE POINTER ONLY ONCE IT IS ACTUALLY DRAGGING ──
+           This used to capture on `pointerdown`, and it cost every card its
+           link. A captured pointer retargets the events that follow to the
+           CAPTURE ELEMENT, and the browser then fires `click` at the nearest
+           common ancestor of the down and up targets — both of which are now
+           the scroll container. So the `<a>` never saw a click and the strip
+           navigated nowhere. Verified by logging `e.target` at the window:
+           `DIV.no-scrollbar w-full overflow-x-auto`, never the anchor.
+
+           A plain click therefore takes no capture at all. The capture is
+           deferred until the pointer has travelled past the same threshold
+           that decides a drag happened, which is the only moment it is
+           needed — it exists so a drag that leaves the strip keeps scrolling
+           it, and a click never leaves anything. */
+        const SLOP = 6;
         let startX = 0;
         let moved = 0;
+        let pressed = false;
+        let id = -1;
         const down = (e: PointerEvent) => {
           if (e.pointerType === 'touch') return;
-          dragging = true;
+          pressed = true;
+          dragging = false;
           moved = 0;
+          id = e.pointerId;
           startX = e.clientX;
-          viewport.setPointerCapture(e.pointerId);
-          viewport.style.cursor = 'grabbing';
         };
         const move = (e: PointerEvent) => {
-          if (!dragging) return;
+          if (!pressed || e.pointerId !== id) return;
           const dx = e.clientX - startX;
           startX = e.clientX;
           moved += Math.abs(dx);
+          if (!dragging) {
+            if (moved <= SLOP) return;
+            /* past the slop — it is a drag now */
+            dragging = true;
+            viewport.setPointerCapture(id);
+            viewport.style.cursor = 'grabbing';
+          }
           viewport.scrollLeft -= dx;
         };
         const up = (e: PointerEvent) => {
-          if (!dragging) return;
+          if (!pressed) return;
+          pressed = false;
           dragging = false;
-          viewport.releasePointerCapture?.(e.pointerId);
+          if (viewport.hasPointerCapture?.(e.pointerId)) {
+            viewport.releasePointerCapture(e.pointerId);
+          }
           viewport.style.cursor = '';
           /* A drag that ends on a card would otherwise FOLLOW it — the
              pointer went down and up on a link, which is a click by any
              measure. Swallowing the next one, and only when the pointer
              actually travelled, keeps dragging and tapping distinct. */
-          if (moved > 6) {
+          if (moved > SLOP) {
             const swallow = (ev: Event) => {
               ev.preventDefault();
               ev.stopPropagation();
@@ -195,13 +228,17 @@ export default function CategoryStrip() {
         };
         viewport.addEventListener('pointerdown', down);
         viewport.addEventListener('pointermove', move);
-        viewport.addEventListener('pointerup', up);
-        viewport.addEventListener('pointercancel', up);
+        /* On the WINDOW, because the press is no longer captured while it is
+           still under the slop: a button released outside the strip would
+           never reach a listener on the viewport, and the strip would think
+           it was still being held. */
+        window.addEventListener('pointerup', up);
+        window.addEventListener('pointercancel', up);
         cleanup.push(() => {
           viewport.removeEventListener('pointerdown', down);
           viewport.removeEventListener('pointermove', move);
-          viewport.removeEventListener('pointerup', up);
-          viewport.removeEventListener('pointercancel', up);
+          window.removeEventListener('pointerup', up);
+          window.removeEventListener('pointercancel', up);
         });
 
         /* ── hover ──
@@ -243,7 +280,7 @@ export default function CategoryStrip() {
     { scope: root },
   );
 
-  const card = (c: (typeof CATEGORIES)[number], copy: boolean) => (
+  const card = (c: (typeof STRIP)[number], copy: boolean) => (
     <Link
       key={`${c.href}-${copy ? 'b' : 'a'}`}
       data-card
@@ -278,6 +315,9 @@ export default function CategoryStrip() {
         aria-hidden="true"
         fill
         sizes="600px"
+        /* eager, for the reason in `ProjectsBand` — the curtain should be
+           what waits, not the reader */
+        loading="eager"
         className="object-cover"
       />
       {/* the label has to sit on photography, so it carries its own scrim
@@ -380,8 +420,8 @@ export default function CategoryStrip() {
           className="flex w-max flex-nowrap items-start"
           style={{ gap: 'var(--cs-gap)', paddingInline: 'calc(var(--cs-gap) / 2)' }}
         >
-          {CATEGORIES.map((c) => card(c, false))}
-          {CATEGORIES.map((c) => card(c, true))}
+          {STRIP.map((c) => card(c, false))}
+          {STRIP.map((c) => card(c, true))}
         </div>
       </div>
     </section>

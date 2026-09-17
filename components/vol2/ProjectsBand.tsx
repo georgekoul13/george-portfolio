@@ -639,26 +639,78 @@ export default function PerspectiveGallery({
 
       /* Drag rides ON TOP of the scroll position rather than replacing it,
          so letting go doesn't snap back to wherever the page happens to be. */
+      /* ── THE CAPTURE WAITS FOR A REAL DRAG ──────────────────────────
+         Every card here is a `<Link>`, and until this changed not one of
+         them could be clicked. `setPointerCapture` retargets the events that
+         follow to the capture element, and the browser then fires `click` at
+         the nearest common ancestor of the down and up targets — both of
+         which had become this `<section>`. The anchor never saw a click, so
+         the rank looked right, moved right, and went nowhere.
+
+         George: *"on desktop when the user click on the card it should lead
+         to that project."*
+
+         It captured on EVERY `pointerdown` with no threshold at all, so
+         there was no press that could reach a link. The capture is deferred
+         until the pointer has actually travelled, which is the only time it
+         earns its keep — it is there so a drag that leaves the section keeps
+         driving the rank. `CategoryStrip` had the identical bug; if a third
+         draggable ever appears, this is the shape it needs. */
+      const SLOP = 6;
       let dragging = false;
+      let pressed = false;
       let lastX = 0;
+      let moved = 0;
+      let id = -1;
       const down = (e: PointerEvent) => {
-        dragging = true;
+        pressed = true;
+        dragging = false;
+        moved = 0;
+        id = e.pointerId;
         lastX = e.clientX;
-        section.setPointerCapture(e.pointerId);
       };
       const move = (e: PointerEvent) => {
-        if (!dragging) return;
-        state.drag -= (e.clientX - lastX) / 90;
+        if (!pressed || e.pointerId !== id) return;
+        const dx = e.clientX - lastX;
         lastX = e.clientX;
+        moved += Math.abs(dx);
+        if (!dragging) {
+          if (moved <= SLOP) return;
+          dragging = true;
+          section.setPointerCapture(id);
+        }
+        state.drag -= dx / 90;
       };
       const up = (e: PointerEvent) => {
+        if (!pressed) return;
+        pressed = false;
         dragging = false;
-        section.releasePointerCapture?.(e.pointerId);
+        if (section.hasPointerCapture?.(e.pointerId)) {
+          section.releasePointerCapture(e.pointerId);
+        }
+        /* A drag that ends on a card is a press and a release on a link by
+           any measure, so the browser will follow it. Swallow that one
+           click, and only when the pointer actually travelled — otherwise
+           sweeping the rank sideways lands you on a project. */
+        if (moved > SLOP) {
+          const swallow = (ev: Event) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+          };
+          section.addEventListener('click', swallow, { capture: true, once: true });
+          window.setTimeout(
+            () => section.removeEventListener('click', swallow, { capture: true }),
+            0,
+          );
+        }
       };
       section.addEventListener('pointerdown', down);
       section.addEventListener('pointermove', move);
-      section.addEventListener('pointerup', up);
-      section.addEventListener('pointercancel', up);
+      /* On the WINDOW: under the slop there is no capture yet, so a button
+         released outside the section would never reach a listener on it and
+         the rank would think it was still held. */
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
 
       render();
       const onResize = () => render();
@@ -671,8 +723,8 @@ export default function PerspectiveGallery({
 
         section.removeEventListener('pointerdown', down);
         section.removeEventListener('pointermove', move);
-        section.removeEventListener('pointerup', up);
-        section.removeEventListener('pointercancel', up);
+        window.removeEventListener('pointerup', up);
+        window.removeEventListener('pointercancel', up);
       };
     },
     /* `revertOnUpdate` is NOT the default. Without it `useGSAP` re-runs the
@@ -840,6 +892,22 @@ export default function PerspectiveGallery({
                 aria-hidden="true"
                 fill
                 sizes="500px"
+                /* EAGER, so the wait happens behind the curtain.
+
+                   George: *"let's make sure there are no delays when the user
+                   is on the page. I'm definitely sure that if we have delay
+                   it's going to be better on the loader."* `Loader` already
+                   holds until `window load`, but `next/image` is lazy by
+                   default and a lazy image is not part of that event — so the
+                   one thing worth waiting for was the one thing the curtain
+                   never waited for, and the cards then filled in under the
+                   reader's eyes instead.
+
+                   Affordable only because of the WebP pass: these variants are
+                   ~50KB each now rather than ~700KB, so the whole rank costs
+                   less than a single card used to. `MAX_WAIT` is the backstop
+                   either way — the curtain lifts at 4s whatever has arrived. */
+                loading="eager"
                 className="object-cover"
                 draggable={false}
               />
