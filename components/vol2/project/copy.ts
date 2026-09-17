@@ -129,6 +129,56 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Vasiliki Vozora — written 2026-09-17 ───────────────────────────
+     Freelance. Βασιλική Βοζώρα, Σύμβουλος Ψυχικής Υγείας, specialising in
+     systemic and family counselling for individuals, couples, families and
+     groups — read off the card.
+
+     THE STORED RECORD MISSED HALF THE JOB. It describes cards, mauve and
+     uncoated stock and nothing else; the second section is a WEBSITE, and
+     George confirmed the job was *"logo, cards and website."* Both sections
+     were chipped "The Directions" on the canvas, which is wrong twice over —
+     they are not directions and a reader saw the same label in a row.
+
+     The mark, in his words: *"a delicate next to a font, a calm familiar
+     face, like the face of the therapist."*
+
+     No arrows: neither section enumerates anything. See `bullets`. */
+  'vasiliki-vozora': {
+    subtitle:
+      'Logo, cards and a website for a systemic and family counsellor.',
+    meta: {
+      client: 'Vasiliki Vozora',
+      role: 'Brand Designer',
+      deliverables: 'Logo, cards and website',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Vasiliki is a mental health counsellor. She works with individuals, ' +
+          'couples, parents, families and groups.',
+      },
+      {
+        chip: 'Identity',
+        text:
+          'The mark is a face, drawn delicately in a single line and set ' +
+          'beside the name. Calm and familiar, the way the therapist is — you ' +
+          'are looking at someone before you have read a word. Dusty mauve ' +
+          'against a warm off-white.',
+        bullets: [],
+      },
+      {
+        chip: 'Website',
+        text:
+          'The site opens on the line that does the work: taking care of ' +
+          'yourself starts with a conversation. Everything else — who she ' +
+          'sees, how it works, how to reach her — sits under it.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Olga Posonidou — written 2026-09-17 ────────────────────────────
      Freelance. Olga Posonidou, psychotherapist and social worker —
      Ψυχοθεραπεύτρια, Κοινωνική λειτουργός, Συντονίστρια Ομάδων, Σχολών &
