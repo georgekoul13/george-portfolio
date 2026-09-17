@@ -87,7 +87,7 @@ const FACT = {
 
 /** slug -> the export folder it draws from, and the title George gave it */
 const SOURCES: { slug: string; folder: string; title: string }[] = [
-  { slug: 'deerislnd', folder: 'Deerislnd', title: 'DEERISLD Posters' },
+  { slug: 'deerislnd', folder: 'Deerislnd', title: 'Deerislnd Posters' },
   { slug: 'cancellation-wallet', folder: 'Cancellation Insurance', title: 'Cancellation Insurance' },
   { slug: 'cybersential', folder: 'Cybersential', title: 'Cybersential' },
   { slug: 'piraeus-insurance', folder: 'Piraeus Insurance', title: 'Piraeus Insurance' },

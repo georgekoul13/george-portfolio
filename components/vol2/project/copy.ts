@@ -129,6 +129,76 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Deerislnd Posters — written 2026-09-17 ─────────────────────────
+     Freelance. Deerislnd played the This is Athens City Festival at Theatro
+     Dora Stratou, 16 May 2026, free entrance.
+
+     THE NAME IS "Deerislnd". The project title said "DEERISLD", the festival
+     site writes "Deer Islnd", and the posters themselves say DEERISLND —
+     George settled it, and the title is corrected. Getting a client's name
+     wrong on the page showing their posters is the worst kind of typo.
+
+     Two sections already had real words on his canvas rather than lorem, and
+     they are kept close to as written: "We had 2 different visual direction"
+     with its two arrows, and "A custom display font with masking an arial
+     view of the actual theatre" — arial corrected to aerial.
+
+     The festival's own numbers (350,000 visitors, 380 events, 186 locations
+     in May 2026) are the festival's to claim, so they are not here. */
+  deerislnd: {
+    subtitle:
+      'Posters for a music duo playing the This is Athens City Festival, at ' +
+      'the Dora Stratou theatre.',
+    meta: {
+      client: 'Deerislnd',
+      role: 'Visual Designer',
+      deliverables: 'Poster and social media materials',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Deerislnd played the This is Athens City Festival at Theatro Dora ' +
+          'Stratou, a place rooted in Greek folk dance.',
+      },
+      null, // the animated poster, full width
+      {
+        /* The challenge, his answer: *"the challenge was the tight
+           deadline... if i remember corectly 2 to 3 days."* The number is
+           what makes it worth a section — every project claims a tight
+           deadline, and two full directions inside three days is a fact. */
+        text:
+          'Two or three days from brief to poster. I still drew two full ' +
+          'directions in that time.',
+      },
+      {
+        /* His line was "A deep research and experimentation on both aspects
+           of this event." Both aspects = the venue and the night, which is my
+           reading of it rather than his words. */
+        text:
+          'The theatre is rooted in Greek folk dance and the music is not. I ' +
+          'looked at both sides of that before drawing anything, because the ' +
+          'poster had to belong to the venue and to the night at the same time.',
+      },
+      {
+        /* His own text, and the arrows are his. The last sentence is the part
+           worth saying out loud: *"the folk illustrations are my personal
+           favorites but this won."* A two-direction story is only honest if
+           it says which one you would have picked. */
+        text:
+          'We went in two directions and drew them both out properly rather ' +
+          'than picking one on paper. The folk illustrations were my ' +
+          'favourite. The typographic one is what ran.',
+        bullets: ['Folk illustrations', 'Clash of fonts'],
+      },
+      {
+        text:
+          'A custom display font, masking an aerial view of the theatre ' +
+          'itself. You read the name and see the place at the same time.',
+      },
+    ],
+  },
+
   /* ── Benefit Apps — written 2026-09-17 ──────────────────────────────
      Holy, 2021-22, for Benefit Software S.M.P.C. of Piraeus (benefit.gr) —
      ERP built exclusively for shipping. Same credit shape as Istorima at
