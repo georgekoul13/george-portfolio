@@ -4,6 +4,8 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onEnterView } from '../project/enterView';
+import { revealTiming } from '../project/revealTiming';
 import { useGSAP } from '@gsap/react';
 import type { CardProject } from './categories';
 import Chip from '../Chip';
@@ -154,16 +156,47 @@ export default function ProjectCards({ projects }: { projects: CardProject[] }) 
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const T = revealTiming();
 
-      gsap.utils.toArray<HTMLElement>('[data-card]').forEach((card) => {
-        gsap.from(card, {
-          autoAlpha: 0,
-          y: 40,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 88%' },
-        });
+      /* ── THREE THINGS WERE WRONG HERE ────────────────────────────────
+         George: *"let's make sure that the project cards of the home and the
+         categories pages have revealing animation on the mobiles and is
+         visible on the mobile."*
+
+         1. It used a ScrollTrigger, which positions from DOCUMENT flow.
+            These cards sit inside `PanelStack`, whose panels hold content
+            still while the document scrolls, so the trigger fired while the
+            card was still well below the fold — measured at 1460px on a
+            project page. See `enterView`.
+
+         2. The timing was a laptop's. At `top 88%` on a 760px phone a card
+            begins its 0.9s arrival with a sliver of itself on screen, and a
+            flick carries it past long before it lands.
+
+         3. `gsap.utils.toArray('[data-card]')` had no root, so it swept the
+            WHOLE DOCUMENT — and `CategoryStrip` marks its category cards
+            `data-card` too. On the home page this component was animating
+            the marquee's cards as well as its own, fighting the marquee for
+            control of the same elements. */
+      const cards = gsap.utils.toArray<HTMLElement>('[data-card]', root.current);
+      const stop = cards.map((card, i) => {
+        gsap.set(card, { autoAlpha: 0, y: 40 });
+        return onEnterView(
+          card,
+          () =>
+            void gsap.to(card, {
+              autoAlpha: 1,
+              y: 0,
+              duration: T.duration,
+              /* a row arrives together, not one card at a time */
+              delay: (i % 3) * T.stagger,
+              ease: 'power3.out',
+            }),
+          T.at,
+        );
       });
+
+      return () => stop.forEach((fn) => fn());
     },
     { scope: root },
   );

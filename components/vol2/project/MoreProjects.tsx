@@ -1,5 +1,12 @@
+'use client';
+
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { cardsForSlugs } from '../category/categories';
 import { Card } from '../category/ProjectCards';
+import { onEnterView } from './enterView';
+import { revealTiming } from './revealTiming';
 
 /**
  * The band that closes a project — Figma 340:19432.
@@ -20,11 +27,42 @@ import { Card } from '../category/ProjectCards';
  * arrived on a link has somewhere to go that is not the back button.
  */
 export default function MoreProjects({ slugs }: { slugs: string[] }) {
+  const root = useRef<HTMLElement>(null);
+
+  /* The one row on a project page that had no arrival at all — every card
+     above it reveals and these three simply appeared. Same observer and same
+     device-aware timing as everywhere else; see `enterView`. */
+  useGSAP(
+    () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const T = revealTiming();
+      const cards = gsap.utils.toArray<HTMLElement>('[data-card]', root.current);
+      const stop = cards.map((card, i) => {
+        gsap.set(card, { autoAlpha: 0, y: 40 });
+        return onEnterView(
+          card,
+          () =>
+            void gsap.to(card, {
+              autoAlpha: 1,
+              y: 0,
+              duration: T.duration,
+              delay: i * T.stagger,
+              ease: 'power3.out',
+            }),
+          T.at,
+        );
+      });
+      return () => stop.forEach((fn) => fn());
+    },
+    { scope: root },
+  );
+
   const projects = cardsForSlugs(slugs);
   if (!projects.length) return null;
 
   return (
     <section
+      ref={root}
       className="flex w-full flex-col px-[var(--gutter)]"
       style={{ gap: 'var(--project-more-gap)' }}
     >
