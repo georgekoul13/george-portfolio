@@ -1,7 +1,12 @@
 'use client';
 
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import LoaderPanel, { EXIT_MS } from '../LoaderPanel';
+import '../scrollDefaults';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Holds a project page behind the loading curtain until the screen you are
@@ -78,19 +83,28 @@ export default function ProjectGate({ children }: { children: React.ReactNode })
 
     /* ── nothing moves underneath ───────────────────────────────────────
        George: *"when the page is loading it should not scroll in the back
-       page."* `overflow: hidden` on the body is not a scroll lock on a
-       phone — a finger drags the document behind the panel regardless — so
-       the gestures are cancelled as well. `passive: false`, or the browser
-       is entitled to ignore the `preventDefault`. */
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
+       page."*
+ 
+       THE GESTURES ONLY — NOT `overflow: hidden`. The first version set it
+       on the body, and `Loader` already carries the warning about why that
+       is wrong: a body with `overflow: hidden` becomes a scroll container,
+       which makes it the sticky containing block for everything inside it,
+       so every panel in a `PanelStack` silently stops sticking and the page
+       measures flat. A project page is nothing but sticky panels, and
+       ScrollTrigger takes its positions from exactly that geometry — it
+       refreshes on `load` and on `document.fonts.ready`, both of which can
+       land INSIDE the locked window, and on a phone usually do, because the
+       curtain is up for longer there while the pictures arrive.
+ 
+       That is the difference George is describing between his phone and the
+       desktop. Cancelling the gestures is the only lock that holds on every
+       browser anyway, and it is the one that changes no layout at all. */
     const swallow = (e: Event) => e.preventDefault();
     window.addEventListener('wheel', swallow, { passive: false });
     window.addEventListener('touchmove', swallow, { passive: false });
     const free = () => {
       window.removeEventListener('wheel', swallow);
       window.removeEventListener('touchmove', swallow);
-      document.body.style.overflow = overflow;
     };
 
     /* Three moments, not one. The panel takes over a second to slide clear,
@@ -106,6 +120,11 @@ export default function ProjectGate({ children }: { children: React.ReactNode })
       setLeaving(true);
       window.setTimeout(() => {
         if (!live) return;
+        /* Measure the page as the reader will actually meet it. Every
+           refresh that happened while the curtain was up did so against a
+           locked, part-loaded page, and whichever of those ran last is what
+           every trigger on the page would otherwise be keyed to. */
+        ScrollTrigger.refresh();
         setReady(true);
         setGone(true);
       }, EXIT_MS);
