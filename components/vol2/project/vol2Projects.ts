@@ -103,7 +103,7 @@ const SOURCES: { slug: string; folder: string; title: string }[] = [
   { slug: 'arcana', folder: 'Tarrot Cards', title: 'Tarot Cards' },
   { slug: 'cabaret', folder: 'Cabaret', title: 'Cabaret Movie Poster' },
   { slug: 'czech-image', folder: 'Czech', title: 'Czech Image' },
-  { slug: 'in-pixels-we-see', folder: 'pixel', title: 'pixels' },
+  { slug: 'in-pixels-we-see', folder: 'pixel', title: 'In Pixels We See' },
   { slug: 'typeface-a', folder: 'Typeface A', title: 'Typeface A' },
   { slug: 'typeface-b', folder: 'Typeface b', title: 'Typeface B' },
 ];

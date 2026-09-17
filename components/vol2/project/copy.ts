@@ -129,6 +129,53 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── In Pixels We See — written 2026-09-17 ──────────────────────────
+     Personal work. Five posters: Mona Lisa, Witches' Sabbath, Birth of
+     Venus, Creation of Adam, Water Lilies.
+
+     The title was "pixels" in SOURCES, lower case. Every poster carries IN
+     PIXELS WE SEE along its top edge, so the h1 does too now.
+
+     THE IDEA IS HIS, and it is not the one on file. The stored record says
+     colour alone carries the painting — the Creation of Adam stays
+     majestic, the Mona Lisa stays enigmatic. George: *"this was an
+     experimentation of colors mainly, by simplifying the colors to solid
+     pixels that do not blend yet create the image... the other was from the
+     other session."* So the page is about how the eye assembles colour, not
+     about paintings being timeless.
+
+     And per his standing note: the page does NOT mention that this restages
+     an exercise he first did at college. */
+  'in-pixels-we-see': {
+    subtitle:
+      'Five famous paintings rebuilt out of solid colour, one block at a ' +
+      'time.',
+    meta: {
+      client: 'Personal project',
+      role: 'Visual Designer',
+      deliverables: '5 posters',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'An experiment with colour. Simplify a painting down to solid ' +
+          'pixels that never blend, and the picture still arrives.',
+      },
+      null, // the animation, full width
+      {
+        /* Five posters, not directions. No arrows — five titles will not fit
+           in two lines. */
+        chip: 'Posters',
+        text:
+          'The Mona Lisa, Witches\' Sabbath, the Birth of Venus, the Creation ' +
+          'of Adam, Water Lilies. Each one is only the colours it is made of, ' +
+          'squared off and laid flat, with nothing left to do the drawing.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Czech Image — written 2026-09-17 ───────────────────────────────
      2019. Posters for the CZECH IMAGE PROJECT, run by the Czech Centres —
      the Czech foreign ministry's cultural arm — to mark a hundred years
