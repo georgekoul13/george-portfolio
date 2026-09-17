@@ -49,20 +49,43 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
     >
       <span
         className="relative block w-full overflow-hidden"
-        style={{ aspectRatio: large ? LARGE_ASPECT : MEDIUM_ASPECT }}
+        /* A TONE UNDER THE PICTURE. George, on the creative page: *"tarot
+           card on creative page it's still empty."* Nothing is broken — that
+           card is a 3.87MB PNG being re-encoded on demand, which takes over
+           five seconds cold for the variant a large card asks for, and until
+           it lands the box is the page's own black and reads as a hole.
+           The project pages got this tone already; the cards were missed. */
+        style={{
+          aspectRatio: large ? LARGE_ASPECT : MEDIUM_ASPECT,
+          background: 'var(--bg-raised)',
+        }}
       >
         {/* `sizes` follows this card's own grid: the large variant runs one
             up until 1200 then two, the medium one up until 900, two, then
-            three at 1200. */}
+            three at 1200.
+
+            MEASURED, not assumed. These read 50/33/100vw and the real boxes
+            are 0.444, 0.287 and 0.90 of the viewport — the difference is the
+            page gutter and the grid gap, which a `vw` fraction quietly
+            ignores. Overstating the width makes the browser step up to the
+            next candidate in the srcset and download a size nobody asked
+            for, which on a phone is the difference between a 1200 and a 1920.
+            Rounded UP from the measurement, so a wider gutter at some future
+            breakpoint still gets enough pixels. */}
         <Image
           src={project.image}
           alt=""
           fill
           sizes={
             large
-              ? '(min-width: 1200px) 50vw, 100vw'
-              : '(min-width: 1200px) 33vw, (min-width: 900px) 50vw, 100vw'
+              ? '(min-width: 1200px) 45vw, 90vw'
+              : '(min-width: 1200px) 29vw, (min-width: 900px) 45vw, 90vw'
           }
+          /* eager, for the reason in `ProjectsBand`. This is the grid where
+             George found the Tarot card empty twice; a card that has to be
+             scrolled to before it starts loading is a card that is blank the
+             moment it is reached. */
+          loading="eager"
           className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
         <span className="relative flex h-full flex-col items-start p-4">

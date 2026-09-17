@@ -41,6 +41,7 @@ export default function ProjectImage({
   sources,
   alt,
   poster,
+  priority,
 }: {
   /** a still */
   src?: string;
@@ -50,6 +51,19 @@ export default function ProjectImage({
   /** first frame of a video slot — what shows before it loads, and the only
       thing that shows when autoplay is refused. */
   poster?: string;
+  /**
+   * The project's opening picture — fetch it FIRST rather than lazily.
+   *
+   * George: *"in some projects there is a slide delay of the hero image."*
+   * `next/image` is lazy by default, so the one picture that is already in
+   * frame when the page opens was queued behind everything else on it. The
+   * frame uncovered on cue and there was nothing inside it yet, which reads
+   * as the animation stuttering rather than as a download.
+   *
+   * Only ever ONE of these per page: `priority` is a claim on the connection
+   * and handing it to every slot would put the hero back where it started.
+   */
+  priority?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const isVideo = !!sources || (!!src && VIDEO.test(src));
@@ -95,7 +109,14 @@ export default function ProjectImage({
       <div
         ref={root}
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: 'var(--project-still)', clipPath: 'inset(0% 0% 0% 0%)' }}
+        /* the same tone the stills carry, for the same reason — an
+           unarrived picture should read as a panel, not as a hole in the
+           page. See `Slot` in `ProjectBlocks`. */
+        style={{
+          aspectRatio: 'var(--project-still)',
+          clipPath: 'inset(0% 0% 0% 0%)',
+          background: 'var(--bg-raised)',
+        }}
       >
         {/* `next/image`, not `<img>`: these are the 1440x1080 source files
             and were being shipped whole to a 375 phone. `fill` because the
@@ -109,10 +130,13 @@ export default function ProjectImage({
             data-inner
             poster={poster}
             aria-label={alt}
+            /* the hero's loop is the first thing on the page too — hold its
+               first frame ready rather than waiting for the reader to be
+               looking at an empty box */
+            preload={priority ? 'metadata' : 'none'}
             muted
             loop
             playsInline
-            preload="none"
             className="absolute inset-0 h-full w-full object-cover"
           >
             {/* WebM first — VP9 holds this content at a fraction of H.264's
@@ -129,6 +153,7 @@ export default function ProjectImage({
             alt={alt}
             fill
             sizes="100vw"
+            priority={priority}
             className="object-cover"
           />
         )}
