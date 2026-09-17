@@ -129,6 +129,50 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Olga Posonidou — written 2026-09-17 ────────────────────────────
+     Freelance. Olga Posonidou, psychotherapist and social worker —
+     Ψυχοθεραπεύτρια, Κοινωνική λειτουργός, Συντονίστρια Ομάδων, Σχολών &
+     Γονέων, read off the card. The stored record said her practice covers
+     "groups, relationships and parenting"; the card says schools, not
+     relationships.
+
+     TWO directions, both his:
+       the hands — *"like an open hug waiting for you"*
+       the line  — *"Η θεραπεία δεν είναι μία ευθεία"*, and the wandering
+                   line draws Ο Π, her initials
+     The line is the one she chose.
+
+     Deliverables stop at logo and business cards. "Visual identity" would
+     oversell five images of a mark and a card system. */
+  'olga-posonidou': {
+    subtitle:
+      'Logo and cards for a psychotherapist, from two ideas about what ' +
+      'therapy looks like.',
+    meta: {
+      client: 'Olga Posonidou',
+      role: 'Brand Designer',
+      deliverables: 'Logo and business cards',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Olga is a psychotherapist and social worker. She works with ' +
+          'groups, with schools and with parents.',
+      },
+      {
+        /* The two directions, and which one ran — the same honesty as
+           Deerislnd. */
+        text:
+          'I drew two. Open hands with a green dot between them, an open hug ' +
+          'waiting for you. Or a single line that wanders before it settles, ' +
+          'because therapy is not a straight one, and on the way it draws her ' +
+          'initials. She chose the line.',
+        bullets: ['An open hug waiting for you', 'Therapy is not a straight line'],
+      },
+    ],
+  },
+
   /* ── To Nixteri Book — written 2026-09-17 ───────────────────────────
      Freelance. Το νυχτέρι by Λευτέρης Σουκουλδάνος, Πρότυπες Εκδόσεις Πηγή,
      115pp, ISBN 978-960-626-954-7. Client name in Latin characters at
