@@ -260,9 +260,9 @@ export const COPY: Record<string, ProjectCopy> = {
      The brief was "Czechia" and "The Czechs through my eyes", so the three
      posters are three answers to it.
 
-     NOTE: `image 03.png` is a blank 800x800 RGBA export — fully
-     transparent, nothing in it. The folk poster exists on the page only as
-     the animation until George re-exports it. */
+     `image 03.png` shipped blank on the first export — an 800x800 RGBA file
+     with nothing in it, rendering as an empty square. George replaced it;
+     it is the Folk Art poster and all three are on the page now. */
   'czech-image': {
     subtitle:
       "Posters for the Czech Centres' competition marking a hundred years of " +
