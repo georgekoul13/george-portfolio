@@ -102,7 +102,7 @@ const SOURCES: { slug: string; folder: string; title: string }[] = [
   { slug: 'danai-michali', folder: 'Danai Michali', title: 'Danai Michali' },
   { slug: 'arcana', folder: 'Tarrot Cards', title: 'Tarot Cards' },
   { slug: 'cabaret', folder: 'Cabaret', title: 'Cabaret Movie Poster' },
-  { slug: 'czech-folk', folder: 'Czech', title: 'Czech Folk' },
+  { slug: 'czech-image', folder: 'Czech', title: 'Czech Image' },
   { slug: 'in-pixels-we-see', folder: 'pixel', title: 'pixels' },
   { slug: 'typeface-a', folder: 'Typeface A', title: 'Typeface A' },
   { slug: 'typeface-b', folder: 'Typeface b', title: 'Typeface B' },

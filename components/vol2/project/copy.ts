@@ -129,6 +129,55 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Czech Image — written 2026-09-17 ───────────────────────────────
+     2019. Posters for the CZECH IMAGE PROJECT, run by the Czech Centres —
+     the Czech foreign ministry's cultural arm — to mark a hundred years
+     since the founding of Czechoslovakia. Open to art and design students
+     and graduates under 35; a Czech-Greek jury picked the Greek winner,
+     whose poster joined the international exhibition in Prague.
+
+     GEORGE WON IT. *"these poster where designed for CZECHIMAGE 2019 GREECE
+     where i placed 1rst."* First place in Greece, and it appears nowhere in
+     any stored record — the project did not even have a name. An earlier
+     session called it "Czech Folk" after the folder, which is why the slug
+     was /czech-folk until now.
+
+     The brief was "Czechia" and "The Czechs through my eyes", so the three
+     posters are three answers to it.
+
+     NOTE: `image 03.png` is a blank 800x800 RGBA export — fully
+     transparent, nothing in it. The folk poster exists on the page only as
+     the animation until George re-exports it. */
+  'czech-image': {
+    subtitle:
+      "Posters for the Czech Centres' competition marking a hundred years of " +
+      'Czechoslovakia. First place in Greece.',
+    meta: {
+      client: 'Czech Centres',
+      role: 'Visual Designer',
+      deliverables: '3 posters',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'The Czech Centres asked designers across Europe to draw Czechia ' +
+          'through their own eyes. I answered three times.',
+      },
+      null, // the folk pattern, animated, full width
+      {
+        /* Three posters, not directions. No arrows: three things do not fit
+           in two lines. */
+        chip: 'Posters',
+        text:
+          'One takes Czech folk ornament and lets it bloom. One sets Prague in ' +
+          'a display face drawn for it. One turns the Astronomical Clock into ' +
+          'a graphic of its own, under the words Timeless Place.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── Cabaret Movie Poster — written 2026-09-17 ──────────────────────
      Personal work. An alternative poster for Bob Fosse's Cabaret, 1972.
 

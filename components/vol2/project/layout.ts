@@ -298,7 +298,7 @@ export const LAYOUT: Record<string, ProjectLayout> = {
         ] },
     ],
   },
-  "czech-folk": {
+  "czech-image": {
     figma: '366:35011',
     blocks: [
       { kind: 'text', chip: "Brief" },
