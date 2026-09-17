@@ -1,15 +1,16 @@
 'use client';
 
 import { useRef } from 'react';
-import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
 import Chip from '../Chip';
+import Picture from './Picture';
 import RevealText from '../RevealText';
 import Rise from './Rise';
+import { useGateReady } from './ProjectGate';
 import ProjectImage from './ProjectImage';
 import VideoSources from './VideoSources';
 import type { Block, Cell } from './blocks';
@@ -94,22 +95,14 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
           <VideoSources src={cell.src} sources={cell.sources} />
         </video>
       ) : (
-        <Image
-          data-inner
+        <Picture
           src={cell.src!}
           alt={cell.alt ?? alt}
-          fill
           /* measured, like the cards in `ProjectCards` — a still is 0.90 of
              the viewport on a phone, not the whole of it, because the page
              keeps its gutter */
           sizes="(min-width: 1200px) 38vw, (min-width: 600px) 43vw, 90vw"
-          /* EAGER. A project page is a run of pictures and nothing else; a
-             still that only starts loading when it is nearly on screen is a
-             still the reader arrives at before it does. They are 40-90KB
-             each since the WebP pass, so fetching the page's worth up front
-             costs less than one of the old PNGs did. */
-          loading="eager"
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       )}
     </div>
@@ -118,6 +111,8 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
 
 function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
   const root = useRef<HTMLDivElement>(null);
+  /* nothing is built while the curtain is up — see `ProjectGate` */
+  const ready = useGateReady();
 
   useGSAP(
     () => {
@@ -166,9 +161,13 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
            100 of them, where there should be none.
 
            Setting the start state outright does not care what is paused. */
-        const pic = still.querySelector<HTMLElement>('[data-inner]');
+        const pic = still.querySelector<HTMLElement>('img, video');
         gsap.set(still, { clipPath: 'inset(100% 0% 0% 0%)' });
         if (pic) gsap.set(pic, { scale: 1.12 });
+
+        /* parked above whatever happens next; played only once the curtain
+           has lifted — see `ProjectGate` */
+        if (!ready) return;
 
         const tl = gsap
           .timeline({ paused: true, delay: sameRow ? 0.08 : 0 })
@@ -196,7 +195,7 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
            connection that stalls, must not leave a section of the page
            permanently hidden — after the cap it uncovers regardless and the
            reader gets the layout even if they do not get the image. */
-        const ready = () => {
+        const pictureReady = () => {
           const img = pic instanceof HTMLImageElement ? pic : null;
           // a video carries its own poster and never blocks
           if (!img || (img.complete && img.naturalWidth > 0)) return Promise.resolve();
@@ -212,13 +211,13 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
           trigger: still,
           start: 'top 88%',
           once: true,
-          onEnter: () => void ready().then(() => tl.play()),
+          onEnter: () => void pictureReady().then(() => tl.play()),
         });
         triggers.push(st);
       });
       return () => triggers.forEach((t) => t.kill());
     },
-    { scope: root },
+    { scope: root, dependencies: [ready], revertOnUpdate: true },
   );
 
   return (

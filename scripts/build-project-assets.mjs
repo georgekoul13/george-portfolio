@@ -30,7 +30,7 @@
  * Run it after every export: `node scripts/build-project-assets.mjs`.
  * Hand-editing the output means the next export silently disagrees with it.
  */
-import { readdirSync, statSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = 'public/images/vol2/projects';
@@ -91,12 +91,40 @@ function imageSize(file) {
 }
 
 const out = {};
+/** every picture that has smaller copies, by its full-size url */
+const srcsets = {};
 for (const dir of readdirSync(ROOT).sort()) {
   if (!statSync(join(ROOT, dir)).isDirectory()) continue;
-  const files = readdirSync(join(ROOT, dir)).filter((f) => f !== '.DS_Store');
+  /* `r/` holds the pre-rendered smaller copies — a directory, not a still */
+  const files = readdirSync(join(ROOT, dir)).filter(
+    (f) => f !== '.DS_Store' && f !== 'r',
+  );
   const url = (f) => `/images/vol2/projects/${dir}/${f}`.replace(/ /g, '%20');
+  /**
+   * A picture, plus the smaller copies of it that exist on disk.
+   *
+   * `srcset` is written here rather than built in the browser because it has
+   * to name FILES, and only this script knows which ones were made — see
+   * `build-image-variants`. Nothing is resized at request time any more, so a
+   * width that is not in this string does not exist.
+   */
+  const variants = existsSync(join(ROOT, dir, 'r'))
+    ? readdirSync(join(ROOT, dir, 'r'))
+    : [];
   const shot = (f) => {
     const s = /\.(png|webp)$/i.test(f) ? imageSize(join(ROOT, dir, f)) : null;
+    const stem = f.replace(/\.[^.]+$/, '');
+    const smaller = variants
+      .filter((v) => v.startsWith(stem + '-'))
+      .map((v) => ({ v, w: +(v.match(/-(\d+)\.webp$/)?.[1] ?? 0) }))
+      .filter((x) => x.w > 0)
+      .sort((a, b) => a.w - b.w);
+
+    const set = [
+      ...smaller.map((x) => `${url('r/' + x.v)} ${x.w}w`),
+      ...(s?.w ? [`${url(f)} ${s.w}w`] : []),
+    ];
+    if (set.length > 1) srcsets[url(f)] = set.join(', ');
     return { src: url(f), w: s?.w ?? 0, h: s?.h ?? 0 };
   };
 
@@ -122,7 +150,9 @@ for (const dir of readdirSync(ROOT).sort()) {
   }
 
   out[dir] = {
-    hero: hero ? url(hero) : null,
+    /* through `shot()` so the hero is registered in `SRCSET` too — it is the
+       biggest file on the page and the one the loading curtain waits for */
+    hero: hero ? shot(hero).src : null,
     stills: [...wires, ...stills, ...wide].map(shot),
     highlights: highlights.map(shot),
     videos: [...loops.values()],
@@ -138,6 +168,23 @@ export interface Shot {
   w: number;
   h: number;
 }
+
+/**
+ * The smaller copies of a picture, by its full-size url.
+ *
+ * A flat map rather than a field on every shot, because the HERO is stored as
+ * a bare string in several places (cards, the band, the strip) and it is the
+ * one file that most needs a phone-sized version. One lookup serves them all
+ * without reshaping anything.
+ *
+ * Absent means there is nothing smaller — the file is already phone-sized.
+ * Nothing is resized at request time, so a width not named here does not
+ * exist; see \`scripts/build-image-variants.mjs\`.
+ */
+export const SRCSET: Record<string, string> = ${JSON.stringify(srcsets, null, 2)};
+
+/** the \`srcset\` for a picture, or undefined when it needs none */
+export const srcsetFor = (src: string): string | undefined => SRCSET[src];
 
 /** one loop, in the formats it was encoded to */
 export interface Loop {

@@ -2,7 +2,6 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -10,6 +9,7 @@ import { useGSAP } from '@gsap/react';
 import { scrubToPosition } from './scrubToPosition';
 import { CATEGORIES as CATEGORY_DATA } from './category/categories';
 import { HERO_BY_SLUG } from './project/vol2Projects';
+import Picture from './project/Picture';
 
 import './scrollDefaults';
 
@@ -309,16 +309,11 @@ export default function CategoryStrip() {
         background: 'var(--bg-raised)',
       }}
     >
-      <Image
+      <Picture
         src={c.img}
         alt=""
-        aria-hidden="true"
-        fill
         sizes="600px"
-        /* eager, for the reason in `ProjectsBand` — the curtain should be
-           what waits, not the reader */
-        loading="eager"
-        className="object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
       />
       {/* the label has to sit on photography, so it carries its own scrim
           rather than trusting whatever happens to be behind it */}

@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { page as seoPage } from '@/lib/seo';
 import NoiseField from '@/components/vol2/NoiseField';
 import MenuBar from '@/components/vol2/MenuBar';
 import PanelStack from '@/components/vol2/PanelStack';
@@ -50,6 +52,23 @@ import { CATEGORIES, projectsFor, type CategorySlug } from '@/components/vol2/ca
 
 export function generateStaticParams() {
   return Object.keys(CATEGORIES).map((category) => ({ category }));
+}
+
+/**
+ * The category's own line, not the site's. `lead` is already written for
+ * each one and says what the work in it actually is — which is what a search
+ * result for "product designer greece" needs to show.
+ */
+export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+  const category = CATEGORIES[params.category as CategorySlug];
+  if (!category) return {};
+  return seoPage({
+    title: `${category.label} design`,
+    /* `lead` is optional in the model; `intro` is the one every category
+       has, so it is the fallback rather than a generic sentence. */
+    description: category.lead ?? category.intro,
+    path: `/${params.category}`,
+  });
 }
 
 export default function CategoryPage({ params }: { params: { category: string } }) {

@@ -7,9 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import type { CardProject } from './categories';
 import Chip from '../Chip';
+import Picture from '../project/Picture';
 
 import '../scrollDefaults';
-import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -72,21 +72,19 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
             for, which on a phone is the difference between a 1200 and a 1920.
             Rounded UP from the measurement, so a wider gutter at some future
             breakpoint still gets enough pixels. */}
-        <Image
+        <Picture
           src={project.image}
           alt=""
-          fill
+          /* MEASURED, not assumed. These read 50/33/100vw and the real boxes
+             are 0.444, 0.287 and 0.90 of the viewport — the difference is the
+             page gutter and the grid gap, which a `vw` fraction quietly
+             ignores. */
           sizes={
             large
               ? '(min-width: 1200px) 45vw, 90vw'
               : '(min-width: 1200px) 29vw, (min-width: 900px) 45vw, 90vw'
           }
-          /* eager, for the reason in `ProjectsBand`. This is the grid where
-             George found the Tarot card empty twice; a card that has to be
-             scrolled to before it starts loading is a card that is blank the
-             moment it is reached. */
-          loading="eager"
-          className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
         <span className="relative flex h-full flex-col items-start p-4">
           <Chip label={project.tag} />

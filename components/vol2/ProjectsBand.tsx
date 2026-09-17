@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -13,6 +12,7 @@ import './scrollDefaults';
 import ProjectCards from './category/ProjectCards';
 import { cardsForSlugs } from './category/categories';
 import { HERO_BY_SLUG } from './project/vol2Projects';
+import Picture from './project/Picture';
 
 /** a project's own opening picture — see `CARDS` */
 const hero = (slug: string) => HERO_BY_SLUG[slug] ?? '';
@@ -886,29 +886,11 @@ export default function PerspectiveGallery({
                 background: 'var(--bg-raised)',
               }}
             >
-              <Image
+              <Picture
                 src={c.img}
                 alt=""
-                aria-hidden="true"
-                fill
                 sizes="500px"
-                /* EAGER, so the wait happens behind the curtain.
-
-                   George: *"let's make sure there are no delays when the user
-                   is on the page. I'm definitely sure that if we have delay
-                   it's going to be better on the loader."* `Loader` already
-                   holds until `window load`, but `next/image` is lazy by
-                   default and a lazy image is not part of that event — so the
-                   one thing worth waiting for was the one thing the curtain
-                   never waited for, and the cards then filled in under the
-                   reader's eyes instead.
-
-                   Affordable only because of the WebP pass: these variants are
-                   ~50KB each now rather than ~700KB, so the whole rank costs
-                   less than a single card used to. `MAX_WAIT` is the backstop
-                   either way — the curtain lifts at 4s whatever has arrived. */
-                loading="eager"
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
                 draggable={false}
               />
             </Link>

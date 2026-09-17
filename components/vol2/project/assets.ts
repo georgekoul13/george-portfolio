@@ -8,6 +8,63 @@ export interface Shot {
   h: number;
 }
 
+/**
+ * The smaller copies of a picture, by its full-size url.
+ *
+ * A flat map rather than a field on every shot, because the HERO is stored as
+ * a bare string in several places (cards, the band, the strip) and it is the
+ * one file that most needs a phone-sized version. One lookup serves them all
+ * without reshaping anything.
+ *
+ * Absent means there is nothing smaller — the file is already phone-sized.
+ * Nothing is resized at request time, so a width not named here does not
+ * exist; see `scripts/build-image-variants.mjs`.
+ */
+export const SRCSET: Record<string, string> = {
+  "/images/vol2/projects/BancaSure360/hero.webp": "/images/vol2/projects/BancaSure360/r/hero-760.webp 760w, /images/vol2/projects/BancaSure360/r/hero-1320.webp 1320w, /images/vol2/projects/BancaSure360/hero.webp 2640w",
+  "/images/vol2/projects/BancaSure360/wireframe%201.webp": "/images/vol2/projects/BancaSure360/r/wireframe%201-760.webp 760w, /images/vol2/projects/BancaSure360/r/wireframe%201-1320.webp 1320w, /images/vol2/projects/BancaSure360/wireframe%201.webp 1680w",
+  "/images/vol2/projects/BancaSure360/wireframe%202.webp": "/images/vol2/projects/BancaSure360/r/wireframe%202-760.webp 760w, /images/vol2/projects/BancaSure360/r/wireframe%202-1320.webp 1320w, /images/vol2/projects/BancaSure360/wireframe%202.webp 1680w",
+  "/images/vol2/projects/Benefit%20Apps/hero.webp": "/images/vol2/projects/Benefit%20Apps/r/hero-760.webp 760w, /images/vol2/projects/Benefit%20Apps/r/hero-1320.webp 1320w, /images/vol2/projects/Benefit%20Apps/hero.webp 2640w",
+  "/images/vol2/projects/Benefit%20Apps/wireframe.webp": "/images/vol2/projects/Benefit%20Apps/r/wireframe-760.webp 760w, /images/vol2/projects/Benefit%20Apps/r/wireframe-1320.webp 1320w, /images/vol2/projects/Benefit%20Apps/wireframe.webp 1680w",
+  "/images/vol2/projects/Benefit%20Apps/image%203.webp": "/images/vol2/projects/Benefit%20Apps/r/image%203-760.webp 760w, /images/vol2/projects/Benefit%20Apps/r/image%203-1320.webp 1320w, /images/vol2/projects/Benefit%20Apps/image%203.webp 1680w",
+  "/images/vol2/projects/Benefit%20Apps/image%209.webp": "/images/vol2/projects/Benefit%20Apps/r/image%209-760.webp 760w, /images/vol2/projects/Benefit%20Apps/r/image%209-1320.webp 1320w, /images/vol2/projects/Benefit%20Apps/image%209.webp 1680w",
+  "/images/vol2/projects/Cabaret/hero.webp": "/images/vol2/projects/Cabaret/r/hero-760.webp 760w, /images/vol2/projects/Cabaret/r/hero-1320.webp 1320w, /images/vol2/projects/Cabaret/hero.webp 2640w",
+  "/images/vol2/projects/Cabaret/highlight.webp": "/images/vol2/projects/Cabaret/r/highlight-760.webp 760w, /images/vol2/projects/Cabaret/r/highlight-1320.webp 1320w, /images/vol2/projects/Cabaret/highlight.webp 2640w",
+  "/images/vol2/projects/Cancellation%20Insurance/hero.webp": "/images/vol2/projects/Cancellation%20Insurance/r/hero-760.webp 760w, /images/vol2/projects/Cancellation%20Insurance/r/hero-1320.webp 1320w, /images/vol2/projects/Cancellation%20Insurance/hero.webp 2640w",
+  "/images/vol2/projects/Cancellation%20Insurance/wireframe.webp": "/images/vol2/projects/Cancellation%20Insurance/r/wireframe-760.webp 760w, /images/vol2/projects/Cancellation%20Insurance/r/wireframe-1320.webp 1320w, /images/vol2/projects/Cancellation%20Insurance/wireframe.webp 1680w",
+  "/images/vol2/projects/Cybersential/hero.webp": "/images/vol2/projects/Cybersential/r/hero-760.webp 760w, /images/vol2/projects/Cybersential/r/hero-1320.webp 1320w, /images/vol2/projects/Cybersential/hero.webp 2640w",
+  "/images/vol2/projects/Cybersential/wireframe.webp": "/images/vol2/projects/Cybersential/r/wireframe-760.webp 760w, /images/vol2/projects/Cybersential/r/wireframe-1320.webp 1320w, /images/vol2/projects/Cybersential/wireframe.webp 1680w",
+  "/images/vol2/projects/Czech/hero.webp": "/images/vol2/projects/Czech/r/hero-760.webp 760w, /images/vol2/projects/Czech/r/hero-1320.webp 1320w, /images/vol2/projects/Czech/hero.webp 2640w",
+  "/images/vol2/projects/Danai%20Michali/hero.webp": "/images/vol2/projects/Danai%20Michali/r/hero-760.webp 760w, /images/vol2/projects/Danai%20Michali/r/hero-1320.webp 1320w, /images/vol2/projects/Danai%20Michali/hero.webp 2640w",
+  "/images/vol2/projects/Danai%20Michali/highlight%201.webp": "/images/vol2/projects/Danai%20Michali/r/highlight%201-760.webp 760w, /images/vol2/projects/Danai%20Michali/r/highlight%201-1320.webp 1320w, /images/vol2/projects/Danai%20Michali/highlight%201.webp 2640w",
+  "/images/vol2/projects/Danai%20Michali/highlight%202.webp": "/images/vol2/projects/Danai%20Michali/r/highlight%202-760.webp 760w, /images/vol2/projects/Danai%20Michali/r/highlight%202-1320.webp 1320w, /images/vol2/projects/Danai%20Michali/highlight%202.webp 2640w",
+  "/images/vol2/projects/Deerislnd/hero.webp": "/images/vol2/projects/Deerislnd/r/hero-760.webp 760w, /images/vol2/projects/Deerislnd/r/hero-1320.webp 1320w, /images/vol2/projects/Deerislnd/hero.webp 2640w",
+  "/images/vol2/projects/Gaspar%20AI/hero.webp": "/images/vol2/projects/Gaspar%20AI/r/hero-760.webp 760w, /images/vol2/projects/Gaspar%20AI/r/hero-1320.webp 1320w, /images/vol2/projects/Gaspar%20AI/hero.webp 2640w",
+  "/images/vol2/projects/Gaspar%20AI/wide%2001.webp": "/images/vol2/projects/Gaspar%20AI/r/wide%2001-760.webp 760w, /images/vol2/projects/Gaspar%20AI/r/wide%2001-1320.webp 1320w, /images/vol2/projects/Gaspar%20AI/wide%2001.webp 1680w",
+  "/images/vol2/projects/Gaspar%20AI/wide%2002.webp": "/images/vol2/projects/Gaspar%20AI/r/wide%2002-760.webp 760w, /images/vol2/projects/Gaspar%20AI/r/wide%2002-1320.webp 1320w, /images/vol2/projects/Gaspar%20AI/wide%2002.webp 1680w",
+  "/images/vol2/projects/Gaspar%20AI/wide%2003.webp": "/images/vol2/projects/Gaspar%20AI/r/wide%2003-760.webp 760w, /images/vol2/projects/Gaspar%20AI/r/wide%2003-1320.webp 1320w, /images/vol2/projects/Gaspar%20AI/wide%2003.webp 1680w",
+  "/images/vol2/projects/Mood/hero.webp": "/images/vol2/projects/Mood/r/hero-760.webp 760w, /images/vol2/projects/Mood/r/hero-1320.webp 1320w, /images/vol2/projects/Mood/hero.webp 2640w",
+  "/images/vol2/projects/Nixteri/hero.webp": "/images/vol2/projects/Nixteri/r/hero-760.webp 760w, /images/vol2/projects/Nixteri/r/hero-1320.webp 1320w, /images/vol2/projects/Nixteri/hero.webp 2640w",
+  "/images/vol2/projects/Nixteri/image%2001.webp": "/images/vol2/projects/Nixteri/r/image%2001-760.webp 760w, /images/vol2/projects/Nixteri/r/image%2001-1320.webp 1320w, /images/vol2/projects/Nixteri/image%2001.webp 1680w",
+  "/images/vol2/projects/Olga%20Posonidou/hero.webp": "/images/vol2/projects/Olga%20Posonidou/r/hero-760.webp 760w, /images/vol2/projects/Olga%20Posonidou/r/hero-1320.webp 1320w, /images/vol2/projects/Olga%20Posonidou/hero.webp 2640w",
+  "/images/vol2/projects/Olga%20Posonidou/image%201.webp": "/images/vol2/projects/Olga%20Posonidou/r/image%201-760.webp 760w, /images/vol2/projects/Olga%20Posonidou/r/image%201-1320.webp 1320w, /images/vol2/projects/Olga%20Posonidou/image%201.webp 1680w",
+  "/images/vol2/projects/Piraeus%20Insurance/hero.webp": "/images/vol2/projects/Piraeus%20Insurance/r/hero-760.webp 760w, /images/vol2/projects/Piraeus%20Insurance/r/hero-1320.webp 1320w, /images/vol2/projects/Piraeus%20Insurance/hero.webp 2640w",
+  "/images/vol2/projects/Piraeus%20Insurance/wireframe.webp": "/images/vol2/projects/Piraeus%20Insurance/r/wireframe-760.webp 760w, /images/vol2/projects/Piraeus%20Insurance/r/wireframe-1320.webp 1320w, /images/vol2/projects/Piraeus%20Insurance/wireframe.webp 1680w",
+  "/images/vol2/projects/Tarot%20Cards/hero.webp": "/images/vol2/projects/Tarot%20Cards/r/hero-760.webp 760w, /images/vol2/projects/Tarot%20Cards/r/hero-1320.webp 1320w, /images/vol2/projects/Tarot%20Cards/hero.webp 2640w",
+  "/images/vol2/projects/Tarot%20Cards/highlight.webp": "/images/vol2/projects/Tarot%20Cards/r/highlight-760.webp 760w, /images/vol2/projects/Tarot%20Cards/r/highlight-1320.webp 1320w, /images/vol2/projects/Tarot%20Cards/highlight.webp 2640w",
+  "/images/vol2/projects/Typeface%20A/hero.webp": "/images/vol2/projects/Typeface%20A/r/hero-760.webp 760w, /images/vol2/projects/Typeface%20A/r/hero-1320.webp 1320w, /images/vol2/projects/Typeface%20A/hero.webp 2640w",
+  "/images/vol2/projects/Typeface%20A/image%201.webp": "/images/vol2/projects/Typeface%20A/r/image%201-760.webp 760w, /images/vol2/projects/Typeface%20A/r/image%201-1320.webp 1320w, /images/vol2/projects/Typeface%20A/image%201.webp 1680w",
+  "/images/vol2/projects/Typeface%20b/hero.webp": "/images/vol2/projects/Typeface%20b/r/hero-760.webp 760w, /images/vol2/projects/Typeface%20b/r/hero-1320.webp 1320w, /images/vol2/projects/Typeface%20b/hero.webp 2640w",
+  "/images/vol2/projects/Typeface%20b/image%201.webp": "/images/vol2/projects/Typeface%20b/r/image%201-760.webp 760w, /images/vol2/projects/Typeface%20b/r/image%201-1320.webp 1320w, /images/vol2/projects/Typeface%20b/image%201.webp 1680w",
+  "/images/vol2/projects/Vasiliki%20Vozora/hero.webp": "/images/vol2/projects/Vasiliki%20Vozora/r/hero-760.webp 760w, /images/vol2/projects/Vasiliki%20Vozora/r/hero-1320.webp 1320w, /images/vol2/projects/Vasiliki%20Vozora/hero.webp 2640w",
+  "/images/vol2/projects/istorima/hero.webp": "/images/vol2/projects/istorima/r/hero-760.webp 760w, /images/vol2/projects/istorima/r/hero-1320.webp 1320w, /images/vol2/projects/istorima/hero.webp 2640w",
+  "/images/vol2/projects/istorima/image%203.webp": "/images/vol2/projects/istorima/r/image%203-760.webp 760w, /images/vol2/projects/istorima/r/image%203-1320.webp 1320w, /images/vol2/projects/istorima/image%203.webp 1680w",
+  "/images/vol2/projects/pixel/hero.webp": "/images/vol2/projects/pixel/r/hero-760.webp 760w, /images/vol2/projects/pixel/r/hero-1320.webp 1320w, /images/vol2/projects/pixel/hero.webp 2640w"
+};
+
+/** the `srcset` for a picture, or undefined when it needs none */
+export const srcsetFor = (src: string): string | undefined => SRCSET[src];
+
 /** one loop, in the formats it was encoded to */
 export interface Loop {
   webm?: string;

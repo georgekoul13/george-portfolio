@@ -6,8 +6,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
-import Image from 'next/image';
+import Picture from './Picture';
 import VideoSources from './VideoSources';
+import { useGateReady } from './ProjectGate';
 import type { Sources } from './blocks';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -67,6 +68,8 @@ export default function ProjectImage({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const isVideo = !!sources || (!!src && VIDEO.test(src));
+  /* nothing is built while the curtain is up — see `ProjectGate` */
+  const ready = useGateReady();
 
   /* Play only while it is on screen. Without this every visitor downloads the
      clip whether or not they scroll this far, and it keeps decoding off the
@@ -95,13 +98,27 @@ export default function ProjectImage({
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const box = root.current!;
+      const pic = box.querySelector('img, video');
+
+      /* PARK NOW, PLAY WHEN THE CURTAIN HAS GONE.
+         Two separate moments, and conflating them is what put this entrance
+         behind the loading panel: the panel takes over a second to slide
+         clear, and a reveal started when it BEGAN leaving was finished before
+         the reader could see any of it. So the start state is written as soon
+         as the page mounts — which is what stops a flash of un-parked content
+         when the curtain lifts — and the timeline is only built once
+         `ProjectGate` says the screen is the reader's. */
+      gsap.set(box, { clipPath: 'inset(100% 0% 0% 0%)' });
+      if (pic) gsap.set(pic, { scale: 1.12 });
+      if (!ready) return;
 
       gsap
-        .timeline({ scrollTrigger: { trigger: root.current, start: 'top 85%' } })
-        .from(root.current, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1, ease: 'power3.out' })
-        .from('[data-inner]', { scale: 1.12, duration: 1.2, ease: 'power3.out' }, 0);
+        .timeline({ scrollTrigger: { trigger: box, start: 'top 85%' } })
+        .to(box, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' })
+        .to(pic, { scale: 1, duration: 1.2, ease: 'power3.out' }, 0);
     },
-    { scope: root },
+    { scope: root, dependencies: [ready], revertOnUpdate: true },
   );
 
   return (
@@ -118,13 +135,10 @@ export default function ProjectImage({
           background: 'var(--bg-raised)',
         }}
       >
-        {/* `next/image`, not `<img>`: these are the 1440x1080 source files
-            and were being shipped whole to a 375 phone. `fill` because the
-            box is an aspect-ratio well, and `sizes` because without it
-            `fill` assumes 100vw at every breakpoint and picks the largest
-            candidate anyway. GSAP animates this element's `scale`, which is
-            a transform and so does not fight the inline `position` that
-            `fill` sets. */}
+        {/* A plain `<img>` on a file that already exists — see `Picture` for
+            why the optimiser is out of this path entirely. It is absolutely
+            positioned to fill the aspect-ratio well, and GSAP animates its
+            `scale`, which is a transform and so does not fight that. */}
         {isVideo ? (
           <video
             data-inner
@@ -147,14 +161,12 @@ export default function ProjectImage({
             <VideoSources src={src} sources={sources} />
           </video>
         ) : (
-          <Image
-            data-inner
+          <Picture
             src={src!}
             alt={alt}
-            fill
             sizes="100vw"
             priority={priority}
-            className="object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         )}
       </div>
