@@ -88,8 +88,10 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
           muted
           loop
           playsInline
-          autoPlay
-          preload="none"
+          /* `metadata`, not `none`: a loop that has not been asked to play
+             yet should still show its first frame rather than an empty box.
+             Playback is started by the observer in `Stills` — see there. */
+          preload="metadata"
           className="absolute inset-0 h-full w-full object-cover"
         >
           <VideoSources src={cell.src} sources={cell.sources} />
@@ -117,6 +119,7 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const cleanups: (() => void)[] = [];
 
       /* Per still, not per wrap — see `Rise` for the whole reasoning. A
          section of Mood's is six pictures in three rows and a single trigger
@@ -129,6 +132,35 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
          turn rather than inheriting the one above. */
       const triggers: ScrollTrigger[] = [];
       const stills = gsap.utils.toArray<HTMLElement>('[data-still]', root.current);
+
+      /* ── THE LOOPS HAVE TO BE TOLD TO PLAY ──────────────────────────
+         `autoPlay` in the JSX is not enough, and an end-to-end audit is what
+         caught it: the rendered HTML carries `muted` and `loop` but NO
+         `autoplay` attribute — React does not server-render it on a media
+         element — so every loop in a stills column sat paused at
+         `readyState: 4`, fully downloaded and never started. The full-width
+         loops were fine, because `ProjectImage` already drives them this way;
+         only the in-column ones were missed.
+
+         Played only while on screen, for the reason `ProjectImage` gives:
+         otherwise every visitor decodes every loop whether or not they
+         scroll to it, and it keeps running off the battery afterwards.
+         Reduced motion never starts one at all — the first frame is the
+         whole experience there, which is why `preload` is `metadata`. */
+      const clips = gsap.utils.toArray<HTMLVideoElement>('video', root.current);
+      if (clips.length) {
+        const io = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((e) => {
+              const v = e.target as HTMLVideoElement;
+              if (e.isIntersecting) void v.play().catch(() => {});
+              else v.pause();
+            }),
+          { rootMargin: '200px 0px' },
+        );
+        clips.forEach((v) => io.observe(v));
+        cleanups.push(() => io.disconnect());
+      }
       stills.forEach((still, i) => {
         const prev = stills[i - 1];
         /* a new row: this cell's left edge is not to the right of the one
@@ -215,7 +247,10 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
         });
         triggers.push(st);
       });
-      return () => triggers.forEach((t) => t.kill());
+      return () => {
+        triggers.forEach((t) => t.kill());
+        cleanups.forEach((fn) => fn());
+      };
     },
     { scope: root, dependencies: [ready], revertOnUpdate: true },
   );
