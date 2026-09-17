@@ -129,6 +129,56 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Istorima — written 2026-09-17 ──────────────────────────────────
+     Holy (holy.gd), 2021-22. Client is Istorima; Holy is the employer.
+
+     A TEAM PROJECT, and it has to say so — George: *"deliverables platform,
+     but we need to tell that it was a team effort."* The stored record was
+     corrected once already for claiming "the full product and visual
+     identity", so the credit is in the copy rather than left to a reader's
+     assumption.
+
+     No numbers. archive.istorima.org publishes 10,215 stories, 727
+     researchers and 8,770 locations, but those are 2026 figures for work
+     done in 2021-22, and they are the archive's to claim. "Thousands" is
+     true then and now. */
+  istorima: {
+    subtitle:
+      "Greece's archive of oral history. Thousands of recorded accounts, and " +
+      'a way to find the one you want.',
+    meta: {
+      client: 'Istorima',
+      role: 'UX Designer @ Holy',
+      deliverables: 'Platform design, as part of the team',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          "Istorima is Greece's archive of oral history: thousands of recorded " +
+          'accounts, gathered by researchers all over the country.',
+      },
+      {
+        /* What he worked on, in his own list, with the team credit first
+           rather than buried. Both sides of the product — the public archive
+           and the tool researchers catalogue with, which is the screen
+           showing Interview Data, Media & Locations, Indexing and Syncing. */
+        text:
+          'This was a team project at Holy. I worked on the researchers upload ' +
+          'platform, the homepage, the search and filtering, the categories ' +
+          'and the library components — both sides of it, the public archive ' +
+          'and the tool researchers catalogue with.',
+      },
+      {
+        /* The challenge, his words: *"the biggest challenge was the amount of
+           content and the filtering."* */
+        text:
+          'The amount of it. Thousands of recordings, and the filtering is ' +
+          'what decides whether any one of them can be found.',
+      },
+    ],
+  },
+
   /* ── Mood: Music of our desire — written 2026-09-17 ──────────────────
      Oct 2025 - May 2026, and it has ENDED: *"the collaboration with mood
      ended on june 1."* His CV says May 2026; either way it is past tense.
