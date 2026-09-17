@@ -187,8 +187,10 @@ export const COPY: Record<string, ProjectCopy> = {
           'part of the work is under NDA.',
       },
       {
-        // the first commercial site
-        chip: 'The Website',
+        /* "Website" and "Website vol2" named the artefact, not the work — and
+           a reader skimming the chips saw the same word twice and read it as a
+           repeat. These say there is a before and an after worth stopping for. */
+        chip: 'First website',
         text:
           'The company needed a site to send people to while the rest was ' +
           'being rebuilt. I built it around the new name, the new logo and ' +
@@ -198,8 +200,7 @@ export const COPY: Record<string, ProjectCopy> = {
         bullets: [],
       },
       {
-        // the same site a year on
-        chip: 'The Website vol2',
+        chip: 'Website one year on',
         text:
           'A year later the site could not hold everything we had added. There ' +
           'was much more product to explain, so I rebuilt it bigger and ' +
