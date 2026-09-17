@@ -155,12 +155,17 @@ export const COPY: Record<string, ProjectCopy> = {
           'customers buy it, in the app and online.',
       },
       {
-        // Design process — the flow map
+        /* Design process — the flow map. NOT about removing steps, which is
+           the first thing anyone reaches for and is wrong here. George:
+           *"here we need to focus on the complaiance of all these big
+           companies and the streamlining of that instead of removing."* You
+           cannot shorten a regulated financial product; the craft is making
+           a process that is fixed in length still feel simple. */
         text:
-          'Every product had its own flow, and each one needed research before ' +
-          'I could draw it. I mapped them all out, then spent most of my time ' +
-          'removing steps. The shorter the path from choosing a policy to ' +
-          'owning one, the more people finish it.',
+          'Insurance and banking have compliance rules you cannot design ' +
+          'away. Every flow had to carry everything the bank and each insurer ' +
+          'are required to ask. I mapped them, then worked on order and ' +
+          'wording so the process felt simple even though nothing could be cut.',
       },
       {
         // Various insurance products — phone, pet, cyber
