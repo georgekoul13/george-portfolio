@@ -129,6 +129,64 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Benefit Apps — written 2026-09-17 ──────────────────────────────
+     Holy, 2021-22, for Benefit Software S.M.P.C. of Piraeus (benefit.gr) —
+     ERP built exclusively for shipping. Same credit shape as Istorima at
+     George's request, but with a split the other pages do not have: the
+     mobile app was his alone, the suite was the team's.
+
+     `data/projects.json` still calls this "Employee benefits management app
+     redesign", which an early session invented by reading the company's
+     NAME as a common noun. It is shipping software.
+
+     No numbers: benefit.gr claims 1,700+ vessels and 5,000+ active users,
+     which are the client's to claim and not from 2021 anyway. */
+  benefit: {
+    subtitle:
+      'ERP for shipping companies: every ship, every cargo, every crew ' +
+      'member. I designed the mobile app and parts of the suite.',
+    meta: {
+      client: 'Benefit Software',
+      role: 'UX Designer @ Holy',
+      deliverables: 'The mobile app, and parts of the suite as part of the team',
+    },
+    sections: [
+      {
+        // Overview
+        text:
+          'Shipping companies run on Benefit: where every ship is, what it is ' +
+          'carrying, and who is on board.',
+      },
+      {
+        /* The mobile app — his alone. Group names read off the wireframe:
+           Log In Process, Dashboard Alternatives, Messages/Notifications,
+           Submission List, Quick Search & Actions, Main Pages. */
+        chip: 'Mobile app',
+        text:
+          'I was the only designer on the mobile app. Login, dashboards, ' +
+          'messages and notifications, submissions, quick search — the whole ' +
+          'thing in a phone, for people whose work does not happen at a desk.',
+      },
+      {
+        /* The suite — a team effort, and the chip says contribution rather
+           than ownership on purpose. His list: *"the messaging system, some
+           dashboards, components etc."* */
+        chip: 'Across the suite',
+        text:
+          'On the main product I worked as part of the team: the messaging ' +
+          'system, some of the dashboards, and components other people built ' +
+          'with.',
+      },
+      {
+        /* The breadth, which is MY reading of his answer rather than his own
+           words — he described what the suite covers, not what was hard. */
+        text:
+          'Everything a shipping company knows sits in one product: ships, ' +
+          'cargo, routes, crews, and the full history of every person.',
+      },
+    ],
+  },
+
   /* ── Istorima — written 2026-09-17 ──────────────────────────────────
      Holy (holy.gd), 2021-22. Client is Istorima; Holy is the employer.
 
