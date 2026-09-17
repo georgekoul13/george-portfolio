@@ -154,10 +154,17 @@ export const COPY: Record<string, ProjectCopy> = {
     },
     sections: [
       {
-        // Overview — the plot, because the plot IS the concept
+        /* Overview — the plot, because the plot IS the concept.
+
+           NOT "telling her story". George: *"they do not tell 'her story'.
+           more like με αφορμή την πεθαμένη λένε ιστορίες."* The dead woman
+           is the occasion, not the subject — each of the seven tells her
+           own, which is exactly why each figure carries a different symbol.
+           The publisher's blurb says her life comes back through their
+           memories, which is looser than the book. */
         text:
           'A woman dies, and the women who knew her sit up all night telling ' +
-          'her story. Seven women, seven stories.',
+          'stories. Seven women, seven stories.',
       },
       {
         text:
