@@ -57,6 +57,14 @@ export interface RevealTextProps {
    * it once on mount, compressed into `LOAD_SECONDS` — for a block that sits
    * in the first viewport, where there is no scroll to spend on it yet.
    *
+   * `enter` is `load`'s timing on `scroll`'s cue: the sentence writes itself
+   * at its own pace, once, the first time the block comes on screen. George,
+   * on the project pages: *"let's have the revealing animation automation
+   * instead related to scroll on big text boxs."* A scrubbed reveal makes the
+   * reader operate the sentence to read it, which is right for a hero they
+   * have stopped to watch and wrong for the eight or nine statements down a
+   * case study — there it is a toll on every one of them.
+   *
    * `pinned` scrubs the reveal against the block's own position on screen,
    * for a block inside a PINNED panel. `scroll` cannot be used there — the
    * panel does not move through the document, so a ScrollTrigger keyed to the
@@ -68,7 +76,7 @@ export interface RevealTextProps {
    * revealing of this text happen word by word with scroll — like we had in
    * the previous version of the Vol2, not automatically after one scroll."*
    */
-  play?: 'scroll' | 'load' | 'pinned';
+  play?: 'scroll' | 'load' | 'enter' | 'pinned';
   /**
    * The `font` shorthand for the copy. Defaults to the display size; the
    * intro sentence takes the step below it. A prop rather than a class
@@ -212,7 +220,7 @@ export default function RevealText({
                `scrub: 0.8` lets it chase the scroll rather than being welded
                to it, so a flick of the wheel still resolves smoothly. */
             const tl = gsap.timeline(
-              play === 'pinned'
+              play === 'pinned' || play === 'enter'
                 ? { paused: true }
                 : play === 'load'
                 ? { delay: 0.15 }
@@ -377,11 +385,27 @@ export default function RevealText({
             /* `load` plays in real time and needs compressing; `pinned` is
                driven by `progress()`, which is normalised, so a timeScale
                would change nothing. */
-            if (play === 'load' && tl.duration() > 0) {
+            if ((play === 'load' || play === 'enter') && tl.duration() > 0) {
               tl.timeScale(tl.duration() / LOAD_SECONDS);
               /* Once. A re-split jumps to the finished state. */
               if (loadPlayed) tl.progress(1);
               loadPlayed = true;
+            }
+
+            /* `enter` waits for the block, then runs on its own clock.
+               `once` matters for more than tidiness: without it a refresh —
+               and a phone fires one every time the address bar retracts —
+               re-evaluates the trigger, and a sentence the reader has already
+               passed gets parked back at its start state with no further
+               crossing coming to release it. */
+            if (play === 'enter') {
+              const st = ScrollTrigger.create({
+                trigger: container,
+                start: 'top 85%',
+                once: true,
+                onEnter: () => tl.play(),
+              });
+              cleanups.push(() => st.kill());
             }
 
             /* Plays once, on whichever comes first: the panel's cue, or the

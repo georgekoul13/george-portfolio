@@ -1,4 +1,5 @@
 import ProjectImage from './ProjectImage';
+import Rise from './Rise';
 import type { ProjectMetaFields } from './blocks';
 
 /**
@@ -77,9 +78,13 @@ export default function ProjectBase({
       {/* `ProjectImage` already owns the aspect token and the uncover-from-
           below entrance, and takes a video just as happily — so a project
           whose opening frame moves needs no different component here. */}
-      <ProjectImage src={hero} alt={title} />
+      <ProjectImage src={hero} alt={title} priority />
 
-      <div className="flex w-full flex-col px-[var(--gutter)]" style={{ gap: 'var(--project-title-gap)' }}>
+      {/* The title and the line under it rise in after the picture has
+          uncovered — the same arrival the rest of the page uses, so the
+          opening screen speaks the template's language rather than simply
+          being there. See `Rise`. */}
+      <Rise className="flex w-full flex-col px-[var(--gutter)]" style={{ gap: 'var(--project-title-gap)' }}>
         <h1
           className="uppercase"
           style={{
@@ -93,7 +98,7 @@ export default function ProjectBase({
           {title}
         </h1>
         <p style={{ font: 'var(--type-16-24-r)', color: 'var(--text-tertiary)' }}>{subtitle}</p>
-      </div>
+      </Rise>
 
       {/* One row at desktop, wrapping to two and then to one below `lg` —
           three cells across a phone would be 25px wide.
@@ -104,7 +109,7 @@ export default function ProjectBase({
           them on its own. Dropping a field out of the left half widens the
           two that remain from a quarter each to a third; it does not move
           the half-way line, which is the part the eye reads. */}
-      <div
+      <Rise
         className="grid w-full grid-cols-1 px-[var(--gutter)] sm:grid-cols-2 lg:flex"
         style={{ gap: 'var(--project-meta-gap)' }}
       >
@@ -117,7 +122,7 @@ export default function ProjectBase({
         <div className="flex min-w-0 flex-1">
           <Cell label="Deliverables" value={meta.deliverables} />
         </div>
-      </div>
+      </Rise>
     </div>
   );
 }

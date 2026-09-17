@@ -8,6 +8,8 @@ import { useGSAP } from '@gsap/react';
 
 import '../scrollDefaults';
 import Chip from '../Chip';
+import RevealText from '../RevealText';
+import Rise from './Rise';
 import ProjectImage from './ProjectImage';
 import VideoSources from './VideoSources';
 import type { Block, Cell } from './blocks';
@@ -52,11 +54,34 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
       className="relative min-w-0 overflow-hidden"
       /* `--still-cell` is 100% on a phone and half-the-column-minus-the-gap
          above it, so the wrap goes to one-up where a 400 would be too small
-         to read. A span-2 slot is the whole column at every width. */
-      style={{ width: cell.span === 2 ? '100%' : 'var(--still-cell)', aspectRatio: cell.aspect }}
+         to read. A span-2 slot is the whole column at every width.
+
+         The `clipPath` is declared at rest so GSAP has something to animate
+         FROM — `from` on an unset clip-path has no end value to interpolate
+         towards and lands on `none` in one frame. */
+      style={{
+        width: cell.span === 2 ? '100%' : 'var(--still-cell)',
+        aspectRatio: cell.aspect,
+        clipPath: 'inset(0% 0% 0% 0%)',
+        /* A TONE UNDER THE PICTURE, so a slot that has not loaded yet is a
+           panel rather than a hole.
+
+           George, on his phone: a tall blank between two stills that he could
+           not reproduce on the Mac. Nothing was broken — the Mac had 405
+           optimised variants cached and the phone asks for widths it has
+           never generated, so each one is a cold re-encode of a 750KB PNG
+           and the box stands empty while it runs. Against the page's own
+           black that empty box is indistinguishable from a layout bug.
+
+           This does not make the picture arrive sooner; the source files are
+           the thing that has to change for that. It makes the wait look like
+           a wait. */
+        background: 'var(--bg-raised)',
+      }}
     >
       {cell.kind === 'video' ? (
         <video
+          data-inner
           poster={cell.poster}
           aria-label={cell.alt ?? alt}
           muted
@@ -70,10 +95,20 @@ function Slot({ cell, alt }: { cell: Cell; alt: string }) {
         </video>
       ) : (
         <Image
+          data-inner
           src={cell.src!}
           alt={cell.alt ?? alt}
           fill
-          sizes="(min-width: 1200px) 40vw, (min-width: 600px) 45vw, 100vw"
+          /* measured, like the cards in `ProjectCards` — a still is 0.90 of
+             the viewport on a phone, not the whole of it, because the page
+             keeps its gutter */
+          sizes="(min-width: 1200px) 38vw, (min-width: 600px) 43vw, 90vw"
+          /* EAGER. A project page is a run of pictures and nothing else; a
+             still that only starts loading when it is nearly on screen is a
+             still the reader arrives at before it does. They are 40-90KB
+             each since the WebP pass, so fetching the page's worth up front
+             costs less than one of the old PNGs did. */
+          loading="eager"
           className="object-cover"
         />
       )}
@@ -87,14 +122,101 @@ function Stills({ cells, alt }: { cells: Cell[]; alt: string }) {
   useGSAP(
     () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      gsap.from(gsap.utils.toArray('[data-still]', root.current), {
-        autoAlpha: 0,
-        y: 24,
-        duration: 0.8,
-        stagger: 0.08,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: root.current, start: 'top 85%' },
+
+      /* Per still, not per wrap — see `Rise` for the whole reasoning. A
+         section of Mood's is six pictures in three rows and a single trigger
+         on the container ran all six the moment the FIRST row entered, so
+         rows two and three were already sitting there when you reached them.
+
+         The stagger that gave the row its cascade is kept as a delay taken
+         from the cell's position WITHIN ITS ROW, so two pictures side by side
+         still arrive one after the other, and the row below waits for its own
+         turn rather than inheriting the one above. */
+      const triggers: ScrollTrigger[] = [];
+      const stills = gsap.utils.toArray<HTMLElement>('[data-still]', root.current);
+      stills.forEach((still, i) => {
+        const prev = stills[i - 1];
+        /* a new row: this cell's left edge is not to the right of the one
+           before it — measured rather than counted, because the wrap is the
+           browser's and changes with the breakpoint */
+        const sameRow =
+          !!prev && still.offsetLeft > prev.offsetLeft && still.offsetTop === prev.offsetTop;
+
+        /* ── THE UNCOVER, not a fade ──────────────────────────────────
+           A 24px rise and a fade over 0.8s is not enough movement to be
+           seen. George, having watched it: *"on desktop it looks the same…
+           on the phone there is a minor animation only when i scroll too
+           quickly, everything looks the same as before."* The tween was
+           running — it just did not read as anything.
+
+           So the stills take the page's OWN image reveal instead, the one
+           `ProjectImage` gives the hero: the frame is uncovered from the
+           bottom edge while the picture inside drifts up out of a 1.12
+           scale. Two things moving against each other, over a full second,
+           across the whole height of the frame. That is the gesture the rest
+           of the site uses for a picture, which is what was asked for. */
+        /* ── PARK THE START STATE OUTRIGHT, then tween TO the rest state ──
+           `from()` is supposed to write its start values the moment it is
+           created. It does NOT when the timeline is already paused — and the
+           timeline below is paused, because the picture now gates it. The
+           first version of this gate used `from` and silently stopped
+           parking anything: every still sat fully uncovered from first paint
+           and the reveal had nothing left to reveal. Caught by walking the
+           page and looking for a frame that was open with no picture in it —
+           100 of them, where there should be none.
+
+           Setting the start state outright does not care what is paused. */
+        const pic = still.querySelector<HTMLElement>('[data-inner]');
+        gsap.set(still, { clipPath: 'inset(100% 0% 0% 0%)' });
+        if (pic) gsap.set(pic, { scale: 1.12 });
+
+        const tl = gsap
+          .timeline({ paused: true, delay: sameRow ? 0.08 : 0 })
+          .to(still, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' })
+          .to(pic, { scale: 1, duration: 1.2, ease: 'power3.out' }, 0);
+
+        /* ── THE UNCOVER WAITS FOR THE PICTURE ───────────────────────
+           George: *"let's make sure there are no delays when the user is on
+           the page"* — and, on which pages: *"i'm speaking for the product
+           pages."*
+
+           The reveal used to be keyed to scroll position alone, so the frame
+           opened on whatever was inside it at that moment — and on a phone,
+           which asks for widths nothing has generated yet, that was very
+           often nothing. The animation performed perfectly onto an empty box
+           and then the picture appeared afterwards, which reads as the page
+           being broken rather than as the network being slow.
+
+           So the cue is BOTH: the still has to have reached the line AND its
+           picture has to be decodable. Whichever is later starts it. The
+           frame holds its placeholder tone until then, which is a panel
+           waiting rather than a hole.
+
+           CAPPED at two seconds. A picture that fails outright, or a
+           connection that stalls, must not leave a section of the page
+           permanently hidden — after the cap it uncovers regardless and the
+           reader gets the layout even if they do not get the image. */
+        const ready = () => {
+          const img = pic instanceof HTMLImageElement ? pic : null;
+          // a video carries its own poster and never blocks
+          if (!img || (img.complete && img.naturalWidth > 0)) return Promise.resolve();
+          return new Promise<void>((res) => {
+            const go = () => res();
+            img.addEventListener('load', go, { once: true });
+            img.addEventListener('error', go, { once: true });
+            window.setTimeout(go, 2000);
+          });
+        };
+
+        const st = ScrollTrigger.create({
+          trigger: still,
+          start: 'top 88%',
+          once: true,
+          onEnter: () => void ready().then(() => tl.play()),
+        });
+        triggers.push(st);
       });
+      return () => triggers.forEach((t) => t.kill());
     },
     { scope: root },
   );
@@ -170,11 +292,29 @@ function Words({
       : size === 'statement'
         ? { font: 'var(--type-56-64-r)' }
         : { font: 'var(--type-24-32-m)', letterSpacing: '1.2px' };
+
+  /* The two full-width sizes are the page's display type, so they arrive the
+     way the home page's big lines do — written word by word against the
+     scroll. The 24/32 beside the pictures does not: see `Rise`. */
+  const big = size !== 'body';
+
   return (
     <>
-      <p style={{ ...font, color: 'var(--text-primary)' }}>
-        {text}
-      </p>
+      {big ? (
+        /* `enter`, not `scroll`. Scrubbed, each of a case study's eight or
+           nine statements has to be scrolled into existence before it can be
+           read; played on arrival, the sentence writes itself once at its own
+           pace and the reader just reads. George: *"let's have the revealing
+           animation automation instead related to scroll on big text
+           boxs."* */
+        <RevealText play="enter" font={font.font} style={{ color: 'var(--text-primary)' }}>
+          {text}
+        </RevealText>
+      ) : (
+        <p style={{ ...font, color: 'var(--text-primary)' }}>
+          {text}
+        </p>
+      )}
       {bullets?.length ? (
         <ul className="flex flex-col" style={{ gap: 8, color: 'var(--text-primary)' }}>
           {bullets.map((b, i) => (
@@ -213,9 +353,12 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
               style={{ gap: 'var(--project-chip-gap)' }}
             >
               {b.chip && (
-                <span data-chip={b.chip} className="inline-flex self-start">
-                  <Chip label={b.chip} />
-                </span>
+                /* the chip rises on its own, ahead of the sentence it labels */
+                <Rise className="inline-flex self-start">
+                  <span data-chip={b.chip} className="inline-flex">
+                    <Chip label={b.chip} />
+                  </span>
+                </Rise>
               )}
               <div className="flex w-full flex-col" style={{ gap: 24 }}>
                 <Words text={b.text} bullets={b.bullets} size={b.display ? 'display' : 'statement'} />
@@ -230,9 +373,11 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
             className="flex w-full flex-col px-[var(--gutter)]"
             style={{ gap: 'var(--project-chip-gap)' }}
           >
-            <span data-chip={b.chip} className="inline-flex self-start">
-              <Chip label={b.chip} />
-            </span>
+            <Rise className="inline-flex self-start">
+              <span data-chip={b.chip} className="inline-flex">
+                <Chip label={b.chip} />
+              </span>
+            </Rise>
             {/* Side by side only from `xl`. The design splits 1320 into 432
                 of words and 840 of pictures, so the two fit beside each other
                 at 1440 and nowhere narrower — at 1024 an 840 column leaves 48
@@ -254,12 +399,12 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
                 className="flex w-full flex-col xl:flex-row xl:items-start"
                 style={{ gap: 'var(--project-split-gap)' }}
               >
-                <div
+                <Rise
                   className="flex min-w-0 flex-col xl:w-[432px] xl:shrink-0"
                   style={{ gap: 24 }}
                 >
                   <Words text={g.text} bullets={g.bullets} />
-                </div>
+                </Rise>
                 <div className="w-full min-w-0 xl:flex-1">
                   <Stills cells={g.cells} alt={alt} />
                 </div>
