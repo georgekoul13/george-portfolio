@@ -62,7 +62,17 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  */
 
 /**
- * Fourteen of the nineteen, and every one of them is a page that exists.
+ * TWELVE of the nineteen, in the order George set on 2026-09-17:
+ *
+ *   Mood · Gaspar AI · Deerislnd · Piraeus · Nixteri · Danai ·
+ *   Cybersential · Czech Image · Cancellation · Istorima · Tarot ·
+ *   Rounded Typeface
+ *
+ * It is not a ranking of the work — it is the order he wants a stranger to
+ * meet it in, so the two biggest product jobs lead and the personal pieces
+ * close. Cancellation Insurance and Rounded Typeface joined; Olga Posonidou,
+ * Cabaret, In Pixels We See and Vasiliki Vozora came out. All nineteen are
+ * still reachable from the category pages.
  *
  * It used to carry `athens-goes-mayan`, `illustrations` and
  * `maria-fitsopoulou` — three slugs with no project behind them any more.
@@ -76,20 +86,18 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  * is why they used to look soft.
  */
 const CARDS = [
-  { slug: 'olga-posonidou',    title: 'Olga Posonidou',    img: hero('olga-posonidou') },
-  { slug: 'arcana',            title: 'Tarot Cards',       img: hero('arcana') },
-  { slug: 'deerislnd',         title: 'Deerislnd Posters', img: hero('deerislnd') },
-  { slug: 'cabaret',           title: 'Cabaret',           img: hero('cabaret') },
-  { slug: 'gaspar-ai',         title: 'Gaspar AI',         img: hero('gaspar-ai') },
-  { slug: 'danai-michali',     title: 'Danai Michali',     img: hero('danai-michali') },
-  { slug: 'in-pixels-we-see',  title: 'In Pixels We See',  img: hero('in-pixels-we-see') },
-  { slug: 'book-cover',        title: 'To Nixteri Book',   img: hero('book-cover') },
-  { slug: 'vasiliki-vozora',   title: 'Vasiliki Vozora',   img: hero('vasiliki-vozora') },
-  { slug: 'czech-image',       title: 'Czech Image',       img: hero('czech-image') },
-  { slug: 'istorima',          title: 'Istorima',          img: hero('istorima') },
-  { slug: 'piraeus-insurance', title: 'Piraeus Insurance', img: hero('piraeus-insurance') },
-  { slug: 'mood',              title: 'Mood',              img: hero('mood') },
-  { slug: 'cybersential',      title: 'Cybersential',      img: hero('cybersential') },
+  { slug: 'mood',                title: 'Mood',                img: hero('mood') },
+  { slug: 'gaspar-ai',           title: 'Gaspar AI',           img: hero('gaspar-ai') },
+  { slug: 'deerislnd',           title: 'Deerislnd Posters',   img: hero('deerislnd') },
+  { slug: 'piraeus-insurance',   title: 'Piraeus Insurance',   img: hero('piraeus-insurance') },
+  { slug: 'book-cover',          title: 'To Nixteri Book',     img: hero('book-cover') },
+  { slug: 'danai-michali',       title: 'Danai Michali',       img: hero('danai-michali') },
+  { slug: 'cybersential',        title: 'Cybersential',        img: hero('cybersential') },
+  { slug: 'czech-image',         title: 'Czech Image',         img: hero('czech-image') },
+  { slug: 'cancellation-wallet', title: 'Cancellation Insurance', img: hero('cancellation-wallet') },
+  { slug: 'istorima',            title: 'Istorima',            img: hero('istorima') },
+  { slug: 'arcana',              title: 'Tarot Cards',         img: hero('arcana') },
+  { slug: 'rounded-typeface',    title: 'Rounded Typeface',    img: hero('rounded-typeface') },
 ];
 const N = CARDS.length;
 
