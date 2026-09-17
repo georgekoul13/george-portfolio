@@ -20,9 +20,31 @@
  * while the paragraph underneath said help desk. Vol 2 reads THIS file and
  * nothing else. When the old routes go, the others go with them.
  *
+ * ── how long a line is allowed to be ──────────────────────────────────
+ * Not a style preference — the template sets the limit twice over.
+ *
+ *   beside pictures   **10 to 15 words.** George: *"In the texts next to the
+ *                     images i want something short like 10 to 15 words. If
+ *                     we need to add more text we can have another section."*
+ *                     A section is the unit of more, not a longer paragraph.
+ *   full width        about **20**, because it sets at 72/80 across the whole
+ *                     1320. Forty words there is nine lines of display type
+ *                     and stops being a statement.
+ *
  * NOTHING HERE IS INFERRED. Every line comes from George in conversation,
  * and anything he has not said stays lorem until he does.
  */
+
+/**
+ * Chip renames that apply to EVERY page.
+ *
+ * `layout.ts` stays a faithful read of the canvas; the renames live here
+ * with the rest of the writing, because that is what they are. George,
+ * 2026-09-17: *"Change brief to Overview everywhere."*
+ */
+export const CHIP_RENAMES: Record<string, string> = {
+  Brief: 'Overview',
+};
 
 export interface SectionCopy {
   /** replaces the working label in `layout.ts` */
@@ -59,8 +81,8 @@ export const COPY: Record<string, ProjectCopy> = {
      he confirmed they are the conversational work, not the portal. */
   'gaspar-ai': {
     subtitle:
-      'A generative-AI help desk for IT and HR — and sixteen months rebuilding ' +
-      'its name, its product and the way it speaks.',
+      'A generative-AI help desk for IT and HR. Sixteen months on its name, ' +
+      'its product and its voice.',
     meta: {
       client: 'Gaspar AI',
       role: 'Lead Product Designer',
@@ -69,38 +91,23 @@ export const COPY: Record<string, ProjectCopy> = {
     },
     sections: [
       {
-        // Brief
+        // Overview — full width, 72/80, so it is a statement and not a paragraph
         text:
           'Gaspar AI resolves employee IT and HR requests inside Slack and ' +
-          'Microsoft Teams, automatically, before they turn into tickets. I ' +
-          'joined in September 2022 as its first full-time designer and stayed ' +
-          'sixteen months — the brand, the product and the language the bot ' +
-          'speaks were all in scope.',
+          'Teams, automatically, before they become tickets.',
       },
       null, // the Figma loop, full width
       {
-        // The challenge
+        /* The challenge. George asked for the previous designer to be left
+           out of it — the state of the work is the point, not who made it. */
         text:
-          'There had never been a designer in the building. The one they used ' +
-          'was external, so nothing had a direction to follow: the brand was ' +
-          'dated, and the logo carried no idea connecting it to what the ' +
-          'product actually did. The product had grown the same way — capable, ' +
-          'but assembled rather than designed. And this was 2022, before every ' +
-          'company had an AI agent, so there was no template to copy and no ' +
-          'expectation to meet.',
+          'A dated brand, a logo with no idea behind it, and a product grown ' +
+          'without a plan.',
       },
       {
         // The brand — the 11 stills
         text:
-          'It was called Gaspardesk: Gaspar, plus helpdesk. Clear, and that was ' +
-          'the problem. It named the category the company was in rather than the ' +
-          'one it was growing into, and said nothing about the AI doing the work ' +
-          '— a ceiling built into the letterhead for a startup still finding its ' +
-          'footing. It became Gaspar AI, with a new logotype to match. The ' +
-          'founder wanted a brand more playful than the other AI companies of ' +
-          'the time, so Gaspar stopped being a word and became a character, one ' +
-          'that turned up doing things across our channels, with a family of ' +
-          'smaller robots behind him standing for the automations he could run.',
+          'Gaspardesk named where we were, not where we were going.',
       },
       {
         /* Was "The Design proccess" on the canvas. George wanted a section
@@ -111,45 +118,30 @@ export const COPY: Record<string, ProjectCopy> = {
            the picture cannot. */
         chip: 'The scale of it',
         text:
-          'Every screen was drawn from scratch by one person over sixteen ' +
-          'months: the components, the responsive behaviour, and the prototypes ' +
-          'the engineers built from. There was no system to inherit and nobody ' +
-          'to split it with, so everything here either had a reason or did not ' +
-          'get made. The largest piece is under NDA — the setup and management ' +
-          'that ran semi-manually before it, rebuilt as a product.',
+          'One designer, sixteen months, every screen from scratch. The largest ' +
+          'part is under NDA.',
       },
       {
         // the first commercial site
         chip: 'The Website',
         text:
-          'The first thing I made was a new commercial site, because the company ' +
-          'needed somewhere to point people while everything else was being ' +
-          'rebuilt. It carried the new name, the new logotype and Gaspar ' +
-          'himself, and it leaned hard into the playfulness — which was the ' +
-          'right bet in a category where every competitor looked like enterprise ' +
-          'software.',
+          'First job: somewhere to point people. New name, new logotype, and ' +
+          'Gaspar all over it.',
         bullets: ['[to write]', '[to write]'],
       },
       {
         // the same site a year on
         chip: 'The Website vol2',
         text:
-          'A year later the site could not hold what the company had become. ' +
-          'There was far more product to explain, so version two is much larger ' +
-          '— and deliberately calmer. I pulled the playfulness back to where it ' +
-          'supports the work rather than leads it: professional, still with a ' +
-          'character in it.',
+          'A year on, far more product to explain. Bigger, calmer, still ' +
+          'playful.',
         bullets: ['[to write]', '[to write]'],
       },
       {
         // Conversational Design — the two dialogue-manager diagrams
         text:
-          "Gaspar's replies were designed rather than written as they came up. " +
-          'Working alongside the AI engineers, I mapped how a conversation ' +
-          'could actually go — where it branches, what happens when someone ' +
-          'raises a second thing halfway through, how it recovers when it has ' +
-          'understood the wrong one — and made sure the whole of it held ' +
-          'together as language and not only as logic.',
+          'Where a conversation branches, and what happens when someone raises ' +
+          'two things at once.',
       },
     ],
   },

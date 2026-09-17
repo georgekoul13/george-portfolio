@@ -37,6 +37,9 @@ function Cell({ label, value }: { label: string; value: string }) {
         className="uppercase"
         style={{
           font: 'var(--type-12-16-r)',
+          /* 1px in Figma, and it is doing work — at 12px uppercase these
+             labels set solid without it. */
+          letterSpacing: '1px',
           color: 'var(--text-tertiary)',
           /* cap-trim: the label sits 14 above its value in the design, which
              only lands if the box is the letters rather than the line. */

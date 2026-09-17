@@ -137,11 +137,30 @@ function ArrowDownRight() {
   );
 }
 
-/** the paragraph, and under it the arrow-led lines some sections carry */
-function Words({ text, bullets }: { text: string; bullets?: string[] }) {
+/**
+ * The paragraph, and under it the arrow-led lines some sections carry.
+ *
+ * TWO SIZES, and they are not decoration — Figma sets them from how much
+ * room the words have. A section with no pictures gets the whole 1320 and
+ * sets at **72/80 Regular**: a statement, three or four lines, read at a
+ * glance. A section beside the stills gets the 432 column and sets at
+ * **24/32 Medium with 5% tracking** (1.2px at that size), which is body
+ * copy.
+ *
+ * This was the typography bug George caught — both were rendering at 24/32,
+ * so the opening statement of every project came out the size of a caption
+ * and the page lost its top note entirely.
+ */
+function Words({ text, bullets, display }: { text: string; bullets?: string[]; display?: boolean }) {
   return (
     <>
-      <p style={{ font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }}>
+      <p
+        style={
+          display
+            ? { font: 'var(--type-72-80-r)', color: 'var(--text-primary)' }
+            : { font: 'var(--type-24-32-m)', letterSpacing: '1.2px', color: 'var(--text-primary)' }
+        }
+      >
         {text}
       </p>
       {bullets?.length ? (
@@ -187,7 +206,7 @@ export default function ProjectBlocks({ blocks, alt }: { blocks: Block[]; alt: s
                 </span>
               )}
               <div className="flex w-full flex-col" style={{ gap: 24 }}>
-                <Words text={b.text} bullets={b.bullets} />
+                <Words text={b.text} bullets={b.bullets} display />
               </div>
             </section>
           );

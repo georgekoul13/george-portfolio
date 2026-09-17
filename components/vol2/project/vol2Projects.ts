@@ -1,5 +1,5 @@
 import { ASSETS, type Loop, type Shot } from './assets';
-import { COPY, type SectionCopy } from './copy';
+import { COPY, CHIP_RENAMES, type SectionCopy } from './copy';
 import { LAYOUT, type LayoutCell } from './layout';
 import type { Block, Cell, Vol2Project } from './blocks';
 
@@ -168,6 +168,11 @@ function buildBlocks(slug: string, folder: string): Block[] {
   const written = COPY[slug]?.sections;
   const says = (at: number): SectionCopy | undefined => written?.[at] ?? undefined;
 
+  /* The chip a section actually shows: what `copy.ts` says for this one, or
+     a rename that applies everywhere, or the working label off the canvas. */
+  const label = (w: SectionCopy | undefined, chip: string) =>
+    w?.chip ?? CHIP_RENAMES[chip] ?? chip;
+
   /** the still for one slot, or nothing when the export does not have it */
   const fill = (c: LayoutCell): string | undefined =>
     c.w >= 800 ? wides.shift() : squares.shift();
@@ -195,7 +200,7 @@ function buildBlocks(slug: string, folder: string): Block[] {
   plan.blocks.forEach((b, at) => {
     if (b.kind === 'text') {
       const w = says(at);
-      blocks.push({ kind: 'text', chip: w?.chip ?? b.chip, text: w?.text ?? LOREM, bullets: w?.bullets });
+      blocks.push({ kind: 'text', chip: label(w, b.chip), text: w?.text ?? LOREM, bullets: w?.bullets });
       return;
     }
 
@@ -221,7 +226,7 @@ function buildBlocks(slug: string, folder: string): Block[] {
     const w = says(at);
     const bullets =
       w?.bullets ?? (b.bullets ? Array.from({ length: b.bullets }, () => LOREM_LINE) : undefined);
-    const chip = w?.chip ?? b.chip;
+    const chip = label(w, b.chip);
 
     /* A section that shows pictures the page shows again reads them by
        index rather than taking them off the queue — see `REPEATS`. */
