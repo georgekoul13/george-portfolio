@@ -320,7 +320,7 @@ export const LAYOUT: Record<string, ProjectLayout> = {
         ] },
     ],
   },
-  "typeface-a": {
+  "angular-typeface": {
     figma: '366:77551',
     blocks: [
       { kind: 'text', chip: "Brief" },
@@ -331,7 +331,7 @@ export const LAYOUT: Record<string, ProjectLayout> = {
       { kind: 'media', cell: { w: 1320, h: 640, k: 'anim' } },
     ],
   },
-  "typeface-b": {
+  "rounded-typeface": {
     figma: '366:104016',
     blocks: [
       { kind: 'text', chip: "Brief" },

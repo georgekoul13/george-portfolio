@@ -129,6 +129,43 @@ export interface ProjectCopy {
 }
 
 export const COPY: Record<string, ProjectCopy> = {
+  /* ── Angular Typeface — written 2026-09-17 ──────────────────────────
+     Personal work.
+
+     THE NAMES ON FILE ARE INVENTED. `content/projects/custom-typefaces.ts`
+     titles this pair "LOUKOUMI & SEISMOS" and tells a story about Loukoumi
+     being named for what a grandmother hands you. George: *"no they don't
+     have names, that was invented."* That file is live on vol1; vol2 reads
+     only from here.
+
+     Titled for what they are, at his request — Angular and Rounded — and
+     the slugs moved with them, from /typeface-a and /typeface-b.
+
+     What he was after: *"something aggressive and unstable."* */
+  'angular-typeface': {
+    subtitle: 'A display face built out of diagonal cuts. Personal work.',
+    meta: {
+      client: 'Personal project',
+      role: 'Visual Designer',
+      deliverables: '1 typeface',
+    },
+    sections: [
+      {
+        // Overview
+        text: 'I wanted something aggressive and unstable.',
+      },
+      {
+        /* One specimen sheet. No arrows — nothing to enumerate. */
+        chip: 'Letters',
+        text:
+          'Every letter is cut on the diagonal, so nothing sits level and no ' +
+          'two edges agree. Heavy enough to hold a poster on its own, and ' +
+          'uncomfortable at any size.',
+        bullets: [],
+      },
+    ],
+  },
+
   /* ── In Pixels We See — written 2026-09-17 ──────────────────────────
      Personal work. Five posters: Mona Lisa, Witches' Sabbath, Birth of
      Venus, Creation of Adam, Water Lilies.
