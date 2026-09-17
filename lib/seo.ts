@@ -34,6 +34,16 @@ export const PREFIX = process.env.NEXT_PUBLIC_VOL2_AS_ROOT === '1' ? '' : '/vol2
 
 export const canonical = (path = '') => `${SITE}${PREFIX}${path}`;
 
+/**
+ * The share card, for anything that has no better picture of its own.
+ *
+ * George drew it at exactly 1200x630 — the one size Facebook, LinkedIn,
+ * Slack, WhatsApp and X all accept — so it is used as-is. A project page
+ * overrides it with its own hero, which is always the stronger card: the
+ * work, rather than a portrait of whose work it is.
+ */
+export const OG = '/images/vol2/preview/Preview.png';
+
 /** who the site is about, reused by every page's title */
 export const AUTHOR = 'George Koulouris';
 const SUFFIX = `${AUTHOR} — Product & Visual Designer`;
@@ -59,7 +69,7 @@ export function page({
   image?: string;
 }): Metadata {
   const url = canonical(path);
-  const images = [{ url: image ?? '/og-image.jpg', width: 1200, height: 630, alt: title }];
+  const images = [{ url: image ?? OG, width: 1200, height: 630, alt: title }];
   return {
     title: `${title} · ${SUFFIX}`,
     description,
