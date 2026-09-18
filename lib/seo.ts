@@ -46,7 +46,26 @@ export const OG = '/images/vol2/preview/Preview.png';
 
 /** who the site is about, reused by every page's title */
 export const AUTHOR = 'George Koulouris';
-const SUFFIX = `${AUTHOR} — Product & Visual Designer`;
+
+/**
+ * The name, and only the name.
+ *
+ * It used to be `George Koulouris — Product & Visual Designer`, which is 43
+ * characters before the separator. Google truncates a result around 60, so
+ * twelve of the twenty-three pages had their brand cut off mid-word, and the
+ * home page read as a stutter:
+ *
+ *   Product & visual designer · George Koulouris — Product & Visual Designer
+ *
+ * Trimmed to the name, the longest title on the site is 44 characters and
+ * nothing truncates. The role is not lost — it is the `jobTitle` in the
+ * Person schema, the description on every page, and the h1 of the home page,
+ * all of which say it once rather than on every tab.
+ *
+ * This is the TITLE only. A shared link shows `og:title`, which is the
+ * page's own words with no suffix at all, over `og:site_name`.
+ */
+const SUFFIX = AUTHOR;
 
 /**
  * One page's metadata.

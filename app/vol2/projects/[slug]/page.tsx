@@ -12,6 +12,7 @@ import ProjectBlocks from '@/components/vol2/project/ProjectBlocks';
 import ProjectGate from '@/components/vol2/project/ProjectGate';
 import MoreProjects from '@/components/vol2/project/MoreProjects';
 import { chipsOf } from '@/components/vol2/project/blocks';
+import { OG_CARD } from '@/components/vol2/project/ogCards';
 import {
   getVol2Project,
   allVol2ProjectSlugs,
@@ -63,7 +64,11 @@ export async function generateMetadata({
     title: project.title,
     description: project.subtitle,
     path: `/projects/${params.slug}`,
-    image: SITE + project.hero,
+    /* The generated 1200x630 JPEG, not the hero itself. The hero is a 2640
+       x 1280 WebP, and pointing `og:image` at it declared a size no file
+       had while handing scrapers a format several of them — LinkedIn above
+       all — will not render. See `scripts/build-og-cards.py`. */
+    image: SITE + OG_CARD[params.slug],
   });
 }
 

@@ -39,6 +39,42 @@ if (asRoot && process.env.NEXT_PUBLIC_VOL2_AS_ROOT !== '1') {
   );
 }
 
+/**
+ * ── THE TEN URLS VOL 2 DOES NOT HAVE ──────────────────────────────────
+ * vol1 published twenty-six project pages; Vol 2 publishes nineteen, and
+ * the two lists are not a subset — ten old urls have no page under the new
+ * site. The moment `/projects/:slug` is rewritten onto Vol 2, every one of
+ * them answers 404.
+ *
+ * A 404 throws away whatever a url has earned — the links pointing at it,
+ * the time it has spent in the index — and hands Search Console an error
+ * per page. So each one goes to the category its work now lives in, 301, on
+ * George's call. A related page keeps the equity; sending them all to the
+ * home page instead is the pattern Google treats as a soft 404 and
+ * discards anyway.
+ *
+ * Only active with the flag, because until the swap these urls still serve
+ * their own vol1 pages perfectly well and there is nothing to redirect.
+ *
+ * Add to this list, never shorten it: a redirect is a promise to everything
+ * that ever linked to the old url, and those links do not expire.
+ */
+const RETIRED = [
+  /* product work */
+  ['/projects/wallbid',                 '/product'],
+  ['/projects/holy-projects',           '/product'],
+  ['/projects/insurance-product-flows', '/product'],
+  /* identity, type and print */
+  ['/projects/logo-designs',            '/graphic'],
+  ['/projects/custom-typefaces',        '/graphic'],
+  ['/projects/psychologist-branding',   '/graphic'],
+  ['/projects/maria-fitsopoulou',       '/graphic'],
+  /* illustration and the rest */
+  ['/projects/illustrations',           '/creative'],
+  ['/projects/creative-projects',       '/creative'],
+  ['/projects/athens-goes-mayan',       '/creative'],
+].map(([source, destination]) => ({ source, destination, permanent: true }));
+
 const nextConfig = {
   images: {
     /* Vol 2 serves its own pre-built WebP straight from `public/` and never
@@ -90,6 +126,7 @@ const nextConfig = {
     return [
       { source: '/vol2', destination: '/', permanent: true },
       { source: '/vol2/:path*', destination: '/:path*', permanent: true },
+      ...RETIRED,
     ];
   },
 };

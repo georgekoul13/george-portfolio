@@ -52,7 +52,11 @@ export const metadata: Metadata = {
   openGraph: {
     title:       'George Koulouris Portfolio',
     description: 'Product design, UX, UI, Creative Direction, Illustrations - Based in Greece',
-    url:         'https://georgekoulouris.com',
+    /* `SITE`, not the bare host typed out. The literal here said
+       `https://georgekoulouris.com`, which 307-redirects to the `www` one
+       every canonical on the site points at — so the share card and the
+       canonical named two different origins. */
+    url:         SITE,
     siteName:    'George Koulouris',
     images: [
       {

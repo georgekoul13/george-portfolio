@@ -1,3 +1,19 @@
+import type { Metadata } from 'next';
+
+/**
+ * A tuning harness for the projects band — real controls, no content, and
+ * the one page on the site that should never appear in a result.
+ *
+ * `noindex` rather than a `robots.txt` disallow. A disallow stops a crawler
+ * READING the page, which means it never sees a noindex and can still index
+ * the url from any link pointing at it, titleless. Letting it in and telling
+ * it no is the combination that actually keeps a page out.
+ */
+export const metadata: Metadata = {
+  title: 'Lab',
+  robots: { index: false, follow: false },
+};
+
 import Header from '@/components/vol2/Header';
 import GalleryLab from '@/components/vol2/lab/GalleryLab';
 
