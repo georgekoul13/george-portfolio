@@ -12,6 +12,8 @@ import {
 } from 'next/font/google';
 import './globals.css';
 import ClientProviders from '@/components/ClientProviders';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { OG, SITE } from '@/lib/seo';
 
 /**
@@ -96,6 +98,34 @@ export default function RootLayout({
     ].join(' ')}>
       <body className="font-sans antialiased">
         <ClientProviders>{children}</ClientProviders>
+
+        {/* ── WHO CAME, AND FROM WHERE ─────────────────────────────────
+            George: *"i want analytics, so we can know how many people
+            visited the website, what the did, for how long."*
+
+            Vercel's own, which is the whole reason it is these two and not
+            Google: it sets NO COOKIES, so the site needs no consent banner.
+            He is in Greece; GA4 would mean a modal in front of the loading
+            curtain and 45KB of script against the 87KB the whole site
+            currently ships, to measure a few hundred visits.
+
+            Free on Hobby to 50,000 events a month, which this will not
+            approach. What it answers: how many people, where they came
+            from (LinkedIn, search, direct), which projects they opened,
+            on what. What it does NOT answer, and he should not read into
+            it: session duration — Hobby does not report it, and on this
+            site it would lie anyway, because the curtain holds the page up
+            to 3.5s before anything is readable and `PanelStack` makes
+            scroll distance mean nothing about how far anyone read.
+
+            `SpeedInsights` is the Core Web Vitals half, measured from real
+            visitors rather than from a laptop on a fast connection — the
+            only honest read on whether the curtain is costing him.
+
+            Both must ALSO be switched on in the Vercel dashboard; the
+            component alone collects nothing. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
