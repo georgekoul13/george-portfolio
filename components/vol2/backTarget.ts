@@ -24,7 +24,14 @@
  * fallback below is used instead, and only then.
  */
 
-export const LISTINGS = ['/vol2', '/vol2/product', '/vol2/graphic', '/vol2/creative'];
+import { PREFIX } from './surface';
+
+/* Built from `PREFIX`, not written out: these are `/`, `/product`, `/graphic`
+   and `/creative` once Vol 2 is the site, and a hard-coded list would have
+   gone stale at the swap along with everything else — see `surface.ts`. */
+export const LISTINGS = ['', '/product', '/graphic', '/creative'].map(
+  (p) => `${PREFIX}${p}` || '/',
+);
 
 const CURRENT = 'vol2:listing';
 const PREVIOUS = 'vol2:listing-prev';

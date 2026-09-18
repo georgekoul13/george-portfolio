@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Avatar from '@/components/vol2/Avatar';
 import Ticker from '@/components/vol2/Ticker';
 import { BACK_TILE, BACK_STYLE, BackGlyph } from '@/components/vol2/MenuBar';
+import { VOL2_HOME } from '../surface';
 
 /**
  * The 404 — Figma 398:17326.
@@ -123,7 +124,7 @@ export default function NotFoundContent({ svg: given }: { svg?: string }) {
             their dark panels. The tone flip gives this one element the dark
             mapping back, so it is the same tile, not a lookalike. */}
         <span data-tone="dark">
-          <Link href="/vol2" className={BACK_TILE} style={BACK_STYLE} aria-label="Back to home">
+          <Link href={VOL2_HOME} className={BACK_TILE} style={BACK_STYLE} aria-label="Back to home">
             <BackGlyph />
           </Link>
         </span>

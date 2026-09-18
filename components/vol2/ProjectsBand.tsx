@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import { getHoldProgress } from './holdProgress';
+import { vol2Href } from './surface';
 
 import './scrollDefaults';
 import ProjectCards from './category/ProjectCards';
@@ -880,7 +881,7 @@ export default function PerspectiveGallery({
           {CARDS.map((c, i) => (
             <Link
               key={c.slug}
-              href={`/vol2/projects/${c.slug}`}
+              href={vol2Href(`/projects/${c.slug}`)}
               data-pcard
               aria-label={c.title}
               onMouseEnter={() => setActive(i)}

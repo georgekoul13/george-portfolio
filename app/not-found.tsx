@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Vol2NotFound from '@/components/vol2/notfound/NotFoundContent';
+import { inVol2 } from '@/components/vol2/surface';
 
 export default function NotFound() {
   const pathname = usePathname();
@@ -21,9 +22,10 @@ export default function NotFound() {
      for `notFound()` thrown from a dynamic segment, so the branch lives here
      instead. Placed below the hooks, not above them: an early return before
      `useState`/`useEffect` would change the hook order between the two 404s.
-     It only changes what `/vol2/*` renders; the live site's 404 is untouched,
-     and this check goes when vol2 takes over the real routes. */
-  if (pathname?.startsWith('/vol2')) return <Vol2NotFound />;
+     Once Vol 2 IS the site this is every 404, which is why the test is
+     `inVol2` and not a written-out prefix — see `surface.ts` for what that
+     cost the first time. */
+  if (inVol2(pathname)) return <Vol2NotFound />;
 
   const handleRefresh = () => window.location.reload();
 

@@ -12,6 +12,7 @@ import { HERO_BY_SLUG } from './project/vol2Projects';
 import Picture from './project/Picture';
 
 import './scrollDefaults';
+import { vol2Href } from './surface';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -287,7 +288,7 @@ export default function CategoryStrip() {
       /* Prefixed, like the menu's links: a bare `/product` is the LIVE
          page, and following one from the vol2 build drops you out of it
          without it being obvious why. */
-      href={`/vol2${c.href}`}
+      href={vol2Href(c.href)}
       aria-hidden={copy || undefined}
       tabIndex={copy ? -1 : undefined}
       aria-label={`${c.name} projects`}

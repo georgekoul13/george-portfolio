@@ -5,6 +5,7 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onEnterView } from '../project/enterView';
+import { vol2Href } from '../surface';
 import { revealTiming } from '../project/revealTiming';
 import { useGSAP } from '@gsap/react';
 import type { CardProject } from './categories';
@@ -63,7 +64,7 @@ export function Card({ project, large }: { project: CardProject; large: boolean 
   return (
     <Link
       data-card
-      href={`/vol2/projects/${project.slug}`}
+      href={vol2Href(`/projects/${project.slug}`)}
       className="group flex min-w-0 flex-col items-start"
       style={{ gap: large ? 'var(--card-gap-large)' : 'var(--card-gap)' }}
     >

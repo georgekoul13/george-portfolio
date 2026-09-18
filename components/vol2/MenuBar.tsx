@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasHistory, returnTo } from './backTarget';
+import { inVol2, PREFIX, VOL2_HOME } from './surface';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -213,16 +214,17 @@ export default function MenuBar() {
   const router = useRouter();
   const [back, setBack] = useState<{ href: string | null } | null>(null);
   useEffect(() => {
-    if (!pathname.startsWith('/vol2') || pathname === '/vol2') return setBack(null);
+    if (!inVol2(pathname) || pathname === VOL2_HOME) return setBack(null);
     /* `href: null` means "step back"; a string means "there is no history of
        ours, go here instead". */
-    setBack(hasHistory() ? { href: null } : { href: returnTo(pathname) ?? '/vol2' });
+    setBack(hasHistory() ? { href: null } : { href: returnTo(pathname) ?? VOL2_HOME });
   }, [pathname]);
 
-  /* Vol2 is a parallel surface, so every link has to stay inside it — a
-     bare `/product` is the LIVE page, and following it mid-test drops you
-     out of the build without it being obvious why. */
-  const base = pathname.startsWith('/vol2') ? '/vol2' : '';
+  /* While Vol 2 is a parallel surface every link has to stay inside it — a
+     bare `/product` is the LIVE page, and following it mid-test drops you out
+     of the build without it being obvious why. Once Vol 2 IS the site the
+     prefix is empty and the same expression gives the real urls. */
+  const base = PREFIX;
   const items = NAV.map((n) => {
     const href = `${base}${n.href}` || '/';
     return { ...n, href, active: pathname === href || (!n.href && pathname === base) };
