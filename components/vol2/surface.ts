@@ -46,3 +46,35 @@ export const inVol2 = (pathname: string | null | undefined): boolean =>
 
 /** an internal link, with the prefix the deployment actually uses */
 export const vol2Href = (path: string): string => `${PREFIX}${path}` || '/';
+
+/**
+ * The path as the BROWSER sees it, whatever the server was asked for.
+ *
+ * ── the second half of the same bug ───────────────────────────────────
+ * Under a `beforeFiles` rewrite the two disagree. Rendering `/product`, the
+ * server's `usePathname()` says `/vol2/product` — the route it actually
+ * resolved — while the browser's says `/product`, because the url never
+ * changed. Anything that RENDERS from that value therefore produces
+ * different markup on each side, and React tears the tree down:
+ *
+ *   #418  hydration failed, the initial UI does not match
+ *   #425  text content does not match
+ *   #423  ...so the entire root switches to client rendering
+ *
+ * That last one is the expensive one. It throws away every byte of the
+ * prerendered html and rebuilds it in the browser, which is most of what
+ * static generation was for.
+ *
+ * `MenuBar` was the one doing it: `active: pathname === href` was false on
+ * the server and true in the browser, so the nav's current item — and the
+ * page name on the closed tile, which is read from it — differed.
+ *
+ * Normalising at the point of use makes both sides agree on the browser's
+ * answer, which is the one that is true by the time anybody can see it.
+ */
+export const normalisePath = (pathname: string | null | undefined): string => {
+  const p = pathname || '/';
+  if (PREFIX !== '') return p;
+  if (p === '/vol2') return '/';
+  return p.startsWith('/vol2/') ? p.slice('/vol2'.length) : p;
+};

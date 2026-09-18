@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasHistory, returnTo } from './backTarget';
-import { inVol2, PREFIX, VOL2_HOME } from './surface';
+import { inVol2, normalisePath, PREFIX, VOL2_HOME } from './surface';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -137,7 +137,10 @@ const BAR: React.CSSProperties = {
 };
 
 export default function MenuBar() {
-  const pathname = usePathname() ?? '';
+  /* Normalised: under the swap's rewrite the server and the browser
+     disagree about what `usePathname()` is, and this component RENDERS from
+     it — which tore the whole tree down at hydration. See `surface.ts`. */
+  const pathname = normalisePath(usePathname());
   const root = useRef<HTMLDivElement>(null);
   const rail = useRef<HTMLDivElement>(null);
   const menuTile = useRef<HTMLDivElement>(null);
