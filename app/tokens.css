@@ -412,6 +412,25 @@
    ALL THE WAY" runs 402px at its drawn 20px, wider than a 375 phone, and it
    cannot wrap because it turns on a drum. It sets smaller instead. */
 :root { --copyright-size: 20px; }
+
+/* ── How much room the closing band gets ─────────────────────────────────
+   The band is the stage `CursorTrail` listens on, so its height IS the area
+   you can sweep a cursor through — George: *"the hoverable area of the
+   cursor trail in the footer got a bit smaller, so let's make it a bit
+   bigger."*
+
+   It had, by a little: this was `60vh` until it went behind a token and
+   became `60svh`. On a phone `svh` excludes the browser toolbar, so the band
+   lost real height; on a desktop the two are the same and it was simply
+   always tight.
+
+   `svh` stays — a band that grows when the mobile url bar hides is a band
+   that shifts the page under a reader's thumb. The number goes up instead,
+   and further where there is a cursor to sweep at all. A touch screen has
+   no trail to catch: it gets a burst under the tap, which needs somewhere to
+   land but not half a screen more of it. */
+:root { --copyright-band: 68svh; }
+@media (hover: hover) and (pointer: fine) { :root { --copyright-band: 84svh; } }
 /* ── The titled bands ────────────────────────────────────────────────────
    Two sections open the same way — the home page's "Learn more" and a
    category's "All projects" — so they share their rhythm rather than each

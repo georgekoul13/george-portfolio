@@ -15,6 +15,10 @@ import RollingText from './RollingText';
  * The band is given real height because both of those need somewhere to
  * happen: at Figma's 84px it would be a strip too thin to sweep a cursor
  * across, and the drum's own travel wouldn't fit.
+ *
+ * That height IS the hoverable area — the trail's listeners sit on this
+ * section — so it lives in `--copyright-band`, which is taller where there
+ * is a pointer to sweep. See the token for why it is `svh` and not `vh`.
  */
 
 /**
@@ -41,7 +45,7 @@ export default function CopyrightSection() {
     <section
       ref={root}
       className="relative flex w-full flex-col items-center justify-center px-[var(--gutter)] py-8"
-      style={{ minHeight: '60svh' }}
+      style={{ minHeight: 'var(--copyright-band)' }}
     >
       <RollingText
         lines={LINES}
