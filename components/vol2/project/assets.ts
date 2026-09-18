@@ -477,6 +477,11 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "h": 800
       },
       {
+        "src": "/images/vol2/projects/Deerislnd/image%206.webp?v=de2d3b17",
+        "w": 800,
+        "h": 800
+      },
+      {
         "src": "/images/vol2/projects/Deerislnd/image%207.webp?v=754a5c01",
         "w": 800,
         "h": 800
