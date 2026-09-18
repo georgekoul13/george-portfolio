@@ -10,6 +10,15 @@ export default function NotFound() {
   const [cardHovered,    setCardHovered]    = useState(false);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
 
+  /* A 404 cannot export `metadata` from a client component, so it inherits
+     the layout's site-wide fallback and would be titled as though it were
+     the home page. Set after mount rather than during render: a title is
+     not markup, so there is nothing for React to hydrate and nothing to
+     mismatch. */
+  useEffect(() => {
+    document.title = 'Page not found · George Koulouris';
+  }, []);
+
   useEffect(() => {
     const update = () => setIsMobileLayout(window.innerWidth < 744);
     update();
