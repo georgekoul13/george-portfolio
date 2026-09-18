@@ -83,8 +83,16 @@ export default function ProjectBase({
       {/* The title and the line under it rise in after the picture has
           uncovered — the same arrival the rest of the page uses, so the
           opening screen speaks the template's language rather than simply
-          being there. See `Rise`. */}
-      <Rise className="flex w-full flex-col px-[var(--gutter)]" style={{ gap: 'var(--project-title-gap)' }}>
+          being there. See `Rise`.
+
+          `on="load"`, not on a scroll line: this panel is pinned, so the
+          masthead never travels far enough to trip one. The measurements
+          are in `Rise`. */}
+      <Rise
+        on="load"
+        className="flex w-full flex-col px-[var(--gutter)]"
+        style={{ gap: 'var(--project-title-gap)' }}
+      >
         <h1
           className="uppercase"
           style={{
@@ -110,6 +118,9 @@ export default function ProjectBase({
           two that remain from a quarter each to a third; it does not move
           the half-way line, which is the part the eye reads. */}
       <Rise
+        on="load"
+        /* a beat behind the title, so the masthead reads top-down */
+        delay={0.16}
         className="grid w-full grid-cols-1 px-[var(--gutter)] sm:grid-cols-2 lg:flex"
         style={{ gap: 'var(--project-meta-gap)' }}
       >

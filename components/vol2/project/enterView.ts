@@ -35,6 +35,34 @@ export function onEnterView(
   /** where the top of the element should be, as a fraction of the viewport */
   at: number,
 ): () => void {
+  /* ── ALREADY ON SCREEN COUNTS AS ARRIVED ──────────────────────────────
+     George, on the project pages: *"the details under the title are not all
+     visible unless you scroll to the next section and scroll back up."*
+
+     The trigger line is 88% of the way down the viewport on a laptop, and
+     the opening screen has content BELOW it: the picture, the title, and
+     then the Client / Role / Deliverables row sitting in the last eighth.
+     The title fires because its top clears the line; the row underneath is
+     parked at `autoAlpha: 0`, in full view, with nothing coming to release
+     it. A reader who scrolls on finds it revealed on the way past, which is
+     why it is there when they come back up.
+
+     So a line the reader has to scroll TOWARDS is the wrong question to ask
+     about something they are already looking at. Anything with any part of
+     itself in the viewport when the reveal is armed plays at once — the
+     entrance still runs, it simply does not wait. Everything below the fold
+     is unchanged and still waits for its own top.
+
+     This is armed once per element, at mount, so the test is a one-off read
+     of the opening screen rather than a rule that weakens the reveal.
+
+     The same trap took `clamp()` off the old ScrollTrigger start for the
+     same reason: on-screen content, parked, with no scroll to free it. */
+  if (el.getBoundingClientRect().top < window.innerHeight) {
+    run();
+    return () => {};
+  }
+
   const bottom = Math.round((1 - at) * 100);
   const io = new IntersectionObserver(
     (entries) => {

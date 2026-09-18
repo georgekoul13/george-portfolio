@@ -44,11 +44,49 @@ export default function Rise({
   style,
   /** wrapper tag — a `section` where this is the block's own outer element */
   as: Tag = 'div',
+  on = 'view',
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   as?: 'div' | 'section';
+  /**
+   * WHEN the group arrives.
+   *
+   * `view` is the page's rule: each child waits for its own top to reach the
+   * reveal line. `load` plays the moment the curtain lifts, and exists for
+   * content that is part of the OPENING rather than part of the scroll.
+   *
+   * ── why a scroll line cannot serve the opening panel ──────────────────
+   * George: *"in all the project pages the details under the title are not
+   * all visible unless you scroll to the next section and scroll back up."*
+   *
+   * A reveal line assumes the element will travel towards it. Inside
+   * `PanelStack` the opening panel is PINNED, and all it ever travels is its
+   * own overflow — so the assumption fails at both ends of the range.
+   * Measured on Cybersential, with the Client / Role / Deliverables row:
+   *
+   *   1512 x 945   panel 1155, overflow 210. The row's top runs 1012 -> 802
+   *                against a line at 832. It crosses with 30px to spare, in
+   *                the last frames before the panel starts receding.
+   *   411 x 760    panel 693, overflow 0. NOTHING in the panel ever moves.
+   *                Deliverables sits at 609 against a line at 547 and stays
+   *                there — the reveal has no way to fire at all.
+   *
+   * What finally plays it, on both, is the panel RECEDING: the scale to 0.7
+   * pulls everything towards the middle of the screen, which drags the row
+   * up over the line while it is fading out. It is revealed behind the
+   * arriving panel, and is simply there when the reader comes back up.
+   *
+   * So the masthead is not waiting for a reader; it is waiting for a
+   * geometry that a pinned panel never provides. It belongs to the page
+   * opening, and plays there — which is what `ProjectBase` always said it
+   * was doing.
+   */
+  on?: 'view' | 'load';
+  /** seconds before a `load` group starts, so a masthead reads top-down */
+  delay?: number;
 }) {
   const root = useRef<HTMLDivElement>(null);
   /* nothing is built while the curtain is up — see `ProjectGate` */
@@ -67,6 +105,24 @@ export default function Rise({
       gsap.set(kids, { autoAlpha: 0, y: 40 });
       if (!ready) return;
 
+      const play = (kid: Element, i: number, lead: number) =>
+        void gsap.to(kid, {
+          autoAlpha: 1,
+          /* 40px of travel — 24 was too little to register at all. The
+             TIMING is `revealTiming`'s, because the number that works
+             on a laptop is wrong on a phone: see there. */
+          y: 0,
+          duration: T.duration,
+          delay: lead + i * T.stagger,
+          ease: 'power3.out',
+        });
+
+      /* The opening panel's own content — see `on` above. */
+      if (on === 'load') {
+        kids.forEach((kid, i) => play(kid, i, delay));
+        return;
+      }
+
       /* ── EACH CHILD IS TRIGGERED BY ITSELF ───────────────────────────
          One trigger on the wrapper with a stagger was wrong, and George
          caught it: *"as i scroll i see them there — i assume that the
@@ -83,27 +139,13 @@ export default function Rise({
       const stop: (() => void)[] = [];
       kids.forEach((kid, i) => {
         stop.push(
-          onEnterView(
-            kid,
-            () =>
-              void gsap.to(kid, {
-                autoAlpha: 1,
-                /* 40px of travel — 24 was too little to register at all. The
-                   TIMING is `revealTiming`'s, because the number that works
-                   on a laptop is wrong on a phone: see there. */
-                y: 0,
-                duration: T.duration,
-                delay: i * T.stagger,
-                ease: 'power3.out',
-              }),
-            T.at,
-          ),
+          onEnterView(kid, () => play(kid, i, 0), T.at),
         );
       });
 
       return () => stop.forEach((fn) => fn());
     },
-    { scope: root, dependencies: [ready], revertOnUpdate: true },
+    { scope: root, dependencies: [ready, on, delay], revertOnUpdate: true },
   );
 
   return (
