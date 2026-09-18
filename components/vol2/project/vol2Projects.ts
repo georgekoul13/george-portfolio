@@ -138,9 +138,23 @@ const NOT_EXPORTED: Record<string, { at: number; chip: string | null }[]> = {};
  * arrived at, so it holds the two it arrived at. They are read by index
  * instead of taken off the queue, which leaves `The Directions` its seven.
  */
-const REPEATS: Record<string, Record<string, number[]>> = {
-  deerislnd: { 'The Design proccess': [0, 1] },
-};
+/*
+ * EMPTY, and worth keeping rather than deleting.
+ *
+ * Deerislnd used to be the one entry: nine picture slots, seven exported
+ * posters, so the design-process pair was read BY INDEX and the directions
+ * below it consumed the queue from the start — which meant the first two
+ * posters appeared twice on the page and nothing after the seventh could
+ * ever be reached.
+ *
+ * George re-exported with the two missing posters (2026-09-18), so the
+ * count matches the design and every section can just take the next file.
+ * The mechanism stays because the situation recurs: a slot whose picture is
+ * also used elsewhere is indistinguishable, from here, from a slot with its
+ * own picture. It is a fact about the EXPORT, not about the design, and it
+ * cannot be worked out from the files.
+ */
+const REPEATS: Record<string, Record<string, number[]>> = {};
 
 /** a square export is a 400 cell; anything wider than it is tall is an 840 */
 const isSquare = (s: Shot) => s.w > 0 && s.w === s.h;

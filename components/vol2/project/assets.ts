@@ -485,6 +485,16 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "src": "/images/vol2/projects/Deerislnd/image%207.webp?v=754a5c01",
         "w": 800,
         "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/Deerislnd/image%208.webp?v=e599200d",
+        "w": 800,
+        "h": 800
+      },
+      {
+        "src": "/images/vol2/projects/Deerislnd/image%209.webp?v=839d1f0a",
+        "w": 800,
+        "h": 800
       }
     ],
     "highlights": [],
@@ -494,8 +504,8 @@ export const ASSETS: Record<string, ProjectAssets> = {
         "webm": "/images/vol2/projects/Deerislnd/highlight%201.webm?v=c2f63339"
       },
       {
-        "mp4": "/images/vol2/projects/Deerislnd/highlight%202.mp4?v=c2d78b41",
-        "webm": "/images/vol2/projects/Deerislnd/highlight%202.webm?v=df68a593"
+        "mp4": "/images/vol2/projects/Deerislnd/highlight%202.mp4?v=62558f8d",
+        "webm": "/images/vol2/projects/Deerislnd/highlight%202.webm?v=1c723051"
       }
     ]
   },
