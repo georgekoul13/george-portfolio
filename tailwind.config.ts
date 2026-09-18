@@ -8,6 +8,25 @@ const config: Config = {
     './context/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    /* ─── Breakpoints ────────────────────────────────────────────
+       NOT `extend` — a full replacement, so Tailwind's defaults
+       (640/768/1024/1280) are gone rather than sitting alongside these.
+
+       These are the same four widths `app/tokens.css` switches on. They
+       used to be two unrelated ladders: the tokens moved at 480/600/900/
+       1200 while `sm:`/`md:`/`lg:`/`xl:` still meant Tailwind's defaults,
+       and the two only ever agreed at 640. That produced a burger menu
+       beside a two-column desktop form between 900 and 1024, and a stacked
+       ProjectMeta under a desktop nav between 1024 and 1280.
+
+       Nothing outside `components/vol2` uses a responsive prefix, so this
+       cannot move the v1 site. */
+    screens: {
+      sm: '481px',   // small phone → phone
+      md: '600px',   // phone → large phone (gutter 20 → 32)
+      lg: '900px',   // the main one: mobile → desktop (gutter → 44)
+      xl: '1200px',  // desktop → wide (gutter → 60)
+    },
     extend: {
       /* ─── Colors ─────────────────────────────────────────────── */
       colors: {

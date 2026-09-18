@@ -1,0 +1,188 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import LoaderPanel, { EXIT_MS } from './LoaderPanel';
+import gsap from 'gsap';
+
+/**
+ * Loading screen — Figma 129:27406.
+ *
+ * A cream panel with LOADING… turning on a drum in the middle. The panel
+ * lifts off the top of the screen, uncovering the site beneath it.
+ *
+ * It is already moving from the first frame rather than arriving at the end:
+ * the panel creeps for as long as the page is loading, then is hauled clear
+ * once everything is ready, so the exit always begins from something already
+ * in motion.
+ *
+ * IT USED TO GO SIDEWAYS, and was drawn that way in Figma — the second frame
+ * shows 137px of the page uncovered from the left. George changed it to a
+ * lift on 2026-08-21. A character rode the boundary through both earlier
+ * versions, a walking dino and then a ghost; both are gone and the panel now
+ * leaves under its own steam.
+ *
+ * The creep is smaller than the sideways version's 170px because the travel
+ * is now across the short axis of the screen: the same 12% of it.
+ *
+ * Everything here is CSS, which is what makes the pause below safe — anything
+ * added later must not be a GSAP tween, because the global timeline is
+ * stopped for as long as the panel is up.
+ */
+
+/** at least this long on screen, so the panel is read rather than flashed */
+const MIN_SHOW = 1200;
+/** …and a ceiling, so a stalled font or image can never strand anyone here */
+const MAX_WAIT = 4000;
+
+/* the panel's own numbers live with the panel — see `LoaderPanel` */
+
+
+/**
+ * Latched once and never cleared. It has to survive the release, because
+ * dismissing the panel is a state change and React re-renders on the way out
+ * — a flag that reset would re-pause the global timeline on that final
+ * render, with nothing left to ever start it again.
+ */
+let holdApplied = false;
+function holdEverything() {
+  if (holdApplied || typeof window === 'undefined') return;
+  holdApplied = true;
+  /* Everything else on the page animates on mount — the hero's letters most
+     of all — and would otherwise play its whole entrance behind the panel,
+     leaving only the tail of it by the time the panel left. Rather than teach
+     every section to wait, GSAP's global timeline is stopped while the panel
+     is up.
+
+     Paused during render, not in an effect: effects run child-first, so by
+     the time this component's effect ran the hero's timeline — built in a
+     layout effect — would already be going. Render precedes all of them. */
+  gsap.globalTimeline.pause();
+}
+
+/**
+ * Whether the curtain has already been through a full cycle in this
+ * document. Module scope on purpose: it has to outlive the component, since
+ * every vol2 page renders its own `<Loader />` and a client-side navigation
+ * mounts a fresh one.
+ *
+ * George: *"something is wrong with the menu when you go to a category and
+ * come back to home."* This was it, and the menu was only the visible half.
+ * The curtain was replaying on EVERY soft navigation — pausing the global
+ * timeline again, holding the page blank for the best part of six seconds,
+ * and leaving the menu stranded mid-morph while it did. It is a page-LOAD
+ * curtain: it covers fonts landing and the window loading, neither of which
+ * happens twice. So it plays once and then stands down.
+ *
+ * Set on RELEASE rather than on mount, so StrictMode's double mount — which
+ * unmounts and remounts before anything has finished — still shows it.
+ */
+let played = false;
+
+export default function Loader() {
+  /* Read once, so the value cannot change under the component mid-life. */
+  const skip = useRef(played).current;
+  if (!skip) holdEverything();
+
+  const [leaving, setLeaving] = useState(false);
+  const [creeping, setCreeping] = useState(false);
+  const [gone, setGone] = useState(false);
+
+  useEffect(() => {
+    if (skip) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // scroll is locked while the panel is up, so nothing can be moved past
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+
+    /* `overflow: hidden` on the body is not a scroll lock on a phone.
+       George: *"when the loading happens the background page should not be
+       scrollable."* It was: a finger dragged across the loader still
+       scrolled the document underneath it, so the panels behind had already
+       moved by the time the panel lifted.
+
+       Cancelling the gestures themselves is the only thing that holds on
+       every browser, and it is the one lock that changes no layout at all —
+       which matters here, because a body that becomes a scroll container
+       stops being the containing block the pinned panels are measured
+       against (see the reduced-motion note below for what that costs).
+       `passive: false` or the browser is entitled to ignore the
+       `preventDefault`. */
+    const swallow = (e: Event) => e.preventDefault();
+    const lockGestures = () => {
+      window.addEventListener('wheel', swallow, { passive: false });
+      window.addEventListener('touchmove', swallow, { passive: false });
+    };
+    const freeGestures = () => {
+      window.removeEventListener('wheel', swallow);
+      window.removeEventListener('touchmove', swallow);
+    };
+    lockGestures();
+
+    const release = () => {
+      played = true;
+      freeGestures();
+      document.body.style.overflow = overflow;
+      gsap.globalTimeline.resume();
+      setGone(true);
+    };
+
+    if (reduce) {
+      const t = setTimeout(release, 300);
+      /* The unlock has to happen here too. React runs an effect's cleanup
+         before it re-runs the effect, and under StrictMode it always
+         re-runs — so a cleanup that only clears the timer leaves
+         `overflow: hidden` in place, and the SECOND run then captures
+         "hidden" as the value to restore. The lock becomes permanent.
+         
+         That is not a loading bug, it is a layout one: a body with
+         `overflow: hidden` is a scroll container, which makes it the sticky
+         containing block for everything inside it — so every panel in the
+         stack silently stops sticking and the whole page scrolls flat. It
+         only ever bit on the reduced-motion path, which is exactly the path
+         that gets the least looking at. */
+      return () => {
+        clearTimeout(t);
+        freeGestures();
+        document.body.style.overflow = overflow;
+      };
+    }
+
+    // one frame at rest first, so the creep is a transition and not a paint
+    const kick = requestAnimationFrame(() => setCreeping(true));
+
+    /* Ready means the fonts have landed and the window has loaded — the two
+       things that would otherwise reflow or pop in behind the panel. The
+       floor and the ceiling bracket it either side. */
+    const ready = Promise.all([
+      document.fonts.ready,
+      new Promise<void>((res) => {
+        if (document.readyState === 'complete') return res();
+        window.addEventListener('load', () => res(), { once: true });
+      }),
+      new Promise<void>((res) => setTimeout(res, MIN_SHOW)),
+    ]);
+
+    let done = false;
+    const go = () => {
+      if (done) return;
+      done = true;
+      setLeaving(true);
+      setTimeout(release, EXIT_MS);
+    };
+
+    ready.then(go);
+    const cap = setTimeout(go, MAX_WAIT);
+
+    return () => {
+      cancelAnimationFrame(kick);
+      clearTimeout(cap);
+      freeGestures();
+      document.body.style.overflow = overflow;
+    };
+  }, [skip]);
+
+  if (skip || gone) return null;
+
+  return <LoaderPanel leaving={leaving} creeping={creeping} />;
+}

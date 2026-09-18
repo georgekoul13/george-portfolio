@@ -4,12 +4,18 @@ const istorima: ProjectContent = {
   slug:       'istorima',
   title:      'ISTORIMA',
   resolution: '1440 × 900',
+  /* Corrected 2026-08-21: this claimed "the full product and visual
+     identity", which overstates it. Istorima was a team project at Holy and
+     George worked across it rather than owning it. The archive's own
+     published figures — stories, researchers, locations — are deliberately
+     not quoted: they are today's numbers, years after the work, and they are
+     the archive's to claim rather than his. */
   description:
-    'Istorima — from the Greek ιστορία, meaning story — is a platform that collects, archives, and publishes personal stories from communities across Greece. I designed the full product and visual identity, creating a system that treats every contribution as a piece of living cultural record.',
+    'Istorima Archive is Greece\'s archive of oral history — thousands of recorded personal accounts, browsable by theme, by decade and by place, gathered by researchers all over the country. I worked on it as part of the design team at Holy, across both sides of the product: the public archive people search and listen to, and the platform the researchers use to upload and catalogue what they have recorded.',
   metadata: {
-    role: 'Lead Product Designer & Brand Designer — product design, visual identity, and editorial design system.',
-    categories: ['PRODUCT DESIGN', 'BRAND DESIGN'],
-    employer: 'MEDIA & CULTURE',
+    role: 'UX Designer at Holy — part of the design team, across the public archive and the researchers\' upload platform.',
+    categories: ['PRODUCT DESIGN', 'UX DESIGN'],
+    employer: 'HØLY™',
   },
   sections: [
     { type: 'divider' },

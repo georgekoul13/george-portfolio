@@ -1,0 +1,127 @@
+/* Contact page tokens — retired 2026-09-08, with `ContactForm` and the
+   `/vol2/contact` route. Kept whole rather than trimmed: the form is
+   unusable without them, and several are derived from each other.
+
+   To restore, put the route and the form back (see ../../README.md) and
+   append this file's contents to `app/tokens.css`. */
+
+/* ── Contact ─────────────────────────────────────────────────────────────
+   Figma 147:11421. The headline is drawn at 205.288/205.288 — not a round
+   number because it is not a chosen size: it is whatever makes "LET'S GET
+   IN" span the 1320 container at 1440. So it is not pinned at all: the size
+   is DERIVED from the measure, and the line fills it at every width.
+
+   "LET'S GET IN" is 1319 wide at 205.344, so it runs 6.423 font-sizes long.
+   Dividing the container by that constant makes it fill exactly — 1320/6.423
+   = 205.5 at desktop, 350/6.423 = 54.5 on a 390 phone.
+
+   In `cqw`, not `vw`: the band is a query container, so 100cqw is its
+   content box — already inside the gutter, and blind to the scrollbar. `vw`
+   counts both, and at 15vw the line came out 376 wide in a 350 container and
+   bled off the left edge.
+
+   `--contact-lead` is Figma's 65.692 gap, used both between the two lines
+   and between the video and TOUCH, so the block reads as one grid.
+
+   Below 900 the second line stops being a row: TOUCH beside a flex-1 video
+   would leave the video about 118px wide on a 375 screen, which is too small
+   to show anything happening in it. It stacks and goes full width instead,
+   and the form's two columns become one. */
+:root {
+  /* The title band, read off Figma 147:13474 (1440 x 897.69):
+     124 down to the back link, 88 to the headline, 88 to the intro, 80
+     under it. They were one token before, which made the last two 124. */
+  --contact-top: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
+  --contact-bottom: clamp(32px, calc(15.1px + 4.507vw), 80px);
+  --contact-back-gap: clamp(40px, calc(23.1px + 4.507vw), 88px);
+  --contact-intro-gap: clamp(56px, calc(44.73px + 3.005vw), 88px);
+  /* how many font-sizes long the longest line is — see above */
+  --contact-fit: 6.423;
+  --contact-rect-flex: 1 1 0%;
+  /* the display size, named once so the gap and the video can be derived
+     from the TYPE rather than from the viewport */
+  --contact-display: calc(100cqw / var(--contact-fit));
+  /* Figma's 65.692 gap is 0.32 of the 205.288 type, not a viewport figure */
+  --contact-lead: calc(var(--contact-display) * 0.32);
+  /* desktop: the video is a flex item stretched to the row, so its height is
+     the cap band of TOUCH — never a number of its own. Only the stacked
+     phone layout needs one. */
+  --contact-rect-h: auto;
+  /* DETAILS and the intro paragraph are the same size at desktop and
+     different on a phone (32 vs 24), so they are two tokens. DETAILS is a
+     single line and cap-trims in `em`; the intro keeps its leading and
+     needs the multi-line trim below. */
+  --contact-details-size: clamp(32px, calc(26.37px + 1.502vw), 48px);
+  --contact-heading: clamp(24px, calc(15.55px + 2.254vw), 48px);
+  --contact-heading-lh: clamp(32px, calc(23.55px + 2.254vw), 56px);
+  /* the cap trim for a MULTI-line block, which the em version in
+     ContactForm can't express because it depends on the leading as well as
+     the size. Derived from the same measured Montserrat metrics:
+       top    = L/2 - 0.3415F      bottom = L/2 - 0.3585F
+     Written against the tokens, so it stays right at every breakpoint. */
+  --contact-heading-trim-t: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3415);
+  --contact-heading-trim-b: calc(var(--contact-heading-lh) / 2 - var(--contact-heading) * 0.3585);
+  /* Two row tokens, not one. The HEADLINE can be a row as soon as there is
+     room for the video beside the word (600); the FORM needs DETAILS in a
+     column beside a two-up grid and only earns that at 900. */
+  --contact-head-row: row;
+  --contact-form-row: row;
+  --contact-cols: 1fr 1fr;
+  --contact-fields-indent: 150px;
+  /* Figma 147:12901: pt-80 / pb-124 on the band, gap-80 down to the button,
+     gap-40 from DETAILS to the fields, gap-48 between field rows. All four
+     were hard-coded in the component; they are tokens so the phone can have
+     smaller ones. */
+  /* The field's value type — Figma 203:5577 sets 20/24. The row height and
+     the textarea's cap trim are both derived from it, so a breakpoint only
+     has to change this one number. */
+  --contact-value-size: 20px;
+  --contact-value-lh: 24px;
+  /* py-8 either side of the line trimmed to its cap (0.7 of the size) */
+  --contact-value-h: calc(var(--contact-value-size) * 0.7 + 16px);
+  /* a textarea can't be cap-trimmed by height, so it gets the multi-line
+     margin form: top = L/2 − 0.3415F, bottom = L/2 − 0.3585F */
+  --contact-ta-trim-t: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3415);
+  --contact-ta-trim-b: calc(var(--contact-value-lh) / 2 - var(--contact-value-size) * 0.3585);
+
+  --contact-form-top: clamp(32px, calc(15.1px + 4.507vw), 80px);
+  --contact-form-bottom: clamp(32px, calc(-0.3944px + 8.638vw), 124px);
+  --contact-cta-gap: clamp(56px, calc(47.55px + 2.254vw), 80px);
+  --contact-details-gap: 40px;
+  --contact-fields-gap: clamp(24px, calc(15.55px + 2.254vw), 48px);
+}
+
+/* ── Contact below the desktop rung ─────────────────────────────────────
+   Figma draws this page twice: 210:5709 at 375 and 147:11421 at 1440. The
+   sizes between those two are FLUID — see the `clamp()`s on `:root` above —
+   because pinning them to the phone value all the way up to 899 left a
+   768 tablet wearing a 375 layout: a 14.7:1 letterbox video under a 110px
+   headline, and DETAILS at 32 beside it.
+
+   What stays in a media query is only what cannot be interpolated: which
+   way a row runs, and how many columns it has. */
+
+/* 600–899: the headline earns its row back — the video is the remainder
+   beside the word, exactly as on desktop — and the form goes two-up. The
+   FORM's own row (DETAILS beside the grid) still waits for 900, because
+   DETAILS + its 150 indent does not fit beside a 704 grid. */
+@media (max-width: 899px) {
+  :root {
+    --contact-form-row: column;
+    --contact-fields-indent: 0px;
+  }
+}
+
+/* Under 600 there is no room for anything beside the display type, so the
+   headline stacks and the video becomes a band of its own. Its height is
+   the one number that has to be interpolated by hand: 48 is the design's
+   at 375, and 88 is the cap band of the display type at the 900 switch, so
+   it arrives at the desktop behaviour without a step. */
+@media (max-width: 599px) {
+  :root {
+    --contact-head-row: column;
+    --contact-cols: 1fr;
+    --contact-rect-flex: 0 0 auto;
+    --contact-rect-h: clamp(48px, calc(19.43px + 7.619vw), 88px);
+  }
+}

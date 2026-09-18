@@ -1,8 +1,12 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Design token CSS vars ─────────────────────────────────────────── */
+/* ─── Legacy v1 tokens ───────────────────────────────────────────────
+   Still referenced by the existing project pages. Removed page by page
+   as each template is rebuilt for vol2. New work uses tokens.css. */
 :root {
   --color-dark:         #1A1A1A;
   --color-surface-dark: #1F1F1F;
@@ -24,6 +28,12 @@ body {
   color: #F2EAE3;
   overflow-x: clip;
   min-height: 100%;
+}
+
+/* Vol2 owns its own surface — flat --bg-page, no v1 chrome behind it. */
+body:has([data-vol2]) {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
 }
 
 /* ─── Custom cursor — hide native cursor on fine-pointer devices ──────── */
@@ -54,4 +64,366 @@ video {
   -webkit-user-drag: none;
   user-select:       none;
   pointer-events:    none;
+}
+
+/* ══ vol2 — mobile layout ═══════════════════════════════════════════════
+   These were inline `<style>` tags inside the components, which is a trap:
+   React escapes `>` to `&amp;gt;` when it server-renders text inside a
+   `<style>`, so the child combinator below arrived escaped from the server
+   and unescaped from the client, and every load threw a hydration mismatch
+   that replaced the whole document. Real stylesheet, no escaping, and the
+   CSS stops being re-emitted on every render.                              */
+
+@media (max-width: 899px) {
+  /* Rewritten 2026-09-05 for the centred hero (230:14543).
+
+     Almost all of what was here served the OLD hero — a fixed 1320 × 582
+     frame with the wordmark, subtitle and a CTA placed on it by percentage,
+     which could not reflow. That frame is gone; the hero is an ordinary
+     centred column now, so the overrides that turned it into one are not
+     just unnecessary, they were fighting it. `align-items: stretch` in
+     particular beat the column's own centring and left "Scroll now" hard
+     against the left edge of a phone.
+
+     Two things are still worth doing narrow, and only two. */
+
+  /* The wordmark's narrowing to the longer word is in `heroData` now, at
+     every width — 255:7046 asks for it wide as well — and both words are
+     flush left there. What used to be here did the same narrowing but kept
+     GEORGE centred on the box, which is what 230:14543 drew when the hero
+     was a centred column; on a phone it left GEORGE floating 45px in from
+     the K below it, against 255:9406, which flushes both. */
+
+  /* The subtitle keeps its measure — `--hero-sub-w` already clamps to 222 at
+     390, which fits inside the gutters — and is only stopped from ever
+     running wider than the screen. `[data-hero-subtitle]` IS the paragraph
+     now; it used to be a wrapper around one. */
+  [data-hero-subtitle] { max-width: 100%; }
+}
+
+/* The centred card in the project strip shows what hover shows on a desktop
+   — scrim, arrow and title. Written here rather than as a Tailwind variant
+   because the attribute is set from a rAF loop, and the elements it has to
+   reach are three levels down inside the card. */
+[data-focus][data-focused] [data-reveal] { opacity: 1; }
+/* it grows, so it has to sit over its neighbours rather than under them */
+[data-focus][data-focused] { position: relative; z-index: 2; }
+
+/* ---------------------------------------------------------------------------
+   Burger menu, open state.
+
+   The menu's backdrop is fixed to the viewport and sits at z-55, one below
+   the header, so the logo and the X stay sharp on top of it. The header's
+   own opaque bar would otherwise punch a solid, unblurred strip across the
+   top of that backdrop — so while the menu is open the bar steps aside and
+   the blur runs the full height of the screen. Its hairline goes with it;
+   a rule drawn across a blurred overlay reads as a stray line.
+
+   `data-nav-open` is set on the root by MobileMenu, which also swallows
+   wheel and touchmove while it is there. See the comment there for why the
+   page is not locked with `overflow: hidden`.
+--------------------------------------------------------------------------- */
+html[data-nav-open] {
+  --header-bg: transparent;
+}
+html[data-nav-open] [data-header-rule] {
+  opacity: 0;
+}
+
+
+/* ─── Scrollable without the bar ──────────────────────────────────────────
+   For rows that overflow sideways on purpose — the social cards, the
+   category marquee. The content still scrolls and drags; only the bar goes.
+   George: *"in the social media section let's remove the visible horizontal
+   scrollbar."* */
+.no-scrollbar {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* old Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                  /* WebKit */
+}
+
+
+/* ─── Hero, narrow — Figma 238:10151 ──────────────────────────────────────
+   The same two centred lines as everywhere else, in a 326 column on a 390
+   frame — 32px padding, so 83.59vw, which both the wordmark and the sentence
+   hold at any width.
+
+   The sentence stays CENTRED and drops to 16/20, and the gap above it closes
+   right up: the design's is 8, plus the 2.38 its own box carries under the
+   letters, so ~10 — 2.56vw at 390. `!important` because the desktop values
+   are inline styles on the element, which a stylesheet cannot reach.
+
+   It was briefly a five-row reflow (GEO / RGE / KOU / LOU / RIS) before
+   George reverted the node to this. */
+@media (max-width: 639px) {
+  [data-hero-frame] { max-width: 83.59vw; }
+
+  [data-hero-subtitle] {
+    width: 100% !important;
+    margin-top: 2.56vw !important;
+    font: var(--type-16-20-r) !important;
+  }
+}
+
+/* ─── Panel 1, narrow — Figma 238:11970 ───────────────────────────────────
+   A different composition, not the wide one squeezed. The two greetings come
+   out of the drawing's top corners and stack around it — HI THERE! above,
+   I'M GEORGE below, both centred at 32px Bold where the wide layout sets
+   them at 16 — with 48 between each and 64 down to the sentence.
+
+   `order` is what puts the drawing between two spans that precede it in the
+   markup, so the DOM keeps reading "greeting, greeting, drawing" (which is
+   the sensible reading order) while the eye gets the design's arrangement.
+
+   The drawing itself changes shape too: its canvas is 609 × 434 wide and
+   326 × 434 narrow — the FIGURE is the same 286 either way, so only the
+   canvas around it shrinks, and the figure's share of it goes 47% → 87.9%.
+   Without that the drawing would scale down with the column and end up half
+   the size the design draws it. */
+@media (max-width: 639px) {
+  [data-portrait] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  /* `!important` throughout this block: the wide values are INLINE styles on
+     these elements — `font` and `aspect-ratio` among them — and a stylesheet
+     cannot otherwise reach them. */
+  [data-portrait] [data-hi],
+  [data-portrait] [data-me] {
+    position: static;
+    order: 0;
+    font: 700 32px/1 var(--font-sans) !important;
+    letter-spacing: 0.02em;
+    /* cap trim, so the 48 gaps are measured to the ink like the design's */
+    margin-top: -0.1585em;
+    margin-bottom: -0.1415em;
+  }
+  [data-portrait] [data-me] { order: 2; }
+  [data-portrait] [data-avatar] { order: 1; }
+
+  /* 326 is the design's canvas width (238:11970), not just what a 390 frame
+     happens to leave after its gutters. Without the cap the drawing grows
+     with the column — 494 wide and 798 tall at a 558 viewport — and takes
+     the whole composition with it. */
+  [data-avatar] {
+    aspect-ratio: 326 / 434 !important;
+    max-width: 326px !important;
+  }
+  [data-avatar] [data-avatar-fig] {
+    width: 87.87% !important;
+    margin-left: -43.935% !important;
+  }
+
+  /* 64 from the drawing group down to the sentence, not the wide 124 */
+  #intro [data-hold] > [data-portrait] + * { margin-top: 64px !important; }
+  /* …except on a category page, which is 48 at every width — the drawing
+     and the one line under it are set as a single object there. */
+  #intro[data-bare] [data-hold] > [data-portrait] + * { margin-top: 48px !important; }
+
+  /* the panel's own 32px gutters, wider than the page's */
+  #intro,
+  [aria-label='Design services'] { padding-inline: 32px !important; }
+}
+
+/* ─── Panel 2, narrow — Figma 239:5024 ────────────────────────────────────
+   The marquee's cards get bigger and ROUNDED on a phone — one card holds the
+   middle with its neighbours peeking either side, where the wide layout runs
+   square-cornered cards edge to edge. `--cs-card` clamps to 260 at this
+   width, which is smaller than the design's and leaves three cards fighting
+   for the frame. */
+@media (max-width: 639px) {
+  #work [data-card] {
+    width: 300px !important;
+    height: 255px !important;
+  }
+}
+
+/* The panel that arrives over the base screen sets its own opening distance
+   — `--content-pad-top` — and its own rhythm between the sections inside it,
+   `--panel-gap`. So nothing in there pays for the space above itself: the
+   first child would double the opening, and any other would make the gap it
+   sits under bigger than its neighbours'. Only the top; every section keeps
+   whatever it puts below itself. */
+[data-panel-content] > * {
+  padding-top: 0 !important;
+}
+
+/* "Learn more" is given more room than the panel's own rhythm — George:
+   *"make the learn more have 200px distance up and below."* Expressed as the
+   DIFFERENCE from `--panel-gap` rather than as a flat margin, because the gap
+   is already between these siblings: at 1440 the panel gap is 200 and this
+   resolves to 0, and on a phone it tops the 124 up to the same 200. Margins
+   on a flex item add to the gap rather than collapsing into it, so the two
+   simply sum. */
+#work {
+  margin-block: calc(200px - var(--panel-gap));
+}
+
+/* `ProjectCards` brings its own vertical rhythm, which is right when it is
+   a section in its own right and wrong directly under a title that has
+   already spaced itself with `--titled-gap`. Only the top goes: the bottom
+   still holds the grid off the footer. */
+[data-titled-band] > section {
+  padding-top: 0;
+}
+
+/* The featured band's inline `height: 100svh` — set by the rank's branch —
+   survives the swap to the phone's list. Both branches return a `<section>`,
+   so React reconciles by type and keeps the same DOM node; GSAP has also
+   written to that element's inline styles, and React then leaves `height`
+   alone however the branch sets it. A distinct `key` would give a fresh node
+   but cannot be used: the rank is PINNED, so ScrollTrigger has re-parented it
+   into a `.pin-spacer`, and unmounting makes React look for the node under a
+   parent that no longer owns it — `removeChild` throws and the page dies.
+
+   A stylesheet `!important` beats a plain inline value, which is the one
+   route left. Without it the list — far taller than a viewport — overflows
+   its own 844px box and lands on top of the footer. */
+@media (max-width: 639px) {
+  [data-band-list] { height: auto !important; }
+}
+
+/* ── The base screen (255:7046 / 255:9406) ───────────────────────────────
+   Wide: the title over the line in a 792 column, the drawing in a 460 one
+   beside them, 48 apart both ways — the ratio the node draws.
+
+   Narrow: one column, and the drawing moves BETWEEN the title and the line.
+   That is why this is a grid with named areas rather than a flex row: the
+   three boxes are siblings in the markup and each breakpoint says where they
+   go, so neither layout has to be the other one bent into shape. */
+[data-base-body] {
+  padding-block: var(--base-pad-y);
+  grid-template-columns: 792fr 460fr;
+  grid-template-areas: 'copy figure';
+  column-gap: 48px;
+  row-gap: 48px;
+  /* `center`, not the default. The grid is a flex child filling the screen,
+     so its rows are auto-sized and then STRETCHED into whatever height is
+     left over — which quietly turned the node's 48 between the wordmark and
+     the line into 157, because each row grew and its item centred inside it.
+     Centring the whole block instead keeps the rows the size of their
+     contents and puts the slack outside them, where it belongs. */
+  align-content: center;
+}
+
+/* 255:7046 frames the drawing in a PORTRAIT window — 460 x 553, clipped —
+   with the drawing itself much larger inside it than the canvas it is
+   authored on: the body stroke is 365 of the window's 460, where the old
+   composition drew it at 286 of 609. That is why it read as a small picture
+   in a wide box here.
+
+   The window is the design's aspect and the drawing is scaled to 166% of it,
+   which lands the body at 359 against the node's 365 and leaves ~50px of
+   clear space each side, against the node's 47. Its own `max-width` cap has
+   to go with it: that cap exists to stop the drawing overwhelming a short
+   window, and inside a fixed-aspect frame the frame already decides.
+
+   Wide only. 255:9406 shows the WHOLE figure on a phone — head, torso and
+   both hands, at the full width of the column — where cropping it to this
+   window took the ears and the shoulders off. The narrow composition draws
+   the drawing complete and lets the column decide its size, which is what it
+   already did. */
+@media (min-width: 900px) {
+  [data-base-figure] {
+    position: relative;
+    aspect-ratio: 460 / 553;
+    overflow: clip;
+    /* …and never taller than the room actually left on the screen. The
+       column's share of the WIDTH decides its size normally, which is right
+       until the window is short — then the drawing simply ran off the
+       bottom, and the menu with it. Capping the WIDTH rather than the height
+       is what keeps the aspect: the ratio does the rest. */
+    /* `width: 100%` is load-bearing next to the auto margin below: an auto
+       margin on a grid item switches it from stretching its track to
+       shrink-to-fit, and the drawing inside is absolutely positioned, so
+       there is nothing to fit and the whole figure collapsed to zero. */
+    width: 100%;
+    max-width: calc((100lvh - var(--ticker-h) - 2 * var(--base-pad-y)) * 460 / 553);
+    /* what pushes the capped box to the column's right edge */
+    margin-inline-start: auto;
+  }
+  [data-base-figure] [data-avatar] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 166%;
+    max-width: none !important;
+  }
+}
+[data-base-copy] {
+  grid-area: copy;
+  gap: 48px;
+}
+[data-base-figure] { grid-area: figure; }
+
+/* The mark takes no part in the wide layout: 255:9087 puts it in the corner
+   above a column that is placed by its own centring, so making it a grid row
+   would push that column down by however tall the mark is. It is absolute
+   against the body's padding box, which is exactly the content's top-left. */
+[data-base-body][data-has-mark] { position: relative; }
+[data-base-mark] {
+  position: absolute;
+  top: var(--base-pad-y);
+  left: var(--gutter);
+  color: var(--text-primary);
+}
+
+@media (max-width: 899px) {
+  [data-base-body] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'title'
+      'figure'
+      'text';
+    row-gap: 24px;
+  }
+  /* the wrapper steps out of the way so its two children can be placed
+     either side of the drawing — see the note in `BaseScreen` */
+  [data-base-copy] { display: contents; }
+  [data-base-title] { grid-area: title; }
+  [data-base-text] { grid-area: text; }
+
+  /* WITH a mark the order is different — 262:5841 puts the mark first, the
+     drawing second and the title and lead TOGETHER under it, 56 apart with
+     16 inside. So the copy stays a column here rather than dissolving. */
+  [data-base-body][data-has-mark] {
+    grid-template-areas:
+      'mark'
+      'figure'
+      'copy';
+    row-gap: 56px;
+  }
+  [data-base-body][data-has-mark] [data-base-copy] {
+    display: flex;
+    /* 16, the node's — it came down from 24 with the type */
+    gap: 16px;
+  }
+  [data-base-mark] {
+    position: static;
+    grid-area: mark;
+  }
+
+  /* Room to climb. A category hero is taller than a phone by design —
+     262:5841 is 1161 against an 844 screen — but only by about 58px, which
+     is less than the menu is tall: the last line of the title finished its
+     travel still sitting under the burger. George: *"give a bit scrolling
+     area to the category hero, so if the burger sits on the text the text
+     will move upwards and the user can read it before the panel comes."*
+     
+     Extra bottom padding is the lever, because the panel's overscroll
+     carries its content up by exactly the amount the content overflows the
+     screen. 120 buys the line a clear pass above the menu, and the panel's
+     `tailRun` then holds it there before the next one arrives.
+
+     `[data-has-mark]` only: the home base has no overflow at all and must
+     keep none — everything in it has to be visible without scrolling. */
+  [data-base-body][data-has-mark] {
+    padding-bottom: calc(var(--base-pad-y) + 120px);
+  }
 }

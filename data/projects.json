@@ -72,12 +72,20 @@
     "slug": "benefit"
   },
   {
-    "id": "music-festivals",
-    "title": "Music Festivals",
-    "subtitle": "Visual identity and collateral for live music events",
+    "id": "deerislnd",
+    "title": "DEERISLND",
+    "subtitle": "Folk embroidery rebuilt as pixels, for a run of nights at Theatro Dora Stratou",
     "category": "creative",
     "mode": "fun",
-    "slug": "music-festivals"
+    "slug": "deerislnd"
+  },
+  {
+    "id": "athens-goes-mayan",
+    "title": "Athens Goes Mayan",
+    "subtitle": "Mayan iconography over the Acropolis, for a PRIMER and ZAMANI run at OAKA",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "athens-goes-mayan"
   },
   {
     "id": "book-cover",
@@ -88,33 +96,65 @@
     "slug": "book-cover"
   },
   {
-    "id": "logo-designs",
-    "title": "Logo Designs",
-    "subtitle": "Brand mark exploration across industries",
+    "id": "maria-fitsopoulou",
+    "title": "Maria Fitsopoulou",
+    "subtitle": "A mark that reads as a molar and as something softer",
     "category": "creative",
     "mode": "fun",
-    "slug": "logo-designs"
+    "slug": "maria-fitsopoulou"
   },
   {
-    "id": "psychologist-branding",
-    "title": "Psychologist Branding",
-    "subtitle": "Warm, trust-forward brand identity for a private practice",
+    "id": "olga-posonidou",
+    "title": "Olga Posonidou",
+    "subtitle": "Two open hands holding a single green dot",
     "category": "creative",
     "mode": "fun",
-    "slug": "psychologist-branding"
+    "slug": "olga-posonidou"
   },
   {
-    "id": "illustrations",
-    "title": "Illustrations",
-    "subtitle": "Character and conceptual illustration work",
+    "id": "vasiliki-vozora",
+    "title": "Vasiliki Vozora",
+    "subtitle": "A quiet identity for a systemic family therapist",
     "category": "creative",
     "mode": "fun",
-    "slug": "illustrations"
+    "slug": "vasiliki-vozora"
+  },
+  {
+    "id": "danai-michali",
+    "title": "Danai Michali",
+    "subtitle": "Identity and an illustrated social series for a systemic counsellor",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "danai-michali"
+  },
+  {
+    "id": "arcana",
+    "title": "Arcana",
+    "subtitle": "A personal tarot series \u2014 queerness, nature, intimacy",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "arcana"
+  },
+  {
+    "id": "in-pixels-we-see",
+    "title": "In Pixels We See",
+    "subtitle": "Renowned paintings reduced to colour and its arrangement",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "in-pixels-we-see"
+  },
+  {
+    "id": "cabaret",
+    "title": "Cabaret",
+    "subtitle": "An alternative poster for Bob Fosse's 1972 film",
+    "category": "creative",
+    "mode": "fun",
+    "slug": "cabaret"
   },
   {
     "id": "custom-typefaces",
-    "title": "Custom Typefaces",
-    "subtitle": "Bespoke type design for editorial and branding contexts",
+    "title": "Loukoumi & Seismos",
+    "subtitle": "Two experimental typefaces \u2014 one comfort, one the floor moving",
     "category": "creative",
     "mode": "fun",
     "slug": "custom-typefaces"

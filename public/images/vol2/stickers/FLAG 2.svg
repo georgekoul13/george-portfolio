@@ -1,0 +1,17 @@
+<svg width="93" height="114" viewBox="0 0 93 114" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M57 78H67.5V88.5H88.5V109.5H4.5V88.5H25.5V78H46.5V57H36V46.5H15V36H4.5V25.5H15V15H36V4.5H57V78Z" fill="#FD5A47"/>
+<path d="M88.5 88.5H67.5V78H57V4.5H36V15H15V25.5H4.5V36H15V46.5H36V57H46.5V78H25.5V88.5H4.5V109.5H88.5V88.5ZM61.5 73.5H72V84H93V114H0V84H21V73.5H42V61.5H31.5V51H10.5V40.5H0V21H10.5V10.5H31.5V0H61.5V73.5Z" fill="#FFFCE0"/>
+<rect x="46.5" y="57" width="10.5" height="52.5" fill="#0F0F0F"/>
+<rect x="36" y="4.5" width="10.5" height="52.5" fill="#FD5A47"/>
+<rect x="25.5" y="25.5" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="25.5" y="15" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="25.5" y="36" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="15" y="25.5" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="15" y="15" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="15" y="36" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="25.5" y="78" width="42" height="10.5" fill="#0F0F0F"/>
+<rect x="4.5" y="88.5" width="84" height="10.5" fill="#0F0F0F"/>
+<rect x="4.5" y="99" width="84" height="10.5" fill="#0F0F0F"/>
+<rect x="4.5" y="25.5" width="10.5" height="10.5" fill="#FD5A47"/>
+<rect x="46.5" y="4.5" width="10.5" height="52.5" fill="#FD5A47"/>
+</svg>

@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Vol2NotFound from '@/components/vol2/notfound/NotFoundContent';
 
 export default function NotFound() {
+  const pathname = usePathname();
   const [cardHovered,    setCardHovered]    = useState(false);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
 
@@ -12,6 +15,15 @@ export default function NotFound() {
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
+
+  /* Vol2 has its own 404 — the dino game. A nested `not-found.tsx` under
+     `app/vol2` is the tidier way to do this, but Next 14.2 does not fire one
+     for `notFound()` thrown from a dynamic segment, so the branch lives here
+     instead. Placed below the hooks, not above them: an early return before
+     `useState`/`useEffect` would change the hook order between the two 404s.
+     It only changes what `/vol2/*` renders; the live site's 404 is untouched,
+     and this check goes when vol2 takes over the real routes. */
+  if (pathname?.startsWith('/vol2')) return <Vol2NotFound />;
 
   const handleRefresh = () => window.location.reload();
 

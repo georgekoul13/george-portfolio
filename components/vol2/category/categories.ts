@@ -1,0 +1,268 @@
+import projects from '@/data/projects.json';
+import { STILLS } from '../project/stills';
+import { CARD_BY_SLUG, HERO_BY_SLUG } from '../project/vol2Projects';
+
+/**
+ * The three category pages — Figma "Category template", node 147:9780.
+ *
+ * Everything a category page varies by lives here, so adding a project,
+ * re-tagging one or re-ordering a page is an edit to this file and nothing
+ * else.
+ *
+ * THE SPLIT IS STILL PROVISIONAL. `data/projects.json` has only two buckets,
+ * `ux-ui` (9) and `creative` (6) — there is no Graphic tag at all — so the
+ * three pages are filled by naming slugs below rather than by filtering on the
+ * data. George's call: get it testable now, categorise properly later, "one by
+ * one, along with missing details and adding more projects". When the real
+ * tags land, replace `slugs` with a filter on `category` and delete this note.
+ *
+ * The line drawn between the two visual pages, for whoever revisits it:
+ * **Graphic is commissioned** — someone briefed it and it ships to their
+ * audience. **Creative is self-directed or expressive** — the festival work
+ * sits there because it is art direction first and deliverable second, and the
+ * typefaces because they were never briefed at all.
+ */
+
+export type CategorySlug = 'product' | 'graphic' | 'creative';
+
+export interface Category {
+  slug: CategorySlug;
+  /** the nav label */
+  label: string;
+  /**
+   * One sentence. Figma breaks it across four rows with images set between
+   * the words; the images are gone and it now wraps on its own, so the copy
+   * is written as prose and the reveal does the shaping.
+   */
+  headline: string;
+  /**
+   * The line under the drawing on the new template (238:6357). Sentence
+   * case, unlike `headline`, which was the old left-aligned all-caps band —
+   * kept because the project pages still use it. Product's is the design's
+   * own words; the other two follow its shape.
+   */
+  intro: string;
+  /**
+   * The line under the title on the hero — 255:9087's "Subtitle".
+   *
+   * The node carries Lorem. George: *"if you can find better copy you can
+   * replace it"* — so these are written to the site's own register rather
+   * than to a brief: short, flat, faintly dry, and making no claim that
+   * would need checking. MINE, not George's, and the first thing to change
+   * if they do not sound like him.
+   */
+  lead?: string;
+  /** the words that arrive as beats rather than a plain wipe */
+  beats: string[];
+  /**
+   * Provisional; becomes a filter on `category` once the data is tagged.
+   * **Order is the page order** — the first two get the large cards, so the
+   * two that should open the page go first. Product leads on the two current
+   * roles (Gaspar, Mood); the rest run roughly newest-first.
+   */
+  slugs: string[];
+}
+
+const orbit = (name: string) => `/images/projects/orbit/${name}.png`;
+
+export const CATEGORIES: Record<CategorySlug, Category> = {
+  product: {
+    slug: 'product',
+    label: 'Product',
+    // Figma's own copy, minus its "HABBITS" typo
+    headline: 'DESIGNING PRODUCTS, DESIGNING EXPERIENCES, DESIGNING HABITS AND SOMETHING ELSE',
+    intro: 'Designing habits, experiences & products.',
+    lead: 'Research, flows and interfaces — the unglamorous half of design, done properly.',
+    beats: ['PRODUCTS', 'EXPERIENCES', 'HABITS'],
+    /* `insurance-product-flows` is gone: it lost its place when the Wallbid
+       apps page was dropped, and it is not one of the nineteen George
+       designed. A card linking to a project that does not exist is a 404
+       with a picture on it. */
+    slugs: [
+      'gaspar-ai',
+      'mood',
+      'piraeus-insurance',
+      'bancasure360',
+      'cybersential',
+      'cancellation-wallet',
+      'benefit',
+      'istorima',
+    ],
+  },
+
+  graphic: {
+    slug: 'graphic',
+    label: 'Graphic',
+    // placeholder copy — Figma only writes the Product page's lines
+    headline: 'DESIGNING COVERS, DESIGNING MARKS, DESIGNING LETTERS AND SOMETHING ELSE',
+    intro: 'Designing covers, marks & letters.',
+    lead: 'Covers, marks and layouts. Mostly type, mostly restraint.',
+    beats: ['COVERS', 'MARKS', 'LETTERS'],
+    /* `maria-fitsopoulou` is paused — George: *"I'm thinking of posing maria
+       and primer for now cuz i don't have time to create all that mock ups."* */
+    slugs: ['book-cover', 'danai-michali', 'olga-posonidou', 'vasiliki-vozora'],
+  },
+
+  creative: {
+    slug: 'creative',
+    label: 'Creative',
+    // placeholder copy — Figma only writes the Product page's lines
+    headline: 'DRAWING WORLDS, DRAWING POSTERS, DRAWING IDENTITIES AND SOMETHING ELSE',
+    intro: 'Drawing worlds, posters & identities.',
+    lead: 'Posters, identities and illustrated worlds — the briefs that say “have fun with it”.',
+    beats: ['WORLDS', 'POSTERS', 'IDENTITIES'],
+    /* `athens-goes-mayan` is not one of the nineteen, and `custom-typefaces`
+       was the two typefaces as one project — they are separate pages now, and
+       the invented names went with it. Czech Image is new here: it had no
+       card at all, which is how a competition win stayed invisible. */
+    slugs: [
+      'deerislnd',
+      'arcana',
+      'in-pixels-we-see',
+      'cabaret',
+      'czech-image',
+      'angular-typeface',
+      'rounded-typeface',
+    ],
+  },
+};
+
+export interface CardProject {
+  slug: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  /** what the chip on the artwork reads — see `TAGS` */
+  tag: string;
+}
+
+/**
+ * The chip on each card.
+ *
+ * It used to repeat the category, which on a category page is the one thing
+ * the reader already knows — nine cards saying PRODUCT under a page that says
+ * PRODUCT. So it carries the **sector** instead: the thing that separates
+ * Gaspar from Mood at a glance, and the thing a recruiter is actually
+ * scanning for.
+ *
+ * Sector only works where there is a client with one. Three of these have no
+ * single sector — the logos span industries, the typefaces and the
+ * illustrations were never for anyone — so those fall back to the **medium**,
+ * which is the next most useful thing to know before clicking.
+ *
+ * Kept short on purpose: the chip is 12/16 at a fixed 32px tall on a card
+ * that is 413px wide at its smallest, so two words is the ceiling.
+ *
+ * Sources are `content/projects/*.ts` — `metadata.employer` and the
+ * descriptions — not invented.
+ */
+const TAGS: Record<string, string> = {
+  // product — sector
+  'gaspar-ai': 'AI SAAS',
+  mood: 'MUSIC',
+  'piraeus-insurance': 'BANKING',
+  bancasure360: 'INSURTECH',
+  cybersential: 'CYBERSECURITY',
+  'cancellation-wallet': 'TRAVEL',
+  benefit: 'SHIPPING',
+  istorima: 'CULTURE',
+
+  // graphic — sector, except the logos, which have no single one
+  'danai-michali': 'COUNSELLING',
+  'olga-posonidou': 'PSYCHOTHERAPY',
+  'vasiliki-vozora': 'FAMILY THERAPY',
+  'book-cover': 'PUBLISHING',
+
+
+  // creative — medium, except the festivals
+  deerislnd: 'EVENTS',
+  arcana: 'PERSONAL',
+  'in-pixels-we-see': 'PIXEL ART',
+  cabaret: 'POSTER',
+  'czech-image': 'POSTER',
+  'angular-typeface': 'TYPE DESIGN',
+  'rounded-typeface': 'TYPE DESIGN',
+};
+
+/**
+ * Two slugs don't match their artwork's filename — the images were exported
+ * before the slugs settled. Everything else is `{slug}-1.png`.
+ *
+ * This is the FALLBACK now, not the rule — see `cardImage`.
+ */
+const IMAGE_OVERRIDES: Record<string, string> = {
+  'piraeus-insurance': 'piraeus-1',
+  'insurance-product-flows': 'insurance-product-1',
+};
+
+/**
+ * The card shows the project's OWN first still — the same picture that opens
+ * its page. George: *"the thumbnail card image … is the same image as the
+ * base section."*
+ *
+ * It used to read `/images/projects/orbit/{slug}-1.png`, and those are around
+ * 270 x 200: a thumbnail stretched across a card drawn at 1240 wide, which is
+ * why every card looked soft. `STILLS[slug][0]` is the real artwork at full
+ * size, and `object-cover` handles the crop — the card is landscape 5:4 where
+ * the hero is 33:16, so the same file serves both.
+ *
+ * Projects whose artwork has not been re-exported yet still have no `STILLS`
+ * entry, so they fall back to the orbit thumbnail rather than to nothing.
+ */
+function cardImage(slug: string): string {
+  /* The 2026-09 export first: those folders are the current artwork, and
+     their `hero.png` is the same file the project page opens on — which is
+     the whole rule George set for this card. `STILLS` is the previous
+     export, still the source for anything not re-shot yet, and the orbit
+     thumbnail is the floor under both. */
+  const fresh = HERO_BY_SLUG[slug];
+  if (fresh) return fresh;
+  const real = STILLS[slug]?.[0];
+  if (real) return real;
+  return orbit(IMAGE_OVERRIDES[slug] ?? `${slug}-1`);
+}
+
+/**
+ * Cards for an arbitrary list of slugs, in the order given. Missing slugs are
+ * dropped rather than rendered empty.
+ *
+ * Split out of `projectsFor` so the home page's featured band can build the
+ * same cards without belonging to a category — George: *"for the featured
+ * project card use the same components like we use in the categories page."*
+ * `fallbackTag` is what a project with no entry in `TAGS` gets; every slug the
+ * band uses has one, so it is a floor rather than a common case.
+ */
+export function cardsForSlugs(slugs: string[], fallbackTag = 'PROJECT'): CardProject[] {
+  const bySlug = new Map(projects.map((p) => [p.slug, p]));
+  return slugs.flatMap((slug) => {
+    /* Vol 2 FIRST. The card used to take its title and subtitle from
+       `data/projects.json`, which still says Gaspar is an "AI-powered
+       insurance assistant" and Mood an "Emotional wellbeing tracking app
+       concept" — invented, and never corrected when the descriptions were.
+       So the card contradicted the page it opened. `CARD_BY_SLUG` is built
+       from the same `copy.ts` the page reads. */
+    const card = CARD_BY_SLUG[slug];
+    if (card) {
+      return [{
+        slug,
+        title: card.title,
+        subtitle: card.subtitle,
+        image: cardImage(slug),
+        tag: TAGS[slug] ?? fallbackTag,
+      }];
+    }
+    const p = bySlug.get(slug);
+    if (!p) return [];
+    return [{
+      slug: p.slug,
+      title: p.title,
+      subtitle: p.subtitle,
+      image: cardImage(p.slug),
+      tag: TAGS[p.slug] ?? fallbackTag,
+    }];
+  });
+}
+
+export function projectsFor(category: Category): CardProject[] {
+  return cardsForSlugs(category.slugs, category.label.toUpperCase());
+}
