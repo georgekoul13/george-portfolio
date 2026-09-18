@@ -1,5 +1,6 @@
 import ProjectImage from './ProjectImage';
 import Rise from './Rise';
+import { altFor } from './altText';
 import type { ProjectMetaFields } from './blocks';
 
 /**
@@ -78,7 +79,7 @@ export default function ProjectBase({
       {/* `ProjectImage` already owns the aspect token and the uncover-from-
           below entrance, and takes a video just as happily — so a project
           whose opening frame moves needs no different component here. */}
-      <ProjectImage src={hero} alt={title} priority />
+      <ProjectImage src={hero} alt={altFor(hero, title)} priority />
 
       {/* The title and the line under it rise in after the picture has
           uncovered — the same arrival the rest of the page uses, so the

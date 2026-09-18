@@ -2,6 +2,7 @@ import { ASSETS, type Loop, type Shot } from './assets';
 import { COPY, CHIP_RENAMES, dropArticle, type SectionCopy } from './copy';
 import { LAYOUT, type LayoutCell } from './layout';
 import type { Block, Cell, SplitGroup, Vol2Project } from './blocks';
+import { altOf } from './altText';
 
 /**
  * The nineteen project pages, on the template of Figma 366:11793.
@@ -195,11 +196,14 @@ function buildBlocks(slug: string, folder: string): Block[] {
     if (c.k !== 'image') {
       const loop: Loop | undefined = videos.shift();
       if (!loop) return null;
-      return { sources: loop, kind: 'video', ...shape(c) };
+      /* Written per file — see `altText`. Left undefined when a picture has
+         no description yet, so it falls back to the project title rather
+         than to silence. */
+      return { sources: loop, kind: 'video', alt: altOf(loop.webm ?? loop.mp4), ...shape(c) };
     }
     const src = still ?? fill(c);
     if (!src) return null;
-    return { src, kind: 'image', ...shape(c) };
+    return { src, kind: 'image', alt: altOf(src), ...shape(c) };
   };
 
   const blocks: Block[] = [];
@@ -232,11 +236,11 @@ function buildBlocks(slug: string, folder: string): Block[] {
          in the order the design has them. */
       if (b.cell.k === 'image') {
         const src = highlights.shift();
-        if (src) blocks.push({ kind: 'media', src });
+        if (src) blocks.push({ kind: 'media', src, alt: altOf(src) });
         return;
       }
       const loop = videos.shift();
-      if (loop) blocks.push({ kind: 'media', sources: loop });
+      if (loop) blocks.push({ kind: 'media', sources: loop, alt: altOf(loop.webm ?? loop.mp4) });
       return;
     }
 
