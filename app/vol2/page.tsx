@@ -41,7 +41,12 @@ import CopyrightSection from '@/components/vol2/CopyrightSection';
  * this, which is the same line every other page had.
  */
 export const metadata: Metadata = seoPage({
-  title: 'Product & visual designer',
+  /* Title Case, because this is a TITLE — it is the headline of the search
+     result and the line under the share card, not a sentence. George asked
+     for the V and the D after seeing it in LinkedIn's preview. It also now
+     matches the site-wide fallback in `app/layout.tsx`, which has always
+     read "Product & Visual Designer". */
+  title: 'Product & Visual Designer',
   description:
     'George Koulouris designs products, brands and the things around them — '
     + 'apps, insurance platforms, identities, posters and type. Based in Greece.',
